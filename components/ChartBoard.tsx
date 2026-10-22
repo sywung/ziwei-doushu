@@ -1,10 +1,12 @@
 'use client';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { ZiweiChart, Palace, Star } from '@/lib/ziwei/types';
 import { BRANCHES, STEMS } from '@/lib/ziwei/constants';
 import PalaceCell from './PalaceCell';
-import TimeNav, { type TimeView, getYearStemIndex, buildSiHuaOverlay } from './TimeNav';
+import TimeNav, { nowTarget, type TimeView } from './TimeNav';
+import { FLOW_LAYER_TAG, flowPalaceShortName, getFlowLayers, type FlowLayers, type FlowTarget } from '@/lib/ziwei/flow-layers';
+import { CHILDHOOD_DAXIAN_INDEX } from '@/lib/ziwei/yunxian-context';
 
 interface ChartBoardProps {
   chart: ZiweiChart;
@@ -55,24 +57,32 @@ const ANIMATION_ORDER = [5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4];
 export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHuaClick }: ChartBoardProps) {
   const [selectedBranch, setSelectedBranch] = useState<number | null>(null);
   const [timeView, setTimeView] = useState<TimeView>('mingpan');
-  const [liunianYear, setLiunianYear] = useState<number>(new Date().getFullYear());
+  const [target, setTarget] = useState<FlowTarget>(nowTarget);
+  // 大限视图默认现实当前大限；本身在童限时选童限
+  const [daXianIndex, setDaXianIndex] = useState<number>(
+    chart.currentDaXianIndex >= 0 ? chart.currentDaXianIndex : CHILDHOOD_DAXIAN_INDEX,
+  );
 
   const palaceMap: Record<number, Palace> = {};
   chart.palaces.forEach(p => { palaceMap[p.branch] = p; });
 
-  // 计算当前叠加四化数据（大限或流年）
-  const currentDx = chart.daXians[chart.currentDaXianIndex];
-  const overlayData: Record<string, string> = (() => {
-    if (timeView === 'daxian' && currentDx) {
-      const dxPalace = chart.palaces.find(p => p.branch === currentDx.palaceBranch);
-      if (dxPalace) return buildSiHuaOverlay(dxPalace.stem);
+  // 运限层：大限视图用点选的大限，其余按目标日期所属大限
+  const { flow, flowError } = useMemo((): { flow: FlowLayers | null; flowError: string | null } => {
+    if (timeView === 'mingpan') return { flow: null, flowError: null };
+    try {
+      return { flow: getFlowLayers(chart, target, timeView === 'daxian' ? daXianIndex : undefined), flowError: null };
+    } catch (e) {
+      if (e instanceof RangeError && /before birth/.test(e.message)) {
+        return { flow: null, flowError: '所选日期早于出生日期，没有运限。' };
+      }
+      console.error('[ChartBoard] flow layers failed', e);
+      return { flow: null, flowError: '运限计算失败，请换个日期再试。' };
     }
-    if (timeView === 'liunian') {
-      return buildSiHuaOverlay(getYearStemIndex(liunianYear));
-    }
-    return {};
-  })();
-  const overlayLabel = timeView === 'daxian' ? '限' : timeView === 'liunian' ? '年' : undefined;
+  }, [chart, timeView, target, daXianIndex]);
+
+  const layer = timeView !== 'mingpan' ? flow?.layers[timeView] ?? null : null;
+  const overlayData: Record<string, string> = layer?.siHua ?? {};
+  const overlayLabel = timeView !== 'mingpan' ? FLOW_LAYER_TAG[timeView] : undefined;
 
   const handlePalaceClick = (branch: number) => {
     const isDeselecting = selectedBranch === branch;
@@ -93,9 +103,13 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
       <TimeNav
         chart={chart}
         view={timeView}
-        liunianYear={liunianYear}
         onViewChange={setTimeView}
-        onYearChange={setLiunianYear}
+        target={target}
+        onTargetChange={setTarget}
+        daXianIndex={daXianIndex}
+        onDaXianChange={setDaXianIndex}
+        flow={flow}
+        flowError={flowError}
       />
 
       {/* 命盘标题 */}
@@ -140,6 +154,7 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
                 overlayStarSiHua={Object.keys(overlayData).length > 0 ? overlayData : undefined}
                 overlayLabel={overlayLabel}
                 onSiHuaClick={(starName, siHua) => onSiHuaClick?.(starName, siHua, timeView)}
+                layerPalaceName={layer?.mingBranch != null ? flowPalaceShortName(layer.mingBranch, branch) : undefined}
               />
             </div>
           );

@@ -17,6 +17,8 @@ interface PalaceCellProps {
   overlayLabel?: string;
   /** 点击叠加四化 badge 回调 */
   onSiHuaClick?: (starName: string, siHua: string) => void;
+  /** 运限层在此宫的宫名（命/兄/夫…），配合 overlayLabel 显示成「年·财」 */
+  layerPalaceName?: string;
 }
 
 const SIHUA_STYLES: Record<string, string> = {
@@ -55,8 +57,9 @@ const SiHuaBadge = ({
 
 export default function PalaceCell({
   palace, onClick, onStarClick, isSelected, isSanFang, delay = 0,
-  overlayStarSiHua, overlayLabel, onSiHuaClick,
+  overlayStarSiHua, overlayLabel, onSiHuaClick, layerPalaceName,
 }: PalaceCellProps) {
+  const isLayerMing = layerPalaceName === '命';
   const { branch, stem, name, stars, daXianAge, isCurrentDaXian, isMingGong, isShenGong } = palace;
   const ganzhi = `${STEMS[stem]}${BRANCHES[branch]}`;
 
@@ -100,6 +103,19 @@ export default function PalaceCell({
           style={!isCurrentDaXian ? { color: 'var(--t-faint)', opacity: 0.75 } : undefined}
         >
           {daXianAge[0]}–{daXianAge[1]}
+        </div>
+      )}
+
+      {/* 运限层宫名 */}
+      {layerPalaceName && (
+        <div
+          className={clsx(
+            'absolute bottom-1 right-1 text-[9px] leading-none px-1 py-0.5 rounded border',
+            isLayerMing ? 'font-bold text-fuchsia-300 border-fuchsia-400/60 bg-fuchsia-500/15' : 'border-transparent',
+          )}
+          style={!isLayerMing ? { color: 'var(--t-faint)' } : undefined}
+        >
+          {overlayLabel}·{layerPalaceName}
         </div>
       )}
 

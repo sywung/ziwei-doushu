@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { ZiweiChart, Palace } from '@/lib/ziwei/types';
 import type { TimeView } from './TimeNav';
+import { FLOW_LAYER_LABEL } from '@/lib/ziwei/flow-layers';
 import { TOPIC_LABEL, TOPIC_PALACE_NAME } from '@/lib/ziwei/db-analysis';
 import {
   READING_TOPICS, READING_YEAR_MAX, READING_YEAR_MIN, isReadingYearCovered, readingKey,
@@ -231,7 +232,7 @@ ${selectedPalace.name}在命盘中的意义，以及这种星曜配置的整体�
       p.stars.some(s => s.name === selectedSiHua.starName)
     );
     const palaceName = palaceOfStar?.name ?? '未知宫位';
-    const viewLabel = selectedSiHua.view === 'daxian' ? '大限' : '流年';
+    const viewLabel = selectedSiHua.view === 'mingpan' ? '本命' : FLOW_LAYER_LABEL[selectedSiHua.view];
 
     const prompt = `请分析【${viewLabel}${selectedSiHua.starName}化${selectedSiHua.siHua}】的飞化影响，按以下结构输出：
 

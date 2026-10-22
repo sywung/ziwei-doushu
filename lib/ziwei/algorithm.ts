@@ -441,6 +441,30 @@ function applySchoolFuxun(palaces: Palace[]): void {
   pushNatalStar(palaces, fu, '副旬');
 }
 
+/**
+ * 建 iztro 星盘（排盘与运限共用同一闰月口径）
+ *
+ * 闰月处理（流派分歧：归本月 / 归下月 / 前后半分）
+ * 默认 = DEFAULT_LEAP_MONTH（2026-09-05 起 split：主流排盘默认口径「月中分界」，150 组金标准盘对照验证；倪师派归下月可经流派抽屉切 next-month）
+ * 非 split 时先算农历，闰月才切 byLunar；非闰月仍走 bySolar，与 split 行为完全一致
+ */
+export function createAstrolabe(
+  birthInfo: Pick<BirthInfo, 'year' | 'month' | 'day' | 'hour' | 'gender'>,
+  leapMode: LunarMonthPolicy = DEFAULT_LEAP_MONTH,
+): ReturnType<typeof astro.bySolar> {
+  const { year, month, day, hour, gender } = birthInfo;
+  const iztroGender = gender === 'male' ? '男' : '女';
+  const effectiveLunar = resolveEffectiveLunarDate(year, month, day, leapMode);
+
+  if (leapMode !== 'split' && effectiveLunar.rawLunarMonth < 0) {
+    // 闰月生人 → 按用户选项切换月份归属
+    const lunarDateStr = `${effectiveLunar.lunarYear}-${effectiveLunar.lunarMonth}-${effectiveLunar.lunarDay}`;
+    return astro.byLunar(lunarDateStr, hour, iztroGender, effectiveLunar.isLeapMonth, false, 'zh-CN');
+  }
+  // 非闰月或 split 模式：直接 bySolar，保持 iztro 的既有行为
+  return astro.bySolar(`${year}-${month}-${day}`, hour, iztroGender, true, 'zh-CN');
+}
+
 export function generateChart(
   birthInfo: BirthInfo,
   opts?: { leapMonth?: LunarMonthPolicy },
@@ -458,32 +482,9 @@ export function generateChart(
   ) {
     throw new RangeError(`solar date does not exist: ${year}-${month}-${day}`);
   }
-  const iztroGender = gender === 'male' ? '男' : '女';
-
-  // 闰月处理（流派分歧：归本月 / 归下月 / 前后半分）
-  // 默认 = DEFAULT_LEAP_MONTH（2026-09-05 起 split：主流排盘默认口径「月中分界」，150 组金标准盘对照验证；倪师派归下月可经流派抽屉切 next-month）
-  // 非 split 时先算农历，闰月才切 byLunar；非闰月仍走 bySolar，与 split 行为完全一致
   const leapMode = opts?.leapMonth ?? DEFAULT_LEAP_MONTH;
-  const effectiveLunar = resolveEffectiveLunarDate(year, month, day, leapMode);
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let astrolabe: any;
-
-  if (leapMode !== 'split' && effectiveLunar.rawLunarMonth < 0) {
-      // 闰月生人 → 按用户选项切换月份归属
-      const lunarDateStr = `${effectiveLunar.lunarYear}-${effectiveLunar.lunarMonth}-${effectiveLunar.lunarDay}`;
-      astrolabe = astro.byLunar(
-        lunarDateStr,
-        hour,
-        iztroGender,
-        effectiveLunar.isLeapMonth,
-        false,
-        'zh-CN',
-      );
-  } else {
-    // 非闰月或 split 模式：直接 bySolar，保持 iztro 的既有行为
-    astrolabe = astro.bySolar(`${year}-${month}-${day}`, hour, iztroGender, true, 'zh-CN');
-  }
+  const astrolabe: any = createAstrolabe(birthInfo, leapMode);
 
   // 让序列化后的 chart.birthInfo 继续携带同一闰月策略，供客户端运限 helper 重建本命盘。
   const chartBirthInfo = {
