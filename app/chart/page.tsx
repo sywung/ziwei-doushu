@@ -3,6 +3,8 @@ import { useState } from 'react';
 import BirthForm from '@/components/BirthForm';
 import ChartBoard from '@/components/ChartBoard';
 import InsightPanel from '@/components/InsightPanel';
+import TwinsPanel from '@/components/TwinsPanel';
+import { readingKey } from '@/lib/reading/key';
 import { generateChart } from '@/lib/ziwei/algorithm';
 import type { BirthInfo, ZiweiChart, Palace } from '@/lib/ziwei/types';
 
@@ -36,6 +38,14 @@ export default function ChartPage() {
     );
   }
 
+  // 换盘（例如点命理学双子）时用键让命盘与解读面板重新挂载，否则解读停在上一张盘
+  const chartKey = readingKey(chart.birthInfo);
+  const openChart = (info: BirthInfo) => {
+    setSelectedPalace(null);
+    setChart(generateChart(info));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // ── 已起盘：命盘 + 解读 ──
   return (
     <main style={{ maxWidth: 1280, margin: '0 auto', padding: '24px 16px' }}>
@@ -50,7 +60,6 @@ export default function ChartPage() {
         ← 重新起盘
       </button>
 
-
       <div
         style={{
           display: 'grid',
@@ -58,10 +67,13 @@ export default function ChartPage() {
           gap: 20, marginTop: 16, alignItems: 'start',
         }}
       >
-        <ChartBoard chart={chart} onPalaceSelect={setSelectedPalace} />
+        <div>
+          <ChartBoard key={chartKey} chart={chart} onPalaceSelect={setSelectedPalace} />
+          <TwinsPanel chart={chart} onOpen={openChart} />
+        </div>
         {/* 解读一则上万字：面板限高、内部捲动，否则新内容会长在页面下方看不到 */}
         <div style={{ position: 'sticky', top: 16, height: 'calc(100vh - 32px)' }}>
-          <InsightPanel chart={chart} selectedPalace={selectedPalace} />
+          <InsightPanel key={chartKey} chart={chart} selectedPalace={selectedPalace} />
         </div>
       </div>
     </main>
