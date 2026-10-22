@@ -68,7 +68,10 @@ export default function ChartPage() {
         }}
       >
         <ChartBoard chart={chart} onPalaceSelect={setSelectedPalace} />
-        <InsightPanel chart={chart} selectedPalace={selectedPalace} />
+        {/* 解读一则上万字：面板限高、内部捲动，否则新内容会长在页面下方看不到 */}
+        <div style={{ position: 'sticky', top: 16, height: 'calc(100vh - 32px)' }}>
+          <InsightPanel chart={chart} selectedPalace={selectedPalace} />
+        </div>
       </div>
     </main>
   );
