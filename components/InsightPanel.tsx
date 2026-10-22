@@ -3,11 +3,19 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { ZiweiChart, Palace } from '@/lib/ziwei/types';
 import type { TimeView } from './TimeNav';
+import { TOPIC_LABEL, TOPIC_PALACE_NAME } from '@/lib/ziwei/db-analysis';
+import {
+  READING_TOPICS, READING_YEAR_MAX, READING_YEAR_MIN, isReadingYearCovered, readingKey,
+  type Reading, type ReadingTopic,
+} from '@/lib/reading/key';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
   hidden?: boolean; // don't show user bubble for auto/topic messages
+  /** 来自 v4 解读数据集（非 AI），新增时滚到这则的开头而不是底部 */
+  kind?: 'reading';
+  topic?: ReadingTopic;
 }
 
 interface SelectedSiHua {
@@ -22,112 +30,44 @@ interface InsightPanelProps {
   selectedSiHua?: SelectedSiHua | null;
 }
 
-const TOPICS = [
-  { key: 'overview',     label: '命格' },
-  { key: 'love',        label: '感情' },
-  { key: 'career',      label: '事业' },
-  { key: 'wealth',      label: '财运' },
-  { key: 'health',      label: '健康' },
-  { key: 'personality', label: '性格' },
-] as const;
-
-const TOPIC_PROMPTS: Record<string, string> = {
-  overview: `请生成命格总览，按以下结构输出：
-
-**【命格定性】**
-用一句话概括这个命盘的核心格局与命主气质。
-
-**【主星解读】**
-命宫主星的核心特质，引用倪海厦原话或观点。
-
-**【三方四正】**
-财、官、迁三宫的联动分析及整体格局。
-
-**【当前大限】**
-当下大限运势方向与最值得关注的事项。
-
-**【优势与注意】**
-命盘天赋优势，以及需要注意的风险或功课。`,
-
-  love: `请深度分析感情婚姻运，按以下结构输出：
-
-**【感情格局】**
-一句话定性感情命格。
-
-**【夫妻宫分析】**
-夫妻宫主星、四化，以及倪海厦体系的具体解读。
-
-**【三方联动】**
-相关宫位对感情的影响。
-
-**【当前大限感情运】**
-当下10年感情走向与关键节点。
-
-**【实际建议】**
-具体可行的感情建议。`,
-
-  career: `请深度分析事业运，按以下结构输出：
-
-**【事业格局】**
-一句话定性事业命格，宜任职或宜创业。
-
-**【官禄宫分析】**
-官禄宫主星、四化，以及倪师对这种配置的判断。
-
-**【财帛宫联动】**
-财运与事业的关系，财路来源分析。
-
-**【当前大限事业运】**
-当下10年事业走向。
-
-**【实际建议】**
-适合的方向、行业与策略。`,
-
-  wealth: `请深度分析财运，按以下结构输出：
-
-**【财运格局】**
-一句话定性财运模式，是主动财还是被动财。
-
-**【财帛宫分析】**
-财帛宫主星、四化，财富来源与流动模式。
-
-**【田宅宫（财库）】**
-积蓄能力与不动产运势分析。
-
-**【当前大限财运】**
-当下财运走向与注意事项。
-
-**【理财建议】**
-具体的财务建议。`,
-
-  health: `请分析健康运势，按以下结构输出：
-
-**【疾厄宫主星】**
-疾厄宫星曜与健康含义。
-
-**【主要风险】**
-结合倪海厦子午流注理论，分析主要健康隐患与需关注的部位。
-
-**【大限健康走势】**
-当下健康趋势与关键时间段。
-
-**【预防建议】**
-具体注意事项与养生方向。`,
-
-  personality: `请深度解析性格特质，按以下结构输出：
-
-**【命宫主星性格】**
-命宫主星的核心性格特质，引用倪师原话。
-
-**【三方性格综合】**
-财、官、迁三宫对性格的影响，全貌描绘。
-
-**【人际关系模式】**
-与他人互动方式、待人处世风格。
-
-**【优势与人生课题】**
-天赋优势，以及需要面对的人生功课。`,
+const TOPIC_SHORT_LABEL: Record<ReadingTopic, string> = {
+  overview: '命格', personality: '性格', love: '感情', career: '事业', wealth: '财运',
+  health: '健康', family: '兄弟', children: '子女', move: '迁移', friends: '人际',
+  home: '田宅', spirit: '福德', parents: '父母',
 };
+
+const TOPICS = READING_TOPICS.map(key => ({ key, label: TOPIC_SHORT_LABEL[key] }));
+
+// 宫位 → 解读维度；命宫对应「命格总览」（另有「性格」维度也落在命宫，从按钮进入）
+const PALACE_TOPIC: Record<string, ReadingTopic> = Object.fromEntries(
+  (Object.entries(TOPIC_PALACE_NAME) as [ReadingTopic, string][])
+    .filter(([topic]) => topic !== 'personality')
+    .map(([topic, palace]) => [palace, topic]),
+);
+
+type ReadingState =
+  | { status: 'loading' }
+  | { status: 'ok'; reading: Reading }
+  | { status: 'error'; message: string };
+
+async function fetchReading(chart: ZiweiChart): Promise<ReadingState> {
+  const { year } = chart.birthInfo;
+  if (!isReadingYearCovered(year)) {
+    return {
+      status: 'error',
+      message: `解读资料集只涵盖 ${READING_YEAR_MIN}–${READING_YEAR_MAX} 年出生的命盘，这张盘（${year} 年）查不到。`,
+    };
+  }
+  try {
+    const res = await fetch(`/api/reading?key=${encodeURIComponent(readingKey(chart.birthInfo))}`);
+    if (res.status === 404) return { status: 'error', message: '解读资料集里查不到这张命盘。' };
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return { status: 'ok', reading: (await res.json()) as Reading };
+  } catch (e) {
+    console.error('[InsightPanel] reading fetch failed', e);
+    return { status: 'error', message: '解读资料读取失败，请稍后再试。' };
+  }
+}
 
 const PALACE_ROLES: Record<string, string> = {
   '命宫':   '自我、性格、先天格局',
@@ -186,7 +126,10 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [activeTopic, setActiveTopic] = useState<string>('overview');
+  const [activeTopic, setActiveTopic] = useState<ReadingTopic>('overview');
+  const [readingState, setReadingState] = useState<ReadingState>({ status: 'loading' });
+  // 资料还没载入时点的维度，载入后补显示
+  const pendingTopic = useRef<ReadingTopic | null>('overview');
   const messagesRef = useRef<Message[]>([]); // always-current copy for closures
   const loadingRef = useRef(false);
   const autoLoaded = useRef(false);
@@ -198,24 +141,60 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
   useEffect(() => { messagesRef.current = messages; }, [messages]);
   useEffect(() => { loadingRef.current = loading; }, [loading]);
 
-  // Auto-scroll
+  // Auto-scroll：解读一则动辄上万字，新增时对齐到这则开头；AI 流式回答则跟到底部
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    const box = scrollRef.current;
+    if (!box) return;
+    const last = messages[messages.length - 1];
+    if (last?.kind === 'reading') {
+      const all = box.querySelectorAll<HTMLElement>('[data-msg]');
+      const el = all[all.length - 1];
+      if (el) box.scrollTop = el.offsetTop - box.offsetTop - 8;
+      return;
     }
+    box.scrollTop = box.scrollHeight;
   }, [messages]);
 
-  // Auto-generate 命格总览 on mount
+  const appendReading = (topic: ReadingTopic, state: ReadingState) => {
+    const content = state.status === 'ok' ? state.reading.content[topic] : state.status === 'error' ? state.message : '';
+    if (!content) return;
+    const msgTopic = state.status === 'ok' ? topic : undefined;
+    setMessages(prev => [...prev, { role: 'assistant', content, kind: 'reading', topic: msgTopic }]);
+  };
+
+  const showTopic = (topic: ReadingTopic) => {
+    setActiveTopic(topic);
+    if (readingState.status === 'loading') {
+      pendingTopic.current = topic;
+      return;
+    }
+    appendReading(topic, readingState);
+  };
+
+  // 起盘后载入 v4 解读资料，先显示命格总览
   useEffect(() => {
     if (autoLoaded.current) return;
     autoLoaded.current = true;
-    sendMessage(TOPIC_PROMPTS.overview, true);
+    let cancelled = false;
+    fetchReading(chart).then(state => {
+      if (cancelled) return;
+      setReadingState(state);
+      const topic = pendingTopic.current;
+      pendingTopic.current = null;
+      if (topic) appendReading(topic, state);
+    });
+    return () => { cancelled = true; autoLoaded.current = false; };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Inject palace analysis when palace selected
   useEffect(() => {
     if (!selectedPalace || selectedPalace.branch === lastPalaceBranch.current) return;
     lastPalaceBranch.current = selectedPalace.branch;
+    const palaceTopic = PALACE_TOPIC[selectedPalace.name];
+    if (palaceTopic) {
+      showTopic(palaceTopic);
+      return;
+    }
 
     const majorStars = selectedPalace.stars.filter(s => s.type === 'major');
     const starDesc = majorStars.length > 0
@@ -336,10 +315,8 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
     streamResponse(apiMessages);
   };
 
-  const handleTopicClick = (topicKey: string) => {
-    if (loadingRef.current) return;
-    setActiveTopic(topicKey);
-    sendMessage(TOPIC_PROMPTS[topicKey], true);
+  const handleTopicClick = (topicKey: ReadingTopic) => {
+    showTopic(topicKey);
   };
 
   const handleSend = () => {
@@ -351,14 +328,13 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
 
       {/* ── Topic buttons ── */}
       <div className="flex-shrink-0 px-2 pt-2.5 pb-2" style={{ borderBottom: '1px solid var(--t-border)' }}>
-        <div className="grid grid-cols-6 gap-1">
+        <div className="grid grid-cols-7 gap-1">
           {TOPICS.map(t => {
             const isActive = activeTopic === t.key;
             return (
               <button
                 key={t.key}
                 onClick={() => handleTopicClick(t.key)}
-                disabled={loading}
                 className="py-1.5 text-[10px] font-medium rounded-lg transition-all duration-150 disabled:opacity-40"
                 style={{
                   background: isActive ? 'rgba(212,168,67,0.12)' : 'transparent',
@@ -380,7 +356,7 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <div className="text-4xl mb-3" style={{ color: 'var(--t-gold)', opacity: 0.1 }}>✦</div>
-            <p className="text-[10px] animate-pulse" style={{ color: 'var(--t-faint)' }}>命格解读生成中…</p>
+            <p className="text-[10px] animate-pulse" style={{ color: 'var(--t-faint)' }}>命格解读载入中…</p>
           </div>
         )}
 
@@ -415,6 +391,7 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
             return (
               <motion.div
                 key={i}
+                data-msg
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
               >
@@ -423,9 +400,9 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
                   style={{ color: 'var(--t-faint)' }}
                 >
                   <span style={{ color: 'var(--t-gold)', opacity: 0.4 }}>✦</span>
-                  命理解读
+                  {msg.kind === 'reading' ? (msg.topic ? TOPIC_LABEL[msg.topic] : '命盘解读') : '命理解读'}
                 </div>
-                <AiContent text={msg.content} streaming={loading && isLastMsg} />
+                <AiContent text={msg.content} streaming={msg.kind !== 'reading' && loading && isLastMsg} />
               </motion.div>
             );
           })}
