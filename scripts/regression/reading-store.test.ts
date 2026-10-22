@@ -77,10 +77,14 @@ async function main() {
     await assert.rejects(store.get('1990-01-02-0-male'), ReadingNotFoundError);
     await assert.rejects(store.get('not-a-key'), RangeError);
 
-    // 数据档换过但索引没重建：偏移指到别人的盘，必须报错而不是回错的解读
-    await writeFile(file, [row(keys[1], null, '乙乙乙'), row(keys[0], '天府', '甲'), row(keys[2], '紫微', '丙')].join('\n') + '\n');
+    // 数据档换过但索引没重建：两行等长，错位后读到的是另一张盘的合法 JSON，
+    // 只有键比对拦得住（不能靠 JSON.parse 失败碰巧拦下）
+    const [ka, kb] = [keys[0], keys[2]]; // 同长度的键
+    await writeFile(file, [row(ka, '天府', '甲'), row(kb, '天府', '乙')].join('\n') + '\n');
+    await writeFile(path.join(indexDir, 'year-1990.json'), JSON.stringify(await buildYearIndex(file)));
+    await writeFile(file, [row(kb, '天府', '乙'), row(ka, '天府', '甲')].join('\n') + '\n');
     const stale = createReadingStore({ dataDir, indexDir });
-    await assert.rejects(stale.get(keys[0]), /index out of sync|Unexpected|JSON/);
+    await assert.rejects(stale.get(ka), /index out of sync/);
 
     // CRLF 会让字节偏移全部错位，建索引时就要拒绝
     await writeFile(file, row(keys[0], '天府', '甲') + '\r\n');
