@@ -22,6 +22,10 @@ export default function ReportView() {
   const chart = useMemo(() => (info ? generateChart(info) : null), [key]); // eslint-disable-line react-hooks/exhaustive-deps
   const [reading, setReading] = useState<ReadingState>({ status: 'loading' });
   const [png, setPng] = useState<PngState>('idle');
+  // 产生出的命盘图；http 网站下载常被浏览器当成「不安全下载」挡掉，所以同时显示在页面上可右键另存
+  const [pngUrl, setPngUrl] = useState<string | null>(null);
+
+  useEffect(() => () => { if (pngUrl) URL.revokeObjectURL(pngUrl); }, [pngUrl]);
 
   useEffect(() => {
     if (!info) return;
@@ -54,8 +58,12 @@ export default function ReportView() {
         scale: 2, useCORS: true, logging: false,
         backgroundColor: getComputedStyle(document.body).backgroundColor,
       });
+      const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'));
+      if (!blob) throw new Error('canvas.toBlob returned null');
+      const url = URL.createObjectURL(blob);
+      setPngUrl(url);
       const link = document.createElement('a');
-      link.href = canvas.toDataURL('image/png');
+      link.href = url;
       link.download = `ziwei-${key}.png`;
       link.click();
       setPng('idle');
@@ -101,6 +109,15 @@ export default function ReportView() {
         </button>
         {png === 'failed' && <span className="text-[11px] text-red-400">命盘图片产生失败，可改用列印存成 PDF。</span>}
       </div>
+
+      {pngUrl && (
+        <figure className="no-print max-w-4xl mx-auto px-6 pt-6">
+          <img src={pngUrl} alt="命盘图片" className="w-full rounded-lg" style={{ border: '1px solid var(--bdr-med)' }} />
+          <figcaption className="mt-1 text-[11px]" style={{ color: 'var(--tx-3)' }}>
+            若浏览器挡下了下载（http 网站常见），可在图片上按右键「另存图片」。
+          </figcaption>
+        </figure>
+      )}
 
       <main className="max-w-4xl mx-auto px-6 py-8">
         <header className="mb-6">
