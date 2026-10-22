@@ -13,6 +13,8 @@ interface ChartBoardProps {
   onStarSelect?: (star: Star, palace: Palace) => void;
   onPalaceSelect?: (palace: Palace) => void;
   onSiHuaClick?: (starName: string, siHua: string, view: TimeView) => void;
+  /** 报告页只要本命盘，不显示运限切换 */
+  showTimeNav?: boolean;
 }
 
 const BRANCH_GRID_POS: Record<number, [number, number]> = {
@@ -54,7 +56,7 @@ function getSanFangSiZheng(branch: number): [number, number, number, number] {
 
 const ANIMATION_ORDER = [5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4];
 
-export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHuaClick }: ChartBoardProps) {
+export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHuaClick, showTimeNav = true }: ChartBoardProps) {
   const [selectedBranch, setSelectedBranch] = useState<number | null>(null);
   const [timeView, setTimeView] = useState<TimeView>('mingpan');
   const [target, setTarget] = useState<FlowTarget>(nowTarget);
@@ -100,7 +102,7 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
   return (
     <div className="w-full select-none">
       {/* 时间导航轴 */}
-      <TimeNav
+      {showTimeNav && <TimeNav
         chart={chart}
         view={timeView}
         onViewChange={setTimeView}
@@ -110,7 +112,7 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
         onDaXianChange={setDaXianIndex}
         flow={flow}
         flowError={flowError}
-      />
+      />}
 
       {/* 命盘标题 */}
       <motion.div

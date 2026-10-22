@@ -58,6 +58,22 @@
   --r-pill:999px;
 }
 
+/* ─── 命盘元件 Token（--t-*）──────────────────────────────
+   命盘、解读面板、运限列等元件用 --t-*，开源版原本没有定义（全部是无效值，颜色只能靠继承）。
+   这里接到上面的设计 token，深浅主题跟着切换。 */
+:root {
+  --t-bg: var(--bg-0);
+  --t-surface: var(--bg-1);
+  --t-card: var(--bg-card);
+  --t-border: var(--bdr-med);
+  --t-border-acc: var(--ac-bdr);
+  --t-text: var(--tx-0);
+  --t-text1: var(--tx-1);
+  --t-text2: var(--tx-2);
+  --t-faint: var(--tx-3);
+  --t-gold: var(--ac);
+}
+
 /* ─── 暗色模式 Token 覆盖 ──────────────────────────────── */
 [data-theme="dark"] {
   --bg-0: #020810;
@@ -428,6 +444,13 @@ body {
   .no-print { display: none !important; }
   body { background: white; color: #1a1a18; }
   @page { margin: 1.2cm; size: A4 landscape; }
+  /* 深色主题下列印也用浅色 token，否则整页黑底 */
+  :root[data-theme="dark"] {
+    --bg-0: #FFFFFF; --bg-1: #F4F3EF; --bg-2: #ECEAE4; --bg-card: #FFFFFF; --bg-page: #FFFFFF;
+    --tx-0: #0D0D0B; --tx-1: #1A1A18; --tx-2: #4A4A45; --tx-3: #6A6A62;
+    --ac: #8A6A18; --ac-bg: rgba(184,146,42,0.07); --ac-bdr: rgba(184,146,42,0.3);
+    --bdr: rgba(0,0,0,0.1); --bdr-med: rgba(0,0,0,0.16); --bdr-heavy: rgba(0,0,0,0.25);
+  }
 }
 
 /* 原生下拉框（年 / 月 / 日 / 时辰 / 省市）：深色主题下选项列表用实色底。

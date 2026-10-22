@@ -59,6 +59,17 @@ export default function ChartPage() {
       >
         ← 重新起盘
       </button>
+      <a
+        href={`/chart/report?key=${encodeURIComponent(chartKey)}`}
+        target="_blank"
+        rel="noopener"
+        style={{
+          marginLeft: 8, marginBottom: 16, padding: '6px 14px', display: 'inline-block',
+          border: '1px solid var(--ac-bdr)', borderRadius: 8, color: 'var(--ac)', textDecoration: 'none',
+        }}
+      >
+        汇出报告 ↗
+      </a>
 
       <div
         style={{
