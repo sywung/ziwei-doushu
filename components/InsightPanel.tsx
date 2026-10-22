@@ -5,6 +5,7 @@ import type { ZiweiChart, Palace } from '@/lib/ziwei/types';
 import type { TimeView } from './TimeNav';
 import { FLOW_LAYER_LABEL } from '@/lib/ziwei/flow-layers';
 import { TOPIC_LABEL, TOPIC_PALACE_NAME } from '@/lib/ziwei/db-analysis';
+import { AiHttpError, readDeltaStream } from '@/lib/ai/sse';
 import {
   READING_TOPICS, READING_YEAR_MAX, READING_YEAR_MIN, isReadingYearCovered, readingKey,
   type Reading, type ReadingTopic,
@@ -261,38 +262,20 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ chart, messages: apiMessages }),
       });
-      if (res.status === 404) throw new Error('api-missing');
-      if (!res.ok) throw new Error('请求失败');
-      if (!res.body) throw new Error('无响应流');
-
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let assistantText = '';
+      if (!res.ok) throw new AiHttpError(res.status);
 
       setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        for (const line of chunk.split('\n')) {
-          if (!line.startsWith('data: ')) continue;
-          const data = line.slice(6);
-          if (data === '[DONE]') break;
-          try {
-            const delta = JSON.parse(data).delta?.text ?? '';
-            assistantText += delta;
-            setMessages(prev => {
-              const updated = [...prev];
-              updated[updated.length - 1] = { role: 'assistant', content: assistantText };
-              return updated;
-            });
-          } catch { /* skip */ }
-        }
-      }
+      await readDeltaStream(res, text => {
+        setMessages(prev => {
+          const updated = [...prev];
+          updated[updated.length - 1] = { role: 'assistant', content: text };
+          return updated;
+        });
+      });
     } catch (e) {
-      const missing = e instanceof Error && e.message === 'api-missing';
-      setMessages(prev => [...prev, { role: 'assistant', content: missing ? '开源版不含 AI 解读接口（/api/interpret），需要你自己实现后才能用，详见 README「快速开始」。排盘本身不需要任何 API Key。' : '解读失败，请稍后重试。' }]);
+      console.error('[InsightPanel] interpret failed', e);
+      const message = e instanceof AiHttpError ? e.message : 'AI 解读失败，请稍后重试。';
+      setMessages(prev => [...prev, { role: 'assistant', content: message }]);
     } finally {
       setLoading(false);
       loadingRef.current = false;
@@ -306,7 +289,8 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
 
     const userMsg: Message = { role: 'user', content: text, hidden };
     // Capture current messages synchronously via ref (avoids stale closure)
-    const apiMessages = [...messagesRef.current, userMsg].map(m => ({
+    // 资料集解读（每则上万字）不送给 AI：服务端已附上这张盘的断语节录，再送会超过长度上限
+    const apiMessages = [...messagesRef.current.filter(m => m.kind !== 'reading'), userMsg].map(m => ({
       role: m.role,
       content: m.content,
     }));
