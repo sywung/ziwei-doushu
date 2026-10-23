@@ -6,6 +6,8 @@ import { readingKey } from '@/lib/reading/key';
 import { clockWindows, formatClockWindow } from '@/lib/twins/clock-windows';
 import { generateChart } from '@/lib/ziwei/algorithm';
 import { PROVINCES } from '@/lib/ziwei/cities';
+import { TAIWAN_CLOCK_KIND_LABEL, taiwanClockAhead, taiwanClockAheadMinutes } from '@/lib/ziwei/dst-tw';
+import { TAIWAN_PROVINCE } from '@/lib/ziwei/share';
 import { BRANCHES, SHICHEN } from '@/lib/ziwei/constants';
 import { SCHOOL_DEFAULT_CONFIG, loadSchoolConfig, sanitizeSchoolConfig } from '@/lib/ziwei/school-config';
 import type { LateZishiRule } from '@/lib/ziwei/true-solar-time';
@@ -69,17 +71,23 @@ function ClockTable({ chart, lateZishi, highlight }: { chart: ZiweiChart; lateZi
     const cities = PROVINCES.map(p => ({ province: p.name, ...p.cities[0] }));
     const chosen = PROVINCES.flatMap(p => p.cities.map(c => ({ province: p.name, ...c }))).find(c => c.name === highlight);
     if (chosen && !cities.some(c => c.name === chosen.name)) cities.unshift(chosen);
-    return cities.map(c => ({
-      ...c,
-      windows: clockWindows(date, chart.birthInfo.hour, c.longitude, lateZishi).map(formatClockWindow),
-    }));
+    return cities.map(c => {
+      // 台湾以当时当地钟表表示（夏令时、日治时期快 1 小时）
+      const ahead = c.province === TAIWAN_PROVINCE ? taiwanClockAheadMinutes : undefined;
+      return {
+        ...c,
+        clockNote: ahead && taiwanClockAhead(date) ? TAIWAN_CLOCK_KIND_LABEL[taiwanClockAhead(date)!] : '',
+        windows: clockWindows(date, chart.birthInfo.hour, c.longitude, lateZishi, ahead).map(formatClockWindow),
+      };
+    });
   }, [chart, lateZishi, highlight]);
 
   return (
     <section style={cardStyle} aria-labelledby="clock-heading">
       <h2 id="clock-heading" style={{ fontSize: 15, fontWeight: 600, color: 'var(--tx-0)' }}>同盘时刻表</h2>
       <p style={{ fontSize: 11, color: 'var(--tx-3)', margin: '4px 0 12px', lineHeight: 1.6 }}>
-        同一个真太阳时辰，在不同经度对应不同的钟表时间（东八区标准时间，已含经度与均时差；台湾同为 UTC+8）。
+        同一个真太阳时辰，在不同经度对应不同的钟表时间（已含经度与均时差）。大陆各地以东八区标准时间表示；
+        台湾以当时的当地钟表表示，遇夏令时或日治时期（UTC+9）会晚 1 小时。
         下表是各地出生能排出这张盘的钟表时间窗。
       </p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: '2px 20px' }}>
@@ -91,7 +99,9 @@ function ClockTable({ chart, lateZishi, highlight }: { chart: ZiweiChart; lateZi
               borderBottom: '1px solid var(--bdr)', color: r.name === highlight ? 'var(--ac)' : 'var(--tx-1)',
             }}
           >
-            <span>{r.name}<span style={{ color: 'var(--tx-3)', fontSize: 10 }}> {r.longitude}°E</span></span>
+            <span>
+              {r.name}<span style={{ color: 'var(--tx-3)', fontSize: 10 }}> {r.longitude}°E{r.clockNote && ` · ${r.clockNote}`}</span>
+            </span>
             <span className="font-mono tabular-nums" style={{ textAlign: 'right' }}>{r.windows.join('；') || '—'}</span>
           </div>
         ))}

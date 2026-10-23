@@ -67,7 +67,7 @@ assert.deepEqual(at({ calendar: 'lunar', year: 2020, month: 4, day: 1, isLeapMon
 // ── 表单 → BirthInfo、分享网址往返 ──
 const form: BirthFormState = {
   name: '', calendar: 'lunar', year: '2020', month: '4', day: '1', isLeapMonth: true,
-  clockHour: '23', clockMinute: '30', unknownTime: false, province: '', city: '', longitude: 120, gender: 'female',
+  clockHour: '23', clockMinute: '30', unknownTime: false, province: '', city: '', longitude: 120, dstAdjust: true, gender: 'female',
 };
 const info = formToBirthInfo(form)!;
 assert.deepEqual([info.year, info.month, info.day, info.hour], [2020, 5, 24, 0]);
@@ -78,5 +78,25 @@ assert.deepEqual(searchParamsToForm(formToSearchParams(form)), { ...form });
 const legacy = searchParamsToForm(new URLSearchParams('y=1990&m=1&d=1&h=8&mi=0&g=m'))!;
 assert.equal(legacy.calendar, 'solar');
 assert.equal(legacy.isLeapMonth, false);
+
+// ── 台湾夏令时／日治时期：钟表快 1 小时，自动减回标准时间 ──
+const tw = (patch: Partial<BirthFormState>) => formToBirthInfo({
+  ...form, calendar: 'solar', isLeapMonth: false, province: '台湾省', city: '台北市', longitude: 121.56, ...patch,
+})!;
+const at930 = { year: '1979', month: '7', day: '15', clockHour: '9', clockMinute: '30' };
+assert.equal(tw(at930).hour, 4, '1979 夏令时 09:30 = 标准 08:30 辰时');
+assert.equal(tw({ ...at930, dstAdjust: false }).hour, 5, '取消勾选：照填的 09:30 = 巳时');
+assert.equal(tw({ ...at930, year: '1980' }).hour, 5, '1980 没有夏令时');
+assert.equal(formToBirthInfo({ ...form, calendar: 'solar', isLeapMonth: false, ...at930, province: '福建省', city: '福州', longitude: 121.56 })!.hour, 5,
+  '同经度但不在台湾，不减');
+assert.equal(tw({ ...at930, year: '1940', month: '1' }).hour, 4, '日治时期 UTC+9 同样减 1 小时');
+// 夏令时 00:30 = 标准时间前一日 23:30（晚子时）→ 视为次日 = 填的那天子时；视为当日 = 前一日
+const dstMidnight = { year: '1979', month: '7', day: '15', clockHour: '0', clockMinute: '30' };
+assert.deepEqual([tw(dstMidnight).month, tw(dstMidnight).day, tw(dstMidnight).hour], [7, 15, 0]);
+const sameDay = formToBirthInfo({ ...form, calendar: 'solar', isLeapMonth: false, province: '台湾省', city: '台北市', longitude: 121.56, ...dstMidnight },
+  { lateZishi: 'current-day' })!;
+assert.deepEqual([sameDay.month, sameDay.day, sameDay.hour], [7, 14, 0]);
+// 分享网址：取消勾选要带出去
+assert.equal(searchParamsToForm(formToSearchParams({ ...form, province: '台湾省', dstAdjust: false }))!.dstAdjust, false);
 
 console.log('birth input regression passed');

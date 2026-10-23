@@ -14,6 +14,35 @@ export interface ProvinceInfo {
 //   打开地点选择框时才动态加载（lib/ziwei/county-data.ts）。区县选中后城市字段存成「地级市·区县」，
 //   见 lib/ziwei/county-label.ts。省直辖县级单位（仙桃、海南各市县、新疆兵团各市）仍是本表的市一级。
 export const PROVINCES: ProvinceInfo[] = [
+  // ─── 台湾（置顶：本站使用者多在台湾）─────────────────────
+  // 22 县市，经度取县市政府所在地（到 0.01°，误差约 2 秒钟）。新竹、嘉义的市与县分开（县治在竹北、太保）
+  {
+    name: '台湾省',
+    cities: [
+      { name: '台北市', longitude: 121.56 },
+      { name: '新北市', longitude: 121.46 },
+      { name: '基隆市', longitude: 121.74 },
+      { name: '桃园市', longitude: 121.30 },
+      { name: '新竹市', longitude: 120.97 },
+      { name: '新竹县', longitude: 121.00 },
+      { name: '苗栗县', longitude: 120.82 },
+      { name: '台中市', longitude: 120.65 },
+      { name: '彰化县', longitude: 120.54 },
+      { name: '南投县', longitude: 120.68 },
+      { name: '云林县', longitude: 120.53 },
+      { name: '嘉义市', longitude: 120.45 },
+      { name: '嘉义县', longitude: 120.33 },
+      { name: '台南市', longitude: 120.21 },
+      { name: '高雄市', longitude: 120.31 },
+      { name: '屏东县', longitude: 120.49 },
+      { name: '宜兰县', longitude: 121.75 },
+      { name: '花莲县', longitude: 121.60 },
+      { name: '台东县', longitude: 121.15 },
+      { name: '澎湖县', longitude: 119.57 },
+      { name: '金门县', longitude: 118.32 },
+      { name: '连江县', longitude: 119.95 },
+    ],
+  },
   // ─── 直辖市 ───────────────────────────────────────────
   {
     name: '北京市',
@@ -671,31 +700,6 @@ export const PROVINCES: ProvinceInfo[] = [
       { name: '澳门', longitude: 113.5 },
       { name: '氹仔', longitude: 113.6 },
       { name: '路环', longitude: 113.6 },
-    ],
-  },
-  {
-    name: '台湾省',
-    cities: [
-      { name: '台北', longitude: 121.5 },
-      { name: '新北', longitude: 121.5 },
-      { name: '桃园', longitude: 121.3 },
-      { name: '台中', longitude: 120.7 },
-      { name: '台南', longitude: 120.2 },
-      { name: '高雄', longitude: 120.3 },
-      { name: '基隆', longitude: 121.7 },
-      { name: '新竹', longitude: 120.9 },
-      { name: '嘉义', longitude: 120.4 },
-      { name: '苗栗', longitude: 120.8 },
-      { name: '彰化', longitude: 120.5 },
-      { name: '南投', longitude: 120.7 },
-      { name: '云林', longitude: 120.5 },
-      { name: '屏东', longitude: 120.5 },
-      { name: '宜兰', longitude: 121.7 },
-      { name: '花莲', longitude: 121.6 },
-      { name: '台东', longitude: 121.1 },
-      { name: '澎湖', longitude: 119.6 },
-      { name: '金门', longitude: 118.3 },
-      { name: '连江', longitude: 119.9 },
     ],
   },
 

@@ -1,7 +1,15 @@
 import type { BirthFormState } from '@/components/BirthForm';
 import type { BirthInfo } from './types';
 import { resolveBirthMoment } from './birth-input';
-import type { LateZishiRule } from './true-solar-time';
+import { taiwanClockAheadMinutes } from './dst-tw';
+import type { GregorianDate, LateZishiRule } from './true-solar-time';
+
+export const TAIWAN_PROVINCE = '台湾省';
+
+/** 出生地的钟表若曾快于 UTC+8（台湾夏令时、日治时期），且使用者没取消「按当时钟表时间」，回传换算函式 */
+export function clockAheadFor(form: Pick<BirthFormState, 'province' | 'dstAdjust'>): ((date: GregorianDate) => number) | undefined {
+  return form.province === TAIWAN_PROVINCE && form.dstAdjust !== false ? taiwanClockAheadMinutes : undefined;
+}
 
 /** BirthFormState → BirthInfo；日期不存在（含该年没有所填闰月）回 null
  *
@@ -19,6 +27,7 @@ export function formToBirthInfo(form: BirthFormState, opts: { lateZishi?: LateZi
     clockHour: parseInt(form.clockHour) || 0,
     clockMinute: parseInt(form.clockMinute) || 0,
     longitude: form.province ? form.longitude : undefined,
+    clockAheadMinutes: clockAheadFor(form),
   }, opts.lateZishi);
   if (!moment) return null;
   return {
@@ -52,6 +61,7 @@ export function formToSearchParams(form: BirthFormState): URLSearchParams {
   if (form.province) p.set('p', form.province);
   if (form.city) p.set('c', form.city);
   if (form.longitude && form.longitude !== 120) p.set('lo', String(form.longitude));
+  if (form.dstAdjust === false) p.set('dst', '0');
   p.set('g', form.gender === 'male' ? 'm' : 'f');
   return p;
 }
@@ -75,6 +85,7 @@ export function searchParamsToForm(params: URLSearchParams): Partial<BirthFormSt
     province: params.get('p') || '',
     city: params.get('c') || '',
     longitude: parseFloat(params.get('lo') || '120'),
+    dstAdjust: params.get('dst') !== '0',
     gender: params.get('g') === 'f' ? 'female' : 'male',
   };
 }

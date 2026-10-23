@@ -16,9 +16,13 @@ export interface ClockWindow {
   endMinute: number;
 }
 
-/** 在经度 longitude 出生、钟表时间落在哪些区间，会排成 chartDate 的 branch 时辰 */
+/**
+ * 在经度 longitude 出生、钟表时间落在哪些区间，会排成 chartDate 的 branch 时辰。
+ * clockAheadMinutes：当地钟表比 UTC+8 快的分钟数（台湾夏令时等），区间以当时的当地钟表表示。
+ */
 export function clockWindows(
   chartDate: GregorianDate, branch: number, longitude: number, lateZishi: LateZishiRule = 'next-day',
+  clockAheadMinutes?: (date: GregorianDate) => number,
 ): ClockWindow[] {
   const windows: ClockWindow[] = [];
   for (let dayOffset = -1; dayOffset <= 1; dayOffset++) {
@@ -26,7 +30,7 @@ export function clockWindows(
     for (let minute = 0; minute < MINUTES_PER_DAY; minute++) {
       const moment = resolveBirthMoment({
         calendar: 'solar', ...inputDate, isLeapMonth: false, unknownTime: false,
-        clockHour: Math.floor(minute / 60), clockMinute: minute % 60, longitude,
+        clockHour: Math.floor(minute / 60), clockMinute: minute % 60, longitude, clockAheadMinutes,
       }, lateZishi);
       if (!moment || moment.branch !== branch || !sameGregorianDate(moment.chartDate, chartDate)) continue;
       const at = dayOffset * MINUTES_PER_DAY + minute;

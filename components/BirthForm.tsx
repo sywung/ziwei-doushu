@@ -8,7 +8,8 @@ import { PROVINCES } from '@/lib/ziwei/cities';
 import {
   LUNAR_DAY_NAMES, LUNAR_MONTH_NAMES, lunarLeapMonth, resolveBirthMoment, type CalendarKind,
 } from '@/lib/ziwei/birth-input';
-import { formToBirthInfo } from '@/lib/ziwei/share';
+import { TAIWAN_PROVINCE, clockAheadFor, formToBirthInfo } from '@/lib/ziwei/share';
+import { TAIWAN_CLOCK_KIND_LABEL, taiwanClockAhead } from '@/lib/ziwei/dst-tw';
 import { calculateTrueSolarTime, sameGregorianDate, type LateZishiRule } from '@/lib/ziwei/true-solar-time';
 
 export interface BirthFormState {
@@ -26,6 +27,8 @@ export interface BirthFormState {
   province: string;
   city: string;
   longitude: number;
+  /** 台湾夏令时／日治时期出生：填的是当时钟表时间，要自动减 1 小时（默认 true） */
+  dstAdjust?: boolean;
   gender: 'male' | 'female';
 }
 
@@ -91,7 +94,15 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
   const moment = useMemo(() => resolveBirthMoment({
     calendar: form.calendar, year: y, month: m, day: d, isLeapMonth: isLeap,
     unknownTime: form.unknownTime, clockHour, clockMinute, longitude,
-  }, lateZishi), [form.calendar, y, m, d, isLeap, form.unknownTime, clockHour, clockMinute, longitude, lateZishi]);
+    clockAheadMinutes: clockAheadFor(form),
+  }, lateZishi), [form.calendar, y, m, d, isLeap, form.unknownTime, clockHour, clockMinute, longitude, lateZishi, form.province, form.dstAdjust]);
+  // 台湾出生、日期落在夏令时／日治时期：钟表比 UTC+8 快 1 小时
+  const isTaiwan = form.province === TAIWAN_PROVINCE;
+  const twClockKind = isTaiwan && moment && !form.unknownTime ? taiwanClockAhead(moment.inputDate) : null;
+  const standardClock = (() => {
+    const mins = ((clockHour * 60 + clockMinute - 60) % 1440 + 1440) % 1440;
+    return `${String(Math.floor(mins / 60)).padStart(2, '0')}:${String(mins % 60).padStart(2, '0')}`;
+  })();
   // 日期还没填完时，时辰预览先只做经度修正
   const solarPreview = moment?.solar ?? calculateTrueSolarTime({ year: 0, month: 0, day: 0, clockHour, clockMinute, longitude });
   const branch = form.unknownTime ? 0 : (moment?.branch ?? solarPreview.branch);
@@ -397,7 +408,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
 
       {/* ── 出生时间 ── */}
       <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'block', fontSize: '11px', color: labelClr, marginBottom: '6px', letterSpacing: '0.05em' }}>出生时间（北京时间）</label>
+        <label style={{ display: 'block', fontSize: '11px', color: labelClr, marginBottom: '6px', letterSpacing: '0.05em' }}>出生时间（{isTaiwan ? '台湾当地钟表时间' : '北京时间'}）</label>
         <div style={{ borderRadius: '14px', padding: '12px', background: panelBg, border: `1px solid ${panelBorder}`, opacity: form.unknownTime ? 0.45 : 1, pointerEvents: form.unknownTime ? 'none' : 'auto', transition: 'opacity 0.2s' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
             <select
@@ -443,6 +454,21 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
             不知道出生时间，以子时（23:00–01:00）起盘
           </span>
         </label>
+        {twClockKind && (
+          <label style={{ display: 'flex', alignItems: 'flex-start', gap: '7px', marginTop: '8px', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={form.dstAdjust !== false}
+              onChange={e => setForm({ ...form, dstAdjust: e.target.checked })}
+              style={{ width: '14px', height: '14px', marginTop: '1px', cursor: 'pointer' }}
+            />
+            <span style={{ fontSize: '10px', lineHeight: 1.6, color: labelClr }}>
+              这天台湾实施{TAIWAN_CLOCK_KIND_LABEL[twClockKind]}，钟表比标准时间快 1 小时。
+              填的是当时钟表时间（出生证明多为此）→ 自动减 1 小时，以标准时间 {standardClock} 排盘；
+              若已自行换算成标准时间请取消勾选。
+            </span>
+          </label>
+        )}
       </div>
 
       {/* ── 性别 ── */}

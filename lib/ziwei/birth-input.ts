@@ -2,8 +2,9 @@
  * 表单输入 → 排盘用公历日期与时辰
  *
  * 1. 农历输入先换成公历（闰月要该年真有此闰月，日数不超过该月天数）
- * 2. 有出生地才做真太阳时（经度修正 + 均时差）；没有就照钟表时间
- * 3. 真太阳时跨日、晚子时（23:00 后）是否算次日，统一交给 resolveZiweiDayOffset 按流派决定
+ * 2. 当地钟表比 UTC+8 快（台湾夏令时、日治时期 UTC+9）时先减回标准时间
+ * 3. 有出生地才做真太阳时（经度修正 + 均时差）；没有就照钟表时间
+ * 4. 真太阳时跨日、晚子时（23:00 后）是否算次日，统一交给 resolveZiweiDayOffset 按流派决定
  *
  * 命盘页与合盘页共用这一份，避免两边同一个出生时间排出不同的盘。
  */
@@ -52,6 +53,8 @@ export interface BirthMomentInput {
   clockMinute: number;
   /** 没选出生地时不传，不做真太阳时校正 */
   longitude?: number;
+  /** 该出生日当地钟表比 UTC+8 快几分钟（如台湾夏令时回 60）；不传 = 0 */
+  clockAheadMinutes?: (date: GregorianDate) => number;
 }
 
 export interface BirthMoment {
@@ -63,6 +66,8 @@ export interface BirthMoment {
   branch: number;
   /** 真太阳时细节；时辰不详时为 null */
   solar: TrueSolarTimeResult | null;
+  /** 实际从钟表时间减掉的分钟数（夏令时等） */
+  clockAheadMinutes: number;
 }
 
 /** 表单输入 → 排盘日与时辰；日期不存在回 null */
@@ -75,11 +80,13 @@ export function resolveBirthMoment(input: BirthMomentInput, lateZishi: LateZishi
   if (!inputDate) return null;
 
   // 时辰不详：以本日子时（早子）起盘，不换日
-  if (input.unknownTime) return { inputDate, chartDate: inputDate, branch: 0, solar: null };
+  if (input.unknownTime) return { inputDate, chartDate: inputDate, branch: 0, solar: null, clockAheadMinutes: 0 };
 
+  // 减回标准时间可能跨到前一天（如夏令时 00:30 = 标准时间前一日 23:30），由 calculateTrueSolarTime 的 dayOffset 处理
+  const ahead = input.clockAheadMinutes?.(inputDate) ?? 0;
   const solar = calculateTrueSolarTime({
-    ...inputDate, clockHour: input.clockHour, clockMinute: input.clockMinute, longitude: input.longitude,
+    ...inputDate, clockHour: input.clockHour, clockMinute: input.clockMinute - ahead, longitude: input.longitude,
   });
   const chartDate = shiftGregorianDate(inputDate, resolveZiweiDayOffset(solar, lateZishi));
-  return { inputDate, chartDate, branch: solar.branch, solar };
+  return { inputDate, chartDate, branch: solar.branch, solar, clockAheadMinutes: ahead };
 }
