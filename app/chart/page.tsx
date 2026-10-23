@@ -66,6 +66,9 @@ export default function ChartPage() {
 
   // 换盘（例如点命理学双子）时用键让命盘与解读面板重新挂载，否则解读停在上一张盘
   const chartKey = readingKey(chart.birthInfo);
+  // 流派不同盘就不同：AI 对话纪录按「盘＋流派」分开存
+  const schoolQuery = new URLSearchParams(configToParams(school)).toString();
+  const historyKey = schoolQuery ? `${chartKey}?${schoolQuery}` : chartKey;
   const openChart = (info: BirthInfo) => {
     setSelectedPalace(null);
     setLastForm(null);
@@ -110,12 +113,12 @@ export default function ChartPage() {
         }}
       >
         <div>
-          <ChartBoard key={`${chartKey}|${new URLSearchParams(configToParams(school))}`} chart={chart} onPalaceSelect={setSelectedPalace} />
+          <ChartBoard key={historyKey} chart={chart} onPalaceSelect={setSelectedPalace} />
           <TwinsPanel chart={chart} onOpen={openChart} />
         </div>
         {/* 解读一则上万字：面板限高、内部捲动，否则新内容会长在页面下方看不到 */}
         <div style={{ position: 'sticky', top: 16, height: 'calc(100vh - 32px)' }}>
-          <InsightPanel key={chartKey} chart={chart} selectedPalace={selectedPalace} />
+          <InsightPanel key={historyKey} historyKey={historyKey} chart={chart} selectedPalace={selectedPalace} />
         </div>
       </div>
     </main>

@@ -10,13 +10,14 @@ import {
   READING_TOPICS, READING_YEAR_MAX, READING_YEAR_MIN, isReadingYearCovered, readingKey,
   type Reading, type ReadingTopic,
 } from '@/lib/reading/key';
+import { browserChatStorage, clearChatHistory, loadChatHistory, saveChatHistory } from '@/lib/ai/chat-history';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
   hidden?: boolean; // don't show user bubble for auto/topic messages
-  /** 来自 v4 解读数据集（非 AI），新增时滚到这则的开头而不是底部 */
-  kind?: 'reading';
+  /** reading：来自 v4 解读数据集（非 AI），新增时滚到这则的开头而不是底部；error：失败提示，不送给 AI、不存纪录 */
+  kind?: 'reading' | 'error';
   topic?: ReadingTopic;
 }
 
@@ -28,6 +29,8 @@ interface SelectedSiHua {
 
 interface InsightPanelProps {
   chart: ZiweiChart;
+  /** AI 对话纪录的键（出生资料＋流派）；不给就不存纪录 */
+  historyKey?: string;
   selectedPalace?: Palace | null;
   selectedSiHua?: SelectedSiHua | null;
 }
@@ -124,7 +127,7 @@ export function AiContent({ text, streaming }: { text: string; streaming?: boole
   );
 }
 
-export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: InsightPanelProps) {
+export default function InsightPanel({ chart, historyKey, selectedPalace, selectedSiHua }: InsightPanelProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -138,6 +141,33 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
   const lastPalaceBranch = useRef<number | undefined>(undefined);
   const lastSiHuaKey = useRef<string | undefined>(undefined);
   const scrollRef = useRef<HTMLDivElement>(null);
+  // 先读回浏览器里的旧对话，读完才开始回存（否则首次渲染的空阵列会把旧纪录删掉）
+  const [historyReady, setHistoryReady] = useState(false);
+  const [restoredCount, setRestoredCount] = useState(0);
+
+  useEffect(() => {
+    if (historyKey) {
+      const restored = loadChatHistory(browserChatStorage(), historyKey);
+      if (restored.length) {
+        // 以读回的纪录取代现有 AI 对话（不是附加）：effect 重跑（StrictMode、historyKey 变动）才不会重复
+        setMessages(prev => [...restored, ...prev.filter(m => m.kind === 'reading')]);
+        setRestoredCount(restored.length);
+      }
+    }
+    setHistoryReady(true);
+  }, [historyKey]);
+
+  // 每则 AI 回答串流完才存，不在逐字更新时写入
+  useEffect(() => {
+    if (!historyKey || !historyReady || loading) return;
+    saveChatHistory(browserChatStorage(), historyKey, messages.filter(m => !m.kind));
+  }, [historyKey, historyReady, loading, messages]);
+
+  const clearHistory = () => {
+    if (historyKey) clearChatHistory(browserChatStorage(), historyKey);
+    setMessages(prev => prev.filter(m => m.kind === 'reading'));
+    setRestoredCount(0);
+  };
 
   // Keep refs in sync
   useEffect(() => { messagesRef.current = messages; }, [messages]);
@@ -275,7 +305,7 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
     } catch (e) {
       console.error('[InsightPanel] interpret failed', e);
       const message = e instanceof AiHttpError ? e.message : 'AI 解读失败，请稍后重试。';
-      setMessages(prev => [...prev, { role: 'assistant', content: message }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: message, kind: 'error' }]);
     } finally {
       setLoading(false);
       loadingRef.current = false;
@@ -290,7 +320,8 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
     const userMsg: Message = { role: 'user', content: text, hidden };
     // Capture current messages synchronously via ref (avoids stale closure)
     // 资料集解读（每则上万字）不送给 AI：服务端已附上这张盘的断语节录，再送会超过长度上限
-    const apiMessages = [...messagesRef.current.filter(m => m.kind !== 'reading'), userMsg].map(m => ({
+    // 错误提示也不送：那不是 AI 说过的话
+    const apiMessages = [...messagesRef.current.filter(m => !m.kind), userMsg].map(m => ({
       role: m.role,
       content: m.content,
     }));
@@ -342,6 +373,15 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
           <div className="flex flex-col items-center justify-center h-full text-center">
             <div className="text-4xl mb-3" style={{ color: 'var(--t-gold)', opacity: 0.1 }}>✦</div>
             <p className="text-[10px] animate-pulse" style={{ color: 'var(--t-faint)' }}>命格解读载入中…</p>
+          </div>
+        )}
+
+        {restoredCount > 0 && (
+          <div className="flex items-center justify-between text-[9px]" style={{ color: 'var(--t-faint)' }}>
+            <span>以下 {restoredCount} 则是先前的 AI 对话（只存在这台浏览器）</span>
+            <button type="button" onClick={clearHistory} className="underline" style={{ color: 'var(--t-faint)' }}>
+              清除对话
+            </button>
           </div>
         )}
 
