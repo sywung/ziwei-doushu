@@ -29,9 +29,7 @@ export default function ChartPage() {
       <main style={{ maxWidth: 720, margin: '0 auto', padding: '48px 20px' }}>
         <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>紫微斗数排盘</h1>
         <p style={{ color: '#888', marginBottom: 32, fontSize: 14, lineHeight: 1.7 }}>
-          输入出生年月日时，开源排盘引擎即时生成命盘。
-          <br />
-          （本页为引擎 Demo，完整商业版界面不在开源范围；排盘内核完全开放。）
+          输入出生年月日时，即时生成命盘与 13 维解读。
         </p>
         <BirthForm onSubmit={(info: BirthInfo) => setChart(generateChart(info))} />
       </main>
