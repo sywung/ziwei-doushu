@@ -1,44 +1,29 @@
 import type { BirthFormState } from '@/components/BirthForm';
 import type { BirthInfo } from './types';
+import { resolveBirthMoment } from './birth-input';
+import type { LateZishiRule } from './true-solar-time';
 
-/** 根据北京时间 + 经度计算真太阳时时辰支 (0-11) */
-export function calcTrueSolarBranch(clockHour: number, clockMinute: number, longitude: number): number {
-  const clockMins = clockHour * 60 + clockMinute;
-  const offset = (longitude - 120) * 4;
-  const solar = ((clockMins + offset) % 1440 + 1440) % 1440;
-  if (solar >= 1380 || solar < 60) return 0;
-  return Math.floor((solar - 60) / 120) + 1;
-}
-
-/** BirthFormState → BirthInfo
+/** BirthFormState → BirthInfo；日期不存在（含该年没有所填闰月）回 null
  *
- * 子时规则（倪海厦体系/三合派标准）：
- * · 23:00-23:59 = 晚子时，**按次日**排盘（日期 +1）
- * · 00:00-00:59 = 早子时，按本日排盘
- * 这与「时辰支同为子(0)」并不冲突——子时分早晚两段，需要在日期上区分。
+ * 公历/农历换算、真太阳时、晚子时换日都在 birth-input.ts。
+ * 晚子时（真太阳时 23:00 后）默认按次日排盘，可经流派「晚子时」改为当日。
  */
-export function formToBirthInfo(form: BirthFormState): BirthInfo {
-  let y = parseInt(form.year) || 0;
-  let m = parseInt(form.month) || 0;
-  let d = parseInt(form.day) || 0;
-
-  // 晚子时（23:00-23:59）按次日处理：用 Date 对象自动处理月末/年末进位
-  if (!form.unknownTime) {
-    const clockHour = parseInt(form.clockHour) || 0;
-    if (clockHour === 23 && y > 0 && m > 0 && d > 0) {
-      const next = new Date(y, m - 1, d + 1);
-      y = next.getFullYear();
-      m = next.getMonth() + 1;
-      d = next.getDate();
-    }
-  }
-
-  const hour = form.unknownTime
-    ? 0
-    : calcTrueSolarBranch(parseInt(form.clockHour) || 0, parseInt(form.clockMinute) || 0, form.longitude);
+export function formToBirthInfo(form: BirthFormState, opts: { lateZishi?: LateZishiRule } = {}): BirthInfo | null {
+  const moment = resolveBirthMoment({
+    calendar: form.calendar,
+    year: parseInt(form.year) || 0,
+    month: parseInt(form.month) || 0,
+    day: parseInt(form.day) || 0,
+    isLeapMonth: form.calendar === 'lunar' && form.isLeapMonth,
+    unknownTime: form.unknownTime,
+    clockHour: parseInt(form.clockHour) || 0,
+    clockMinute: parseInt(form.clockMinute) || 0,
+    longitude: form.province ? form.longitude : undefined,
+  }, opts.lateZishi);
+  if (!moment) return null;
   return {
-    year: y, month: m, day: d,
-    hour,
+    ...moment.chartDate,
+    hour: moment.branch,
     gender: form.gender,
     name: form.name || undefined,
     province: form.province || undefined,
@@ -51,6 +36,10 @@ export function formToBirthInfo(form: BirthFormState): BirthInfo {
 export function formToSearchParams(form: BirthFormState): URLSearchParams {
   const p = new URLSearchParams();
   if (form.name) p.set('n', form.name);
+  if (form.calendar === 'lunar') {
+    p.set('cal', 'l');
+    if (form.isLeapMonth) p.set('lp', '1');
+  }
   p.set('y', form.year);
   p.set('m', form.month);
   p.set('d', form.day);
@@ -75,6 +64,8 @@ export function searchParamsToForm(params: URLSearchParams): Partial<BirthFormSt
   if (!year || !month || !day) return null;
   return {
     name: params.get('n') || '',
+    calendar: params.get('cal') === 'l' ? 'lunar' : 'solar',
+    isLeapMonth: params.get('cal') === 'l' && params.get('lp') === '1',
     year,
     month,
     day,

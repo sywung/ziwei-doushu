@@ -100,10 +100,12 @@ export default function HemingPage() {
       // 并行起两张盘（如果还没起）
       let cA = chartA;
       let cB = chartB;
-      const [newA, newB] = await Promise.all([
-        cA ? Promise.resolve(cA) : generateChart(formToBirthInfo(formA!)),
-        cB ? Promise.resolve(cB) : generateChart(formToBirthInfo(formB!)),
-      ]);
+      // 日期不存在（如该年没有所填闰月）时 formToBirthInfo 回 null，下方当失败处理
+      const toChart = async (form: BirthFormState | null) => {
+        const info = form ? formToBirthInfo(form) : null;
+        return info ? generateChart(info) : null;
+      };
+      const [newA, newB] = await Promise.all([cA ?? toChart(formA), cB ?? toChart(formB)]);
       cA = newA;
       cB = newB;
       if (!cA || !cB) {

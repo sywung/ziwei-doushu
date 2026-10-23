@@ -1,11 +1,12 @@
 'use client';
 import { useEffect, useState } from 'react';
-import BirthForm from '@/components/BirthForm';
+import BirthForm, { type BirthFormState } from '@/components/BirthForm';
 import ChartBoard from '@/components/ChartBoard';
 import InsightPanel from '@/components/InsightPanel';
 import SchoolPanel from '@/components/SchoolPanel';
 import TwinsPanel from '@/components/TwinsPanel';
 import { readingKey } from '@/lib/reading/key';
+import { formToBirthInfo } from '@/lib/ziwei/share';
 import { generateChart } from '@/lib/ziwei/algorithm';
 import {
   SCHOOL_DEFAULT_CONFIG, configToParams, loadSchoolConfig, sanitizeSchoolConfig, saveSchoolConfig,
@@ -28,6 +29,8 @@ export default function ChartPage() {
   const [chart, setChart] = useState<ZiweiChart | null>(null);
   const [selectedPalace, setSelectedPalace] = useState<Palace | null>(null);
   const [school, setSchool] = useState<SchoolConfig>(SCHOOL_DEFAULT_CONFIG);
+  // 最近一次表单输入：改「晚子时」时要从原始钟表时间重算出生日；从命理学双子开的盘没有表单，为 null
+  const [lastForm, setLastForm] = useState<BirthFormState | null>(null);
 
   // 流派存在 localStorage；只在浏览器端读，避免 SSR 与客户端不一致
   useEffect(() => {
@@ -37,7 +40,9 @@ export default function ChartPage() {
   const changeSchool = (next: SchoolConfig) => {
     setSchool(next);
     saveSchoolConfig(next);
-    if (chart) setChart(generateChart(chart.birthInfo, { school: next }));
+    if (!chart) return;
+    const info = lastForm ? formToBirthInfo(lastForm, { lateZishi: next.lateZishi }) : null;
+    setChart(generateChart(info ?? chart.birthInfo, { school: next }));
   };
 
   // ── 未起盘：展示出生信息表单 ──
@@ -49,7 +54,12 @@ export default function ChartPage() {
           输入出生年月日时，即时生成命盘与 13 维解读。
         </p>
         <SchoolPanel value={school} onChange={changeSchool} />
-        <BirthForm onSubmit={(info: BirthInfo) => setChart(generateChart(info, { school }))} />
+        <BirthForm
+          lateZishi={school.lateZishi}
+          initialData={lastForm ?? undefined}
+          onFormSave={setLastForm}
+          onSubmit={(info: BirthInfo) => setChart(generateChart(info, { school }))}
+        />
       </main>
     );
   }
@@ -58,6 +68,7 @@ export default function ChartPage() {
   const chartKey = readingKey(chart.birthInfo);
   const openChart = (info: BirthInfo) => {
     setSelectedPalace(null);
+    setLastForm(null);
     setChart(generateChart(info, { school }));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };

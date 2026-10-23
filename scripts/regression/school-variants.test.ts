@@ -113,10 +113,10 @@ for (const lm of ['split', 'next-month', 'prev-month', 'origin-month'] as const)
   assert.deepEqual(generateChart(leapBirth, { school: { leapMonth: lm } }), generateChart(leapBirth, { leapMonth: lm }), `leap ${lm}`);
 }
 
-// ── 不可信输入：只收六项可切换流派的合法值 ──
+// ── 不可信输入：只收七项可切换流派的合法值（天空等未实作的项目丢掉）──
 assert.deepEqual(sanitizeSchoolConfig({
   brightnessSchool: 'ZZ', kuiyueSchool: 'bogus', lateZishi: 'current-day', tiankongSchool: 'shun-jia-shi', __proto__: { x: 1 },
-}), { brightnessSchool: 'ZZ' });
+}), { brightnessSchool: 'ZZ', lateZishi: 'current-day' });
 assert.deepEqual(sanitizeSchoolConfig('ZZ'), {});
 assert.deepEqual(sanitizeSchoolConfig(null), {});
 // AI 端按前端送来的流派重排（偷塞非法值则被忽略）

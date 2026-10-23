@@ -292,12 +292,12 @@ export const SCHOOL_LABELS: Record<keyof SchoolConfig, string> = {
 
 // ─── 开源自架版实际可切换的项目 ─────────────────────────────────────────
 /**
- * generateChart 真正实作的流派（algorithm.ts applyXxxVariant）。
- * 天空、天使天伤、长生十二神的非默认排法定义无法从现有资料确认；晚子时需要分钟级出生时间，
- * 表单只选时辰分不出早晚子时——这四项不开放，设定面板与 sanitize 都只认下列六项。
+ * 自架版真正实作的流派：前五项在 generateChart（algorithm.ts applyXxxVariant），
+ * 晚子时在表单换算出生日时（birth-input.ts resolveBirthMoment）。
+ * 天空、天使天伤、长生十二神的非默认排法定义无法从现有资料确认，不开放；设定面板与 sanitize 都只认下列七项。
  */
 export const SCHOOL_SWITCHABLE_KEYS = [
-  'brightnessSchool', 'gengYearSihua', 'kuiyueSchool', 'jiekongSchool', 'tianmaSchool', 'leapMonth',
+  'brightnessSchool', 'gengYearSihua', 'kuiyueSchool', 'jiekongSchool', 'tianmaSchool', 'leapMonth', 'lateZishi',
 ] as const satisfies readonly (keyof SchoolConfig)[];
 
 export type SwitchableSchoolKey = typeof SCHOOL_SWITCHABLE_KEYS[number];
