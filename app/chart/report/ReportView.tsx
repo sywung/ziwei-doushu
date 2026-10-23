@@ -60,13 +60,14 @@ export default function ReportView() {
     if (!node) return;
     setPng('working');
     try {
-      const html2canvas = (await import('html2canvas')).default;
-      const canvas = await html2canvas(node, {
-        scale: 2, useCORS: true, logging: false,
+      // html-to-image 经 SVG foreignObject 交给浏览器自己排版再画进 canvas，与页面所见一致。
+      // 原本的 html2canvas 自行重算版面：小徽章与图例文字下移、底角文字被圆角裁掉、color-mix 背景画成实心色块
+      const { toBlob } = await import('html-to-image');
+      const blob = await toBlob(node, {
+        pixelRatio: 2, cacheBust: true,
         backgroundColor: getComputedStyle(document.body).backgroundColor,
       });
-      const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'));
-      if (!blob) throw new Error('canvas.toBlob returned null');
+      if (!blob) throw new Error('html-to-image returned no blob');
       const url = URL.createObjectURL(blob);
       setPngUrl(url);
       const link = document.createElement('a');
