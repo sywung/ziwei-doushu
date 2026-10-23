@@ -289,3 +289,40 @@ export const SCHOOL_LABELS: Record<keyof SchoolConfig, string> = {
   lateZishi: '晚子时',
   leapMonth: '闰月归属',
 };
+
+// ─── 开源自架版实际可切换的项目 ─────────────────────────────────────────
+/**
+ * generateChart 真正实作的流派（algorithm.ts applyXxxVariant）。
+ * 天空、天使天伤、长生十二神的非默认排法定义无法从现有资料确认；晚子时需要分钟级出生时间，
+ * 表单只选时辰分不出早晚子时——这四项不开放，设定面板与 sanitize 都只认下列六项。
+ */
+export const SCHOOL_SWITCHABLE_KEYS = [
+  'brightnessSchool', 'gengYearSihua', 'kuiyueSchool', 'jiekongSchool', 'tianmaSchool', 'leapMonth',
+] as const satisfies readonly (keyof SchoolConfig)[];
+
+export type SwitchableSchoolKey = typeof SCHOOL_SWITCHABLE_KEYS[number];
+
+/** 不可信输入（请求 body、URL、localStorage）→ 只留可切换项目且值合法的部分配置 */
+export function sanitizeSchoolConfig(input: unknown): Partial<SchoolConfig> {
+  if (!input || typeof input !== 'object') return {};
+  const out: Partial<Record<SwitchableSchoolKey, string>> = {};
+  for (const key of SCHOOL_SWITCHABLE_KEYS) {
+    const value = (input as Record<string, unknown>)[key];
+    if (SCHOOL_OPTIONS[key].some(o => o.value === value)) out[key] = value as string;
+  }
+  return out as Partial<SchoolConfig>;
+}
+
+/** 可切换项目中与默认不同的那些（用来提示「解读依默认流派」） */
+export function nonDefaultSchoolKeys(cfg: Partial<SchoolConfig> | undefined): SwitchableSchoolKey[] {
+  if (!cfg) return [];
+  return SCHOOL_SWITCHABLE_KEYS.filter(k => cfg[k] !== undefined && cfg[k] !== SCHOOL_DEFAULT_CONFIG[k]);
+}
+
+/** 非默认的可切换项目 → 「星曜亮度表：中州派」这类文字 */
+export function describeNonDefaultSchool(cfg: Partial<SchoolConfig> | undefined): string[] {
+  return nonDefaultSchoolKeys(cfg).map(k => {
+    const option = SCHOOL_OPTIONS[k].find(o => o.value === cfg![k]);
+    return `${SCHOOL_LABELS[k]}：${option?.label ?? cfg![k]}`;
+  });
+}

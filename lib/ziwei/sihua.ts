@@ -12,18 +12,31 @@ import { Lunar } from 'lunar-javascript';
 import type { ZiweiChart, Palace, SiHua } from './types';
 import { SI_HUA_TABLE, STEMS } from './constants';
 import { CHILDHOOD_DAXIAN_INDEX, getChildhoodDaXianPalace } from './yunxian-context';
+import { SCHOOL_SIHUA_GENG_VARIANTS, SCHOOL_STAR_ID_TO_NAME } from './school-data';
+import type { GengYearSihua } from './school-config';
 
 // ─── 1) 由天干索引取四化四星 ───────────────────────────────────
 /** 天干索引 0-9 → { 禄, 权, 科, 忌 } 对应星名 */
-export function getSiHuaByStem(stemIndex: number): Record<SiHua, string> {
-  const arr = SI_HUA_TABLE[stemIndex];
+const GENG_STEM_INDEX = 6;
+
+/** 天干索引 → [禄, 权, 科, 忌] 星名；庚干依流派「庚年四化」取变体（默认阳武阴同 = SI_HUA_TABLE） */
+function siHuaRow(stemIndex: number, geng?: GengYearSihua): readonly [string, string, string, string] | undefined {
+  if (stemIndex === GENG_STEM_INDEX && geng && geng !== 'GYWYT') {
+    const [, lu, quan, ke, ji] = SCHOOL_SIHUA_GENG_VARIANTS[geng].map(id => SCHOOL_STAR_ID_TO_NAME[id]);
+    return [lu, quan, ke, ji];
+  }
+  return SI_HUA_TABLE[stemIndex];
+}
+
+export function getSiHuaByStem(stemIndex: number, geng?: GengYearSihua): Record<SiHua, string> {
+  const arr = siHuaRow(stemIndex, geng);
   if (!arr) return { 禄: '', 权: '', 科: '', 忌: '' };
   return { 禄: arr[0], 权: arr[1], 科: arr[2], 忌: arr[3] };
 }
 
 /** 星名 → 四化类型（由某天干确定） */
-export function buildStarSiHuaMap(stemIndex: number): Record<string, SiHua> {
-  const arr = SI_HUA_TABLE[stemIndex];
+export function buildStarSiHuaMap(stemIndex: number, geng?: GengYearSihua): Record<string, SiHua> {
+  const arr = siHuaRow(stemIndex, geng);
   if (!arr) return {};
   return { [arr[0]]: '禄', [arr[1]]: '权', [arr[2]]: '科', [arr[3]]: '忌' };
 }
@@ -63,7 +76,7 @@ export function getDaXianSiHua(
   return {
     stemIndex,
     stemName: STEMS[stemIndex] ?? '',
-    transforms: getSiHuaByStem(stemIndex),
+    transforms: getSiHuaByStem(stemIndex, chart.school?.gengYearSihua),
   };
 }
 
@@ -196,8 +209,8 @@ export interface SelfSihua {
   starName: string;    // 被化的星
 }
 
-export function detectSelfSihua(palace: Palace): SelfSihua[] {
-  const transforms = getSiHuaByStem(palace.stem);
+export function detectSelfSihua(palace: Palace, geng?: GengYearSihua): SelfSihua[] {
+  const transforms = getSiHuaByStem(palace.stem, geng);
   const found: SelfSihua[] = [];
   const palaceStarNames = new Set(palace.stars.map(s => s.name));
   (['禄', '权', '科', '忌'] as SiHua[]).forEach(sh => {
@@ -227,7 +240,7 @@ export function findIncomingPalaces(
 ): Palace[] {
   const result: Palace[] = [];
   chart.palaces.forEach(p => {
-    const transforms = getSiHuaByStem(p.stem);
+    const transforms = getSiHuaByStem(p.stem, chart.school?.gengYearSihua);
     if (transforms[sihua] === starName) {
       result.push(p);
     }
@@ -241,7 +254,7 @@ export function findIncomingPalaces(
 export function buildAllSelfSihua(chart: ZiweiChart): Record<number, SelfSihua[]> {
   const result: Record<number, SelfSihua[]> = {};
   chart.palaces.forEach(p => {
-    const list = detectSelfSihua(p);
+    const list = detectSelfSihua(p, chart.school?.gengYearSihua);
     if (list.length > 0) result[p.branch] = list;
   });
   return result;

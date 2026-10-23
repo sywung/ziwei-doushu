@@ -15,6 +15,7 @@ import { BRANCHES, STEMS } from './constants';
 import {
   buildStarSiHuaMap, getDaXianSiHua, getLiuNianSiHua, getLiuRiSiHua, getLiuShiSiHua, getLiuYueSiHua,
 } from './sihua';
+import type { GengYearSihua } from './school-config';
 import type { BirthInfo, SiHua, ZiweiChart } from './types';
 import { CHILDHOOD_DAXIAN_INDEX, getChildhoodDaXianPalace } from './yunxian-context';
 
@@ -72,8 +73,9 @@ export function flowPalaceShortName(mingBranch: number, branch: number): string 
 
 function layerFrom(
   key: FlowLayerKey, mingBranch: number | null, stemIndex: number | null, ganzhi: string,
+  geng?: GengYearSihua,
 ): FlowLayer {
-  return { key, mingBranch, stemIndex, ganzhi, siHua: stemIndex === null ? {} : buildStarSiHuaMap(stemIndex) };
+  return { key, mingBranch, stemIndex, ganzhi, siHua: stemIndex === null ? {} : buildStarSiHuaMap(stemIndex, geng) };
 }
 
 /**
@@ -90,6 +92,10 @@ export function getFlowLayers(chart: ZiweiChart, target: FlowTarget, daXianIndex
     throw new RangeError(`hour must be a branch index 0–11; received ${hour}`);
   }
 
+  // 庚干四化按命盘流派（chart.school）取变体，运限层与本命盘同一口径
+  const geng = chart.school?.gengYearSihua;
+  const layer = (key: FlowLayerKey, mingBranch: number | null, stemIndex: number | null, ganzhi: string) =>
+    layerFrom(key, mingBranch, stemIndex, ganzhi, geng);
   const birthInfo = chart.birthInfo as BirthInfo & { leapMonthPolicy?: LunarMonthPolicy };
   const astrolabe = createAstrolabe(birthInfo, birthInfo.leapMonthPolicy);
   const horo = astrolabe.horoscope(`${year}-${month}-${day}`, hour);
@@ -117,20 +123,20 @@ export function getFlowLayers(chart: ZiweiChart, target: FlowTarget, daXianIndex
     ? getChildhoodDaXianPalace(chart, lunarYear)
     : chart.palaces.find(p => p.branch === chart.daXians[resolvedDx]?.palaceBranch) ?? null;
   const dxSiHua = dxPalace ? getDaXianSiHua(chart, resolvedDx, lunarYear) : null;
-  const daxian = layerFrom(
+  const daxian = layer(
     'daxian', dxPalace?.branch ?? null, dxSiHua?.stemIndex ?? null,
     dxPalace ? `${STEMS[dxPalace.stem]}${BRANCHES[dxPalace.branch]}` : '',
   );
 
   // ── 小限 ──
-  const xiaoxian = layerFrom(
+  const xiaoxian = layer(
     'xiaoxian', branchOfIndex(horo.age.index), stemOf(horo.age.heavenlyStem),
     `${horo.age.heavenlyStem}${horo.age.earthlyBranch}`,
   );
 
   // ── 流年：农历年干 ──
   const ln = getLiuNianSiHua(lunarYear);
-  const liunian = layerFrom(
+  const liunian = layer(
     'liunian', branchOfIndex(horo.yearly.index), ln.stemIndex,
     `${horo.yearly.heavenlyStem}${horo.yearly.earthlyBranch}`,
   );
@@ -138,20 +144,20 @@ export function getFlowLayers(chart: ZiweiChart, target: FlowTarget, daXianIndex
   // ── 流月：五虎遁；闰月按前后半月归属（sihua.ts 口径）──
   const nextYearStem = (ln.stemIndex + 1) % 10;
   const ly = getLiuYueSiHua(ln.stemIndex, Math.abs(rawLunarMonth), { isLeapMonth, liuriDay: lunarDay, nextYearStem });
-  const liuyue = layerFrom(
+  const liuyue = layer(
     'liuyue', branchOfIndex(horo.monthly.index), ly.stemIndex,
     `${ly.stemName}${horo.monthly.earthlyBranch}`,
   );
 
   // ── 流日、流时：日干 → 五鼠遁时干 ──
   const lr = getLiuRiSiHua(lunarYear, Math.abs(rawLunarMonth), lunarDay, isLeapMonth);
-  const liuri = layerFrom(
+  const liuri = layer(
     'liuri', branchOfIndex(horo.daily.index), lr?.stemIndex ?? stemOf(horo.daily.heavenlyStem),
     `${horo.daily.heavenlyStem}${horo.daily.earthlyBranch}`,
   );
   const dayStem = lr?.stemIndex ?? stemOf(horo.daily.heavenlyStem);
   const ls = getLiuShiSiHua(dayStem, hour);
-  const liushi = layerFrom(
+  const liushi = layer(
     'liushi', branchOfIndex(horo.hourly.index), ls.stemIndex,
     `${ls.stemName}${BRANCHES[hour]}`,
   );

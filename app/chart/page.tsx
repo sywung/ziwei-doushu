@@ -1,11 +1,16 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import BirthForm from '@/components/BirthForm';
 import ChartBoard from '@/components/ChartBoard';
 import InsightPanel from '@/components/InsightPanel';
+import SchoolPanel from '@/components/SchoolPanel';
 import TwinsPanel from '@/components/TwinsPanel';
 import { readingKey } from '@/lib/reading/key';
 import { generateChart } from '@/lib/ziwei/algorithm';
+import {
+  SCHOOL_DEFAULT_CONFIG, configToParams, loadSchoolConfig, sanitizeSchoolConfig, saveSchoolConfig,
+  type SchoolConfig,
+} from '@/lib/ziwei/school-config';
 import type { BirthInfo, ZiweiChart, Palace } from '@/lib/ziwei/types';
 
 /**
@@ -22,6 +27,18 @@ import type { BirthInfo, ZiweiChart, Palace } from '@/lib/ziwei/types';
 export default function ChartPage() {
   const [chart, setChart] = useState<ZiweiChart | null>(null);
   const [selectedPalace, setSelectedPalace] = useState<Palace | null>(null);
+  const [school, setSchool] = useState<SchoolConfig>(SCHOOL_DEFAULT_CONFIG);
+
+  // 流派存在 localStorage；只在浏览器端读，避免 SSR 与客户端不一致
+  useEffect(() => {
+    setSchool({ ...SCHOOL_DEFAULT_CONFIG, ...sanitizeSchoolConfig(loadSchoolConfig()) });
+  }, []);
+
+  const changeSchool = (next: SchoolConfig) => {
+    setSchool(next);
+    saveSchoolConfig(next);
+    if (chart) setChart(generateChart(chart.birthInfo, { school: next }));
+  };
 
   // ── 未起盘：展示出生信息表单 ──
   if (!chart) {
@@ -31,7 +48,8 @@ export default function ChartPage() {
         <p style={{ color: '#888', marginBottom: 32, fontSize: 14, lineHeight: 1.7 }}>
           输入出生年月日时，即时生成命盘与 13 维解读。
         </p>
-        <BirthForm onSubmit={(info: BirthInfo) => setChart(generateChart(info))} />
+        <SchoolPanel value={school} onChange={changeSchool} />
+        <BirthForm onSubmit={(info: BirthInfo) => setChart(generateChart(info, { school }))} />
       </main>
     );
   }
@@ -40,7 +58,7 @@ export default function ChartPage() {
   const chartKey = readingKey(chart.birthInfo);
   const openChart = (info: BirthInfo) => {
     setSelectedPalace(null);
-    setChart(generateChart(info));
+    setChart(generateChart(info, { school }));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -58,7 +76,7 @@ export default function ChartPage() {
         ← 重新起盘
       </button>
       <a
-        href={`/chart/report?key=${encodeURIComponent(chartKey)}`}
+        href={`/chart/report?${new URLSearchParams({ key: chartKey, ...configToParams(school) })}`}
         target="_blank"
         rel="noopener"
         style={{
@@ -69,6 +87,10 @@ export default function ChartPage() {
         汇出报告 ↗
       </a>
 
+      <div style={{ marginTop: 16 }}>
+        <SchoolPanel value={school} onChange={changeSchool} />
+      </div>
+
       <div
         style={{
           display: 'grid',
@@ -77,7 +99,7 @@ export default function ChartPage() {
         }}
       >
         <div>
-          <ChartBoard key={chartKey} chart={chart} onPalaceSelect={setSelectedPalace} />
+          <ChartBoard key={`${chartKey}|${new URLSearchParams(configToParams(school))}`} chart={chart} onPalaceSelect={setSelectedPalace} />
           <TwinsPanel chart={chart} onOpen={openChart} />
         </div>
         {/* 解读一则上万字：面板限高、内部捲动，否则新内容会长在页面下方看不到 */}

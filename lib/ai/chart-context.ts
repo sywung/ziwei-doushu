@@ -6,6 +6,7 @@
 import { readingKey, isReadingYearCovered, READING_TOPICS, type Reading } from '../reading/key';
 import { createReadingStore } from '../reading/store';
 import { generateChart } from '../ziwei/algorithm';
+import { describeNonDefaultSchool, sanitizeSchoolConfig } from '../ziwei/school-config';
 import { BRANCHES, SHICHEN, STEMS } from '../ziwei/constants';
 import { TOPIC_LABEL } from '../ziwei/db-analysis';
 import { FLOW_LAYER_LABEL, flowPalaceShortName, getFlowLayers, type FlowTarget } from '../ziwei/flow-layers';
@@ -26,7 +27,8 @@ export function chartFromUntrusted(input: unknown): ZiweiChart | null {
   try {
     const info = { year: b.year!, month: b.month!, day: b.day!, hour: b.hour!, gender: b.gender! };
     readingKey(info); // 验证日期、时辰、性别
-    return generateChart(info);
+    // 流派也来自前端：只收白名单内的合法值，否则 AI 看到的盘与画面上的不同
+    return generateChart(info, { school: sanitizeSchoolConfig((input as { school?: unknown }).school) });
   } catch {
     return null;
   }
@@ -51,9 +53,12 @@ export function describeChart(chart: ZiweiChart, now: FlowTarget): string {
     `公历 ${b.year}-${b.month}-${b.day} ${SHICHEN[b.hour].name}，${b.gender === 'male' ? '男' : '女'}命`,
     `农历 ${l.lunarYear} 年 ${l.isLeapMonth ? '闰' : ''}${Math.abs(l.lunarMonth)} 月 ${l.lunarDay} 日，年干支 ${STEMS[l.yearStem]}${BRANCHES[l.yearBranch]}`,
     `${chart.wuxingJuName}，命宫在${BRANCHES[chart.mingGongBranch]}，身宫在${BRANCHES[chart.shenGongBranch]}`,
-    '',
-    '十二宫：',
   ];
+  const school = describeNonDefaultSchool(chart.school);
+  if (school.length) {
+    lines.push(`排盘流派（非默认）：${school.join('；')}。下方断语节录是按默认流派的盘写的，与此盘不同处以盘面为准`);
+  }
+  lines.push('', '十二宫：');
   for (let offset = 0; offset < 12; offset++) {
     const branch = ((chart.mingGongBranch - offset) % 12 + 12) % 12;
     const palace = chart.palaces.find(p => p.branch === branch);

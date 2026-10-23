@@ -7,9 +7,9 @@ import { astro } from 'iztro';
 import { Solar, LunarMonth } from 'lunar-javascript';
 import type { BirthInfo, LunarInfo, Star, Palace, DaXian, DaXianSiHua, ZiweiChart } from './types';
 import { BRANCHES, STEMS } from './constants';
-import { schoolStarBrightness, type BrightnessSchool } from './school-data';
+import { SCHOOL_SIHUA_GENG_VARIANTS, SCHOOL_STAR_ID_TO_NAME, schoolStarBrightness, type BrightnessSchool } from './school-data';
 import { SCHOOL_AX } from './school-tables.generated';
-import { DEFAULT_LEAP_MONTH } from './school-config';
+import { DEFAULT_LEAP_MONTH, SCHOOL_DEFAULT_CONFIG, type GengYearSihua, type JiekongSchool, type KuiyueSchool, type SchoolConfig } from './school-config';
 // 飞星派工具仅供导出，不再在排盘时调用（倪师《天纪 03》：四化星永远固定不动）
 // import { detectSelfSihua, getSiHuaByStem } from './sihua';
 
@@ -360,10 +360,18 @@ function relocateStar(palaces: Palace[], name: string, targetBranch: number): vo
   }
 }
 
-function applySchoolKuiyue(palaces: Palace[], yearStemCn: string): void {
+// 魁钺四派对应 KY_ARR1–4（qs2 与默认派只在庚辛壬癸年不同，正好对上 KY_ARR2 的差异行）
+const KUIYUE_TABLES: Record<KuiyueSchool, readonly (readonly number[])[]> = {
+  'qs1': SCHOOL_AX.KY_ARR1,
+  'qs2': SCHOOL_AX.KY_ARR2,
+  'zhong-yiming': SCHOOL_AX.KY_ARR3,
+  'network': SCHOOL_AX.KY_ARR4,
+};
+
+function applySchoolKuiyue(palaces: Palace[], yearStemCn: string, school: KuiyueSchool = 'qs1'): void {
   const gan = STEMS.indexOf(yearStemCn); // 甲=0 … 癸=9
   if (gan < 0) return;
-  const row = SCHOOL_AX.KY_ARR1[gan + 1]; // KY 表「甲=1」起;子起一编码
+  const row = KUIYUE_TABLES[school][gan + 1]; // KY 表「甲=1」起;子起一编码
   if (!row) return;
   relocateStar(palaces, '天魁', row[0] - 1); // 子起一(子=1) → BRANCHES 索引(子=0)
   relocateStar(palaces, '天钺', row[1] - 1);
@@ -441,6 +449,44 @@ function applySchoolFuxun(palaces: Palace[]): void {
   pushNatalStar(palaces, fu, '副旬');
 }
 
+// ─── 流派切换（非默认口径）──────────────────────────────────────────────
+// 默认口径的修正在上面；以下只在使用者于设定面板改了流派时才生效。
+
+/** 截空单星派（JK_ARR1）/ 占验派（JK_ARR3）：只安一颗截空，不安副截。表按生年干、子起一。 */
+function applyJiekongVariant(palaces: Palace[], yearStem: number, school: JiekongSchool): void {
+  if (school === 'double') return;
+  const table = school === 'single' ? SCHOOL_AX.JK_ARR1 : SCHOOL_AX.JK_ARR3;
+  const target = table[yearStem + 1];
+  if (!target) return;
+  for (const p of palaces) p.stars = p.stars.filter((s) => s.name !== '截空' && s.name !== '副截');
+  pushNatalStar(palaces, target - 1, '截空');
+}
+
+/**
+ * 天马依月支：生月地支三合局的驿马（寅午戌→申、申子辰→寅、巳酉丑→亥、亥卯未→巳）。
+ * 生月取左辅所在宫反推（左辅 = 辰起正月顺行），与盘上月系星同一个月份口径（含闰月归属）。
+ */
+function applyMonthTianma(palaces: Palace[]): void {
+  const zuofu = palaces.find((p) => p.stars.some((s) => s.name === '左辅'));
+  if (!zuofu) return;
+  const monthBranch = (zuofu.branch - 4 + 2 + 12) % 12; // 正月 = 寅
+  const yima = [2, 11, 8, 5][monthBranch % 4]; // 申子辰→寅 亥卯未→巳 寅午戌→申 巳酉丑→亥（按支 mod 4 分组）
+  relocateStar(palaces, '天马', yima);
+}
+
+/** 庚年四化变体：只有生年干为庚时生效，重设本命四化。 */
+function applyGengSihua(palaces: Palace[], yearStemCn: string, school: GengYearSihua): void {
+  if (yearStemCn !== '庚' || school === 'GYWYT') return;
+  const [, lu, quan, ke, ji] = SCHOOL_SIHUA_GENG_VARIANTS[school].map((id) => SCHOOL_STAR_ID_TO_NAME[id]);
+  const want: Record<string, Star['siHua']> = { [lu]: '禄', [quan]: '权', [ke]: '科', [ji]: '忌' };
+  for (const p of palaces) {
+    for (const s of p.stars) {
+      if (s.siHua) s.siHua = undefined;
+      if (s.type === 'major' && want[s.name]) s.siHua = want[s.name];
+    }
+  }
+}
+
 /**
  * 建 iztro 星盘（排盘与运限共用同一闰月口径）
  *
@@ -465,10 +511,30 @@ export function createAstrolabe(
   return astro.bySolar(`${year}-${month}-${day}`, hour, iztroGender, true, 'zh-CN');
 }
 
-export function generateChart(
-  birthInfo: BirthInfo,
-  opts?: { leapMonth?: LunarMonthPolicy },
-): ZiweiChart {
+export interface ChartOptions {
+  /** 闰月口径；同时给了 school.leapMonth 时以此为准（旧呼叫端只传这个） */
+  leapMonth?: LunarMonthPolicy;
+  /** 排盘流派；缺的项目用默认口径 */
+  school?: Partial<SchoolConfig>;
+}
+
+/** 合并出完整流派配置：默认 ← school ← leapMonth */
+export function resolveSchoolConfig(opts: ChartOptions = {}): SchoolConfig {
+  return {
+    ...SCHOOL_DEFAULT_CONFIG,
+    ...opts.school,
+    leapMonth: opts.leapMonth ?? opts.school?.leapMonth ?? DEFAULT_LEAP_MONTH,
+  };
+}
+
+export function generateChart(birthInfo: BirthInfo, opts?: ChartOptions): ZiweiChart {
+  const school = resolveSchoolConfig(opts);
+  // 亮度表是模块状态（relocateStar / pushNatalStar 都读它）；每张盘开排前都按自己的配置重设，排盘是同步的，不会串到别张盘
+  setBrightnessSchool(school.brightnessSchool);
+  return buildChart(birthInfo, school);
+}
+
+function buildChart(birthInfo: BirthInfo, school: SchoolConfig): ZiweiChart {
   const { year, month, day, hour, gender } = birthInfo;
   if (!Number.isInteger(hour) || hour < 0 || hour > 11) {
     throw new RangeError(`hour must be an integer branch index from 0 to 11; received ${hour}`);
@@ -482,7 +548,7 @@ export function generateChart(
   ) {
     throw new RangeError(`solar date does not exist: ${year}-${month}-${day}`);
   }
-  const leapMode = opts?.leapMonth ?? DEFAULT_LEAP_MONTH;
+  const leapMode = school.leapMonth;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const astrolabe: any = createAstrolabe(birthInfo, leapMode);
 
@@ -567,7 +633,7 @@ export function generateChart(
 
   // ★ 天魁天钺对齐默认派(KY1)——用户决策 2026-05-30,实测仅辛年与现状不同(见上方函数注释)
   const yearStemCn = (astrolabe.rawDates?.chineseDate?.yearly?.[0]) as string | undefined;
-  if (yearStemCn) applySchoolKuiyue(palaces, yearStemCn);
+  if (yearStemCn) applySchoolKuiyue(palaces, yearStemCn, school.kuiyueSchool);
 
   // ── 当前年龄 & 大限 ──
   // ★ 用 iztro horoscope.age.nominalAge（中国虚岁口径，与 daXianAge 范围一致）
@@ -639,6 +705,11 @@ export function generateChart(
   applySchoolDahao(palaces, lunarInfo.yearBranch);
   applySchoolFuxun(palaces);
 
+  // 使用者选的非默认流派
+  applyJiekongVariant(palaces, lunarInfo.yearStem, school.jiekongSchool);
+  if (school.tianmaSchool === 'month-branch') applyMonthTianma(palaces);
+  if (yearStemCn) applyGengSihua(palaces, yearStemCn, school.gengYearSihua);
+
   // ── 命主 / 身主 / 阴阳性别 ──
   const mingZhu = calcMingZhu(mingGongBranch >= 0 ? mingGongBranch : 0);
   const shenZhu = calcShenZhu(lunarInfo.yearBranch);
@@ -659,5 +730,6 @@ export function generateChart(
     mingZhu,
     shenZhu,
     yinYangGender,
+    school,
   };
 }

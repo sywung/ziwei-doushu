@@ -5,6 +5,7 @@ import ChartBoard from '@/components/ChartBoard';
 import { AiContent } from '@/components/InsightPanel';
 import { READING_TOPICS, isReadingYearCovered, parseReadingKey, type Reading } from '@/lib/reading/key';
 import { generateChart } from '@/lib/ziwei/algorithm';
+import { paramsToConfig, sanitizeSchoolConfig } from '@/lib/ziwei/school-config';
 import { BRANCHES, SHICHEN } from '@/lib/ziwei/constants';
 import { TOPIC_LABEL } from '@/lib/ziwei/db-analysis';
 
@@ -17,9 +18,15 @@ type PngState = 'idle' | 'working' | 'failed';
 
 /** 报告页：本命盘 + 13 维解读，供列印成 PDF 或下载命盘 PNG */
 export default function ReportView() {
-  const key = useSearchParams().get('key') ?? '';
+  const params = useSearchParams();
+  const key = params.get('key') ?? '';
+  const schoolQuery = params.toString();
   const info = parseReadingKey(key);
-  const chart = useMemo(() => (info ? generateChart(info) : null), [key]); // eslint-disable-line react-hooks/exhaustive-deps
+  // 流派从网址带过来（命盘页「汇出报告」会附上非默认项）；不合法的值丢掉、走默认
+  const chart = useMemo(
+    () => (info ? generateChart(info, { school: sanitizeSchoolConfig(paramsToConfig(params)) }) : null),
+    [key, schoolQuery], // eslint-disable-line react-hooks/exhaustive-deps
+  );
   const [reading, setReading] = useState<ReadingState>({ status: 'loading' });
   const [png, setPng] = useState<PngState>('idle');
   // 产生出的命盘图；http 网站下载常被浏览器当成「不安全下载」挡掉，所以同时显示在页面上可右键另存

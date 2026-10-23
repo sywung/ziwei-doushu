@@ -1,3 +1,5 @@
+import type { SchoolConfig } from './school-config';
+
 export interface BirthInfo {
   year: number;      // Gregorian year（已经过子时换日修正后的"排盘日"）
   month: number;     // Gregorian month (1-12)
@@ -118,4 +120,6 @@ export interface ZiweiChart {
   shenZhu?: string;
   /** 阴阳性别（阳男/阴男/阳女/阴女） */
   yinYangGender?: string;
+  /** 排盘所用流派配置（generateChart 写入；运限、四化飞化、AI 都按它重建，避免与盘面口径不一） */
+  school?: SchoolConfig;
 }
