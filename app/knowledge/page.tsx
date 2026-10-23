@@ -1,6 +1,6 @@
 /**
  * /knowledge — 知识库主页
- * 列出 14 主星，每星可看其在 13 宫位的解读
+ * 列出 14 主星简介与古籍检索；开源版 STAR_DB 为空，13 宫论断页不会生成（getKnowledge 皆不存在）
  */
 
 import Link from 'next/link';
@@ -9,7 +9,7 @@ import { TOPIC_LABEL } from '@/lib/ziwei/db-analysis';
 
 export const metadata = {
   title: '紫微斗数知识库 · 14 主星 × 13 宫位 · 倪海厦正宗体系',
-  description: '基于倪海厦《天纪》体系与古籍《紫微斗数全集》《骨髓赋》编纂的紫微斗数知识库。覆盖 14 主星在 13 个宫位的完整论断，含一句话定调、核心论断、命盘依据、经典出处。',
+  description: '紫微斗数十四主星简介，并可检索《紫微斗数全集》《骨髓赋》等古籍原文。',
   keywords: ['紫微斗数', '倪海厦', '倪海厦紫微斗数', '紫微斗数全集', '紫微斗数全书', '14 主星', '12 宫位'],
 };
 
@@ -43,8 +43,7 @@ export default function KnowledgeHomePage() {
           紫微斗数知识库
         </h1>
         <p style={{ fontSize: '14px', color: 'var(--tx-2)', letterSpacing: '0.08em', maxWidth: '600px', margin: '0 auto', lineHeight: 1.7 }}>
-          14 主星 × 13 宫位 = <strong style={{ color: 'var(--ac)' }}>{ALL_STARS.length * ALL_TOPICS.length}</strong> 项专题<br />
-          基于倪海厦《天纪》体系编纂 · 含古籍引证
+          十四主星简介 · 点选主星检索古籍原文
         </p>
       </div>
 
@@ -57,7 +56,7 @@ export default function KnowledgeHomePage() {
           {ALL_STARS.map(star => (
             <Link
               key={star}
-              href={`/knowledge/${STAR_TO_SLUG[star]}/overview`}
+              href={`#${STAR_TO_SLUG[star]}`}
               style={{
                 display: 'block',
                 padding: '14px 10px',
@@ -80,7 +79,7 @@ export default function KnowledgeHomePage() {
         {/* 详细列表（每个主星 + 简介 + 进入按钮） */}
         <div className="mt-14 space-y-4">
           {ALL_STARS.map(star => (
-            <div key={star} style={{
+            <div key={star} id={STAR_TO_SLUG[star]} style={{
               background: 'var(--bg-card)',
               border: '1px solid rgba(184,146,42,0.18)',
               borderRadius: '12px',
@@ -98,6 +97,20 @@ export default function KnowledgeHomePage() {
                 {STAR_DESCRIPTIONS_QUICK[star] || ''}
               </p>
               <div className="flex flex-wrap gap-2">
+                <Link
+                  href={`/library/search?q=${encodeURIComponent(star)}`}
+                  style={{
+                    fontSize: '11px',
+                    padding: '4px 10px',
+                    background: 'rgba(184,146,42,0.06)',
+                    border: '1px solid rgba(184,146,42,0.15)',
+                    borderRadius: '999px',
+                    color: 'var(--ac)',
+                    textDecoration: 'none',
+                  }}
+                >
+                  古籍原文 →
+                </Link>
                 {ALL_TOPICS.map(t => {
                   const k = getKnowledge(star, t);
                   if (!k.exists) return null;
