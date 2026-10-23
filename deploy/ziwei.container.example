@@ -1,0 +1,20 @@
+# Podman quadlet 示例：放到 ~/.config/containers/systemd/ziwei.container
+# 然后 systemctl --user daemon-reload && systemctl --user start ziwei
+[Unit]
+Description=ziwei-doushu 紫微排盘
+
+[Container]
+ContainerName=ziwei
+Image=localhost/ziwei-doushu:latest
+# 只想在区网用就绑定区网 IP，例如 PublishPort=192.168.1.10:3000:3000
+PublishPort=127.0.0.1:3000:3000
+# 资料目录唯读挂进容器（底下 v4/、twins/、corpus/，对应 .env.example 的预设路径）
+Volume=%h/ziwei/data:/data:ro,Z
+# AI 金钥等环境变数（权限设 600，不要放进 repo）
+EnvironmentFile=%h/ziwei/deploy/ai.env
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

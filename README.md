@@ -10,6 +10,41 @@
 
 </div>
 
+> ## 關於這個 fork（sywung/ziwei-doushu）
+>
+> 這是 [Renhuai123/ziwei-doushu](https://github.com/Renhuai123/ziwei-doushu) 的個人自架版，補上開源版沒有的後端與功能，並修了幾個上游缺陷。下方「一」以後的章節是上游原文，說的是上游的狀態。
+>
+> **新增功能**
+> - 13 宮解讀：直接讀 v4 解讀資料集（`/api/reading`，位元組偏移索引，查詢約 0.3 秒）
+> - 全時序運限：本命／大限（含童限）／小限／流年／流月／流日／流時
+> - 命理學雙子：在 1950–2026 年每個出生時刻裡找配置相同的盤，分主星／主星＋四化／全盤三層、同年／跨年；獨立頁 `/twins` 另有命盤指紋與「同盤時刻表」（各地鐘錶幾點出生會同盤）
+> - AI 問盤、四化飛化、合盤分析（`/api/interpret`、`/api/heming`，OpenAI 相容端點）；對話紀錄只存在瀏覽器
+> - 排盤流派切換：亮度表、庚年四化、魁鉞、截空、天馬、閏月、晚子時（補回開源版被刪掉的流派修正）
+> - 出生日期可輸入農曆（含閏月）；台灣 22 縣市置頂，台灣夏令時與日治時期（UTC+9）自動換算
+> - 三紀字幕導播（天紀 4,886 條、人紀 19,294 條判語逐句回放 B 站原影片）
+> - 命盤報告匯出（列印／PDF、PNG）；介面繁體中文
+>
+> **修掉的上游缺陷**：命盤頁 23:00 後出生不換日（與合盤頁排出不同的盤）、AI 串流拆行掉字、元件 `--t-*` CSS 變數未定義、知識庫主星連結全部 404、PNG 匯出文字位移與色塊錯誤。
+>
+> **自架需要的資料**（都不在 repo 裡，沒有的功能會顯示讀取失敗，排盤照常）
+>
+> | 功能 | 資料 | 產生方式 | 環境變數 |
+> |---|---|---|---|
+> | 13 宮解讀 | v4 資料集解壓後的 `year-YYYY.jsonl`（約 53 GB） | 見下方「二·新」下載；`npx tsx scripts/reading/build-index.ts <dataDir> [indexDir]` 建索引 | `READING_DATA_DIR`、`READING_INDEX_DIR` |
+> | 命理學雙子 | 索引檔（約 13 MB） | `npx tsx scripts/twins/build-index.ts <outFile> --jobs N`（16 核約 7 分鐘） | `TWINS_INDEX_FILE` |
+> | 三紀字幕導播 | `tianji/`、`renji/` 的 `entries.jsonl` | 取自 [nihai-tianji-corpus](https://github.com/Renhuai123/nihai-tianji-corpus)、[nihai-renji-corpus](https://github.com/Renhuai123/nihai-renji-corpus)（CC BY-NC-SA 4.0，不可商用） | `SANJI_DATA_DIR` |
+> | AI | OpenAI 相容端點與金鑰 | — | `AI_BASE_URL`、`AI_API_KEY`、`AI_MODEL` |
+>
+> 設定範例見 [`.env.example`](./.env.example)；容器部署見 [`deploy/Containerfile`](./deploy/Containerfile) 與 Podman quadlet 範例 [`deploy/ziwei.container.example`](./deploy/ziwei.container.example)：
+>
+> ```bash
+> podman build -f deploy/Containerfile --build-arg NEXT_PUBLIC_SITE_URL=https://你的網址 -t localhost/ziwei-doushu:latest .
+> ```
+>
+> 授權同上游：程式碼 MIT（保留原作者版權聲明），資料依各自授權。
+>
+> **贊助**：覺得有用，歡迎[贊助本 fork 的維護](https://donate.twater.cc/r/ziwei)（綠界金流：信用卡、ATM、超商）。上游作者的原始成果另見 [metisziwei.com](https://metisziwei.com/)。
+
 基于<strong>倪海厦《天纪》</strong>教学体系的紫微斗数排盘系统，包含完整排盘算法、四化系统、格局知识库、古籍原文数据，以及一套完整开源的紫微斗数解读数据：**v4.0 解读数据集——67.5 万张命盘 × 13 维 = 877 万段解读，正文约 204 亿字，解压后 56.6 GB**（2026-10-15 发布）。
 
 | 数据集 | 命盘 | 解读段数 | 解压后 | 覆盖年份 | 每张盘解读字数 |
@@ -281,6 +316,8 @@ npm test            # 排盘引擎回归（768 盘 × 紫微铁律、夏令时�
 
 每次 push 与 PR 都会在 GitHub Actions 上跑同一套（见 [`.github/workflows/ci.yml`](./.github/workflows/ci.yml)）。
 
+> **（上游原文；本 fork 已實作這些接口，見最上方說明）**
+>
 > **注意：开源版不含后端 API 路由。**排盘、命盘展示、合盘起盘都在浏览器里用本仓库的引擎完成，**不需要任何 API Key**。AI 解读（`/api/interpret`）和合盘 AI 分析（`/api/heming`）需要你自己实现接口；没实现之前，这两处会直接提示「开源版不含该接口」，配置 API Key 也不会变成可用（#30 就是这个原因）。
 
 ---

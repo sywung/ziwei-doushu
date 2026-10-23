@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion';
 import StarField from '@/components/StarField';
 import { useTheme, type Theme } from '@/components/ThemeProvider';
+import { DONATE_URL } from '@/lib/site';
 
 // ─── 滚动入场 wrapper ────────────────────────────────────
 function FadeIn({
@@ -948,6 +949,12 @@ export default function HomePage() {
             <a href="/terms" style={{ color: c.footerText, textDecoration: 'underline' }}>服务条款</a>
             {' · '}
             <a href="/privacy" style={{ color: c.footerText, textDecoration: 'underline' }}>隐私政策</a>
+            {DONATE_URL && (
+              <>
+                {' · '}
+                <a href={DONATE_URL} target="_blank" rel="noopener" style={{ color: c.goldSolid, textDecoration: 'underline' }}>赞助本站</a>
+              </>
+            )}
           </p>
         </div>
       </footer>
