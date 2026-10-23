@@ -1,27 +1,27 @@
 /**
- * 排盘流派配置 — 9 类排盘流派开关 + 默认值 + 持久化
+ * 排盤流派配置 — 9 類排盤流派開關 + 默認值 + 持久化
  *
- * 数据源：按通行口径整理（详见 docs/school-alignment.md）
+ * 數據源：按通行口徑整理（詳見 docs/school-alignment.md）
  *
- * 用户在 chart 页设置面板切换，立即重新排盘
+ * 用戶在 chart 頁設置面板切換，立即重新排盤
  */
 
 import type { BrightnessSchool } from './school-data';
 
-// ─── 9 类流派配置 ───────────────────────────────────────────────────────
+// ─── 9 類流派配置 ───────────────────────────────────────────────────────
 
 /** 1. 14 主星亮度表 */
 export type BrightnessSchoolOption = 'default' | BrightnessSchool;
 
-/** 2. 庚年四化（5 种变体）*/
+/** 2. 庚年四化（5 種變體）*/
 export type GengYearSihua =
-  | 'GYWYT'   // 阳武阴同（主流默认口径，与 iztro 一致）
-  | 'GYWTY'   // 阳武同阴（科忌互换说）
-  | 'GYWFT'   // 阳武府同
-  | 'GYWFX'   // 阳武府相
-  | 'GYWTX';  // 阳武同相
+  | 'GYWYT'   // 陽武陰同（主流默認口徑，與 iztro 一致）
+  | 'GYWTY'   // 陽武同陰（科忌互換說）
+  | 'GYWFT'   // 陽武府同
+  | 'GYWFX'   // 陽武府相
+  | 'GYWTX';  // 陽武同相
 
-/** 3. 安天马 */
+/** 3. 安天馬 */
 export type TianmaSchool = 'year-branch' | 'month-branch';
 
 /** 4. 安天空 */
@@ -30,30 +30,30 @@ export type TiankongSchool = 'normal' | 'shun-jia-shi';
 /** 5. 截空旬空 */
 export type JiekongSchool = 'single' | 'double' | 'zhanyan';
 
-/** 6. 安魁钺 */
+/** 6. 安魁鉞 */
 export type KuiyueSchool = 'qs1' | 'qs2' | 'zhong-yiming' | 'network';
 
-/** 7. 安天使天伤 */
+/** 7. 安天使天傷 */
 export type TianshiTianshangSchool = 'normal' | 'zhongzhou';
 
-/** 8. 安长生十二神 */
+/** 8. 安長生十二神 */
 export type ChangshengSchool = 'yin-yang-shun-ni' | 'shui-tu' | 'huo-tu';
 
-/** 9. 晚子时处理 */
+/** 9. 晚子時處理 */
 export type LateZishi =
-  | 'next-day'           // 视为次日（主流默认口径 + 我们当前）
-  | 'current-day'        // 视为当日（倪师派）
-  | 'all-current'        // 日柱当日时柱当日（八字）
-  | 'day-cur-time-next'; // 日柱当日时柱次日（八字）
+  | 'next-day'           // 視為次日（主流默認口徑 + 我們當前）
+  | 'current-day'        // 視為當日（倪師派）
+  | 'all-current'        // 日柱當日時柱當日（八字）
+  | 'day-cur-time-next'; // 日柱當日時柱次日（八字）
 
-/** 10. 闰月处理（用户反馈：倪师派要求闰月归下月）*/
+/** 10. 閏月處理（用戶反饋：倪師派要求閏月歸下月）*/
 export type LeapMonth =
-  | 'split'         // 分半（前 15 天归上月，后 15 天归下月）— ★我们默认 = 主流排盘默认口径「月中分界」（2026-09-05 150 组金标准盘对照：9 张闰月后半月盘唯此口径逐星全同）
-  | 'next-month'    // 整月归下月（倪师派：闰四月当五月）
-  | 'prev-month'    // 整月当本月普通月（闰四月当四月）— 可选口径「视为本月」；早先 2.6 万盘验证针对的是另一套参照引擎，与金标准盘默认口径不一致
-  | 'origin-month'; // 不调整（闰四月仍标闰月，iztro fixLeap=false）
+  | 'split'         // 分半（前 15 天歸上月，後 15 天歸下月）— ★我們默認 = 主流排盤默認口徑「月中分界」（2026-09-05 150 組金標準盤對照：9 張閏月後半月盤唯此口徑逐星全同）
+  | 'next-month'    // 整月歸下月（倪師派：閏四月當五月）
+  | 'prev-month'    // 整月當本月普通月（閏四月當四月）— 可選口徑「視為本月」；早先 2.6 萬盤驗證針對的是另一套參照引擎，與金標準盤默認口徑不一致
+  | 'origin-month'; // 不調整（閏四月仍標閏月，iztro fixLeap=false）
 
-// ─── 完整配置对象 ──────────────────────────────────────────────────────
+// ─── 完整配置對象 ──────────────────────────────────────────────────────
 
 export interface SchoolConfig {
   brightnessSchool: BrightnessSchoolOption;
@@ -68,35 +68,35 @@ export interface SchoolConfig {
   leapMonth: LeapMonth;
 }
 
-/** 默认配置 = 对齐主流排盘默认口径（辅星六煞杂曜+四化+运限 穷举零差异；闰月口径=整月归本月）*/
+/** 默認配置 = 對齊主流排盤默認口徑（輔星六煞雜曜+四化+運限 窮舉零差異；閏月口徑=整月歸本月）*/
 /**
- * ★ 2026-09-05 默认闰月口径 prev-month → split：150 组金标准盘对照，随机 100 盘 0 排星差异，
- * 唯一系统性差异是 9 张闰月后半月盘——金标准盘默认「月中分界」(split)，Metis 旧默认整月归本月；切 split 后逐星全同。
- * 站长 2026-09-05 拍板改默认。algorithm / school-patches / yunxian-palace 的兜底默认都引用这一个常量，别再各写字面量。
+ * ★ 2026-09-05 默認閏月口徑 prev-month → split：150 組金標準盤對照，隨機 100 盤 0 排星差異，
+ * 唯一系統性差異是 9 張閏月後半月盤——金標準盤默認「月中分界」(split)，Metis 舊默認整月歸本月；切 split 後逐星全同。
+ * 站長 2026-09-05 拍板改默認。algorithm / school-patches / yunxian-palace 的兜底默認都引用這一個常量，別再各寫字面量。
  */
 export const DEFAULT_LEAP_MONTH: LeapMonth = 'split';
 
 export const SCHOOL_DEFAULT_CONFIG: SchoolConfig = {
-  brightnessSchool: 'default',           // = 《斗数全书》（algorithm.ts 把 'default' 当 QS 用，对齐主流排盘默认口径，10-20 改）
-  gengYearSihua: 'GYWYT',                // 阳武阴同
-  tianmaSchool: 'year-branch',           // 依据年支
-  tiankongSchool: 'normal',              // 常规
-  jiekongSchool: 'double',               // 正副双星
-  kuiyueSchool: 'qs1',                   // 斗数全书歌诀理解1
-  tianshiTianshang: 'normal',            // 常规
-  changshengSchool: 'yin-yang-shun-ni',  // 区分阴阳顺逆
-  lateZishi: 'next-day',                 // 视为次日
-  leapMonth: DEFAULT_LEAP_MONTH,         // 闰月分半（主流排盘默认口径「月中分界」，150 组金标准盘对照验证）
+  brightnessSchool: 'default',           // = 《斗數全書》（algorithm.ts 把 'default' 當 QS 用，對齊主流排盤默認口徑，10-20 改）
+  gengYearSihua: 'GYWYT',                // 陽武陰同
+  tianmaSchool: 'year-branch',           // 依據年支
+  tiankongSchool: 'normal',              // 常規
+  jiekongSchool: 'double',               // 正副雙星
+  kuiyueSchool: 'qs1',                   // 斗數全書歌訣理解1
+  tianshiTianshang: 'normal',            // 常規
+  changshengSchool: 'yin-yang-shun-ni',  // 區分陰陽順逆
+  lateZishi: 'next-day',                 // 視為次日
+  leapMonth: DEFAULT_LEAP_MONTH,         // 閏月分半（主流排盤默認口徑「月中分界」，150 組金標準盤對照驗證）
 };
 
 // ─── localStorage 持久化 key ───────────────────────────────────────────
 export const SCHOOL_CONFIG_LS_KEY = 'ziwei-school-config-v1';
-/** 2026-09-05 闰月默认 prev-month→split 的一次性迁移标记（见 loadSchoolConfig） */
+/** 2026-09-05 閏月默認 prev-month→split 的一次性遷移標記（見 loadSchoolConfig） */
 export const SCHOOL_LEAP_MIGRATED_KEY = 'ziwei-school-leap-split-migrated';
 
 /**
- * ★ 2026-10-20 键名统一改名：早期版本存在 `ziwei-<旧名>-config-v1` / `ziwei-<旧名>-leap-split-migrated`。
- * 新键还没有时，把旧键里的流派配置（认 brightnessSchool 字段）与闰月迁移标记搬过来、删掉旧键；只认这两种形状，不碰别的键。
+ * ★ 2026-10-20 鍵名統一改名：早期版本存在 `ziwei-<舊名>-config-v1` / `ziwei-<舊名>-leap-split-migrated`。
+ * 新鍵還沒有時，把舊鍵裡的流派配置（認 brightnessSchool 字段）與閏月遷移標記搬過來、刪掉舊鍵；只認這兩種形狀，不碰別的鍵。
  */
 function migrateLegacyKeys(): void {
   try {
@@ -119,12 +119,12 @@ function migrateLegacyKeys(): void {
       if (localStorage.getItem(SCHOOL_LEAP_MIGRATED_KEY) === null) localStorage.setItem(SCHOOL_LEAP_MIGRATED_KEY, localStorage.getItem(k) ?? '1');
       localStorage.removeItem(k);
     }
-  } catch { /* localStorage 被禁：照旧走默认 */ }
+  } catch { /* localStorage 被禁：照舊走默認 */ }
 }
 
 /**
- * 读 localStorage 配置（安全 fallback 到默认）
- * 浏览器端调用，服务端返回默认
+ * 讀 localStorage 配置（安全 fallback 到默認）
+ * 瀏覽器端調用，服務端返回默認
  */
 export function loadSchoolConfig(): SchoolConfig {
   if (typeof window === 'undefined') return SCHOOL_DEFAULT_CONFIG;
@@ -133,8 +133,8 @@ export function loadSchoolConfig(): SchoolConfig {
     const raw = localStorage.getItem(SCHOOL_CONFIG_LS_KEY);
     if (!raw) return SCHOOL_DEFAULT_CONFIG;
     const parsed = JSON.parse(raw) as Partial<SchoolConfig>;
-    // ★ 2026-09-05 一次性迁移：旧默认 prev-month 是被整份存进 localStorage 的（抽屉存完整配置），分不清「默认」还是「手选」；
-    //   而旧选项本身就标着「默认」，选它的人要的也是对齐默认口径 → 统一迁到新默认 split，只迁一次（迁移标记），之后再手选 prev-month 就尊重
+    // ★ 2026-09-05 一次性遷移：舊默認 prev-month 是被整份存進 localStorage 的（抽屜存完整配置），分不清「默認」還是「手選」；
+    //   而舊選項本身就標著「默認」，選它的人要的也是對齊默認口徑 → 統一遷到新默認 split，只遷一次（遷移標記），之後再手選 prev-month 就尊重
     if (parsed.leapMonth === 'prev-month' && !localStorage.getItem(SCHOOL_LEAP_MIGRATED_KEY)) {
       parsed.leapMonth = DEFAULT_LEAP_MONTH;
       try { localStorage.setItem(SCHOOL_LEAP_MIGRATED_KEY, '1'); localStorage.setItem(SCHOOL_CONFIG_LS_KEY, JSON.stringify({ ...SCHOOL_DEFAULT_CONFIG, ...parsed })); } catch { /* noop */ }
@@ -146,11 +146,11 @@ export function loadSchoolConfig(): SchoolConfig {
 }
 
 /**
- * ★ 2026-10-18 默认项与它底层的那张表只留一项（站长：两项排出来一样，别并排摆）。
- * ★ 2026-10-20 默认改成《斗数全书》（主流排盘默认口径，见 algorithm.ts setBrightnessSchool），归并方向随之改：
- *   手选 QS（本机存的、分享链接 bs=QS）一律当默认，勾落在「《斗数全书》派（默认）」；
- *   XD2 不再归并——它现在是单独一项「现代修正 v2」，手选了就尊重。
- *   10-18 到 10-20 之间被归成 'default' 的老 XD2 选择分不出来，随默认一起变成全书（站长定：跟默认口径走）。
+ * ★ 2026-10-18 默認項與它底層的那張表只留一項（站長：兩項排出來一樣，別並排擺）。
+ * ★ 2026-10-20 默認改成《斗數全書》（主流排盤默認口徑，見 algorithm.ts setBrightnessSchool），歸併方向隨之改：
+ *   手選 QS（本機存的、分享鏈接 bs=QS）一律當默認，勾落在「《斗數全書》派（默認）」；
+ *   XD2 不再歸併——它現在是單獨一項「現代修正 v2」，手選了就尊重。
+ *   10-18 到 10-20 之間被歸成 'default' 的老 XD2 選擇分不出來，隨默認一起變成全書（站長定：跟默認口徑走）。
  */
 function normalizeBrightness(cfg: SchoolConfig): SchoolConfig {
   return cfg.brightnessSchool === 'QS' ? { ...cfg, brightnessSchool: 'default' } : cfg;
@@ -161,28 +161,28 @@ export function saveSchoolConfig(cfg: SchoolConfig): void {
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(SCHOOL_CONFIG_LS_KEY, JSON.stringify(cfg));
-  } catch { /* localStorage 满或被禁 */ }
+  } catch { /* localStorage 滿或被禁 */ }
 }
 
-/** 重置为默认 */
+/** 重置為默認 */
 export function resetSchoolConfig(): void {
   if (typeof window === 'undefined') return;
   try { localStorage.removeItem(SCHOOL_CONFIG_LS_KEY); } catch { /* noop */ }
 }
 
-// ─── 配置 → URL query 双向转换（用于分享带流派的命盘）────────────────────
+// ─── 配置 → URL query 雙向轉換（用於分享帶流派的命盤）────────────────────
 
 /**
- * 流派 URL 参数 key 全集 — 与 configToParams 输出一一对应，10 类配置 10 个 key。
+ * 流派 URL 參數 key 全集 — 與 configToParams 輸出一一對應，10 類配置 10 個 key。
  *
- * ★ 2026-06-12 修「分享链接丢闰月口径」：chart 页此前两处手写 key 数组判断
- *   「URL 是否带流派参数」，都漏了 'lm'（闰月归属）——用户改成 next-month 后分享，
- *   对方打开 ?lm=next-month 被无视、按默认闰月口径排出不同的盘。
- *   今后判断一律复用本常量；configToParams 加字段时必须同步加这里。
+ * ★ 2026-06-12 修「分享鏈接丟閏月口徑」：chart 頁此前兩處手寫 key 數組判斷
+ *   「URL 是否帶流派參數」，都漏了 'lm'（閏月歸屬）——用戶改成 next-month 後分享，
+ *   對方打開 ?lm=next-month 被無視、按默認閏月口徑排出不同的盤。
+ *   今後判斷一律複用本常量；configToParams 加字段時必須同步加這裡。
  */
 export const SCHOOL_PARAM_KEYS = ['bs', 'gys', 'tm', 'tk', 'jk', 'ky', 'tst', 'cs', 'lz', 'lm'] as const;
 
-/** SchoolConfig → URL params（紧凑形式：?bs=qs&sh=GYWTY...）*/
+/** SchoolConfig → URL params（緊湊形式：?bs=qs&sh=GYWTY...）*/
 export function configToParams(cfg: SchoolConfig): Record<string, string> {
   const out: Record<string, string> = {};
   if (cfg.brightnessSchool !== 'default') out.bs = cfg.brightnessSchool;
@@ -194,11 +194,11 @@ export function configToParams(cfg: SchoolConfig): Record<string, string> {
   if (cfg.tianshiTianshang !== 'normal') out.tst = cfg.tianshiTianshang;
   if (cfg.changshengSchool !== 'yin-yang-shun-ni') out.cs = cfg.changshengSchool;
   if (cfg.lateZishi !== 'next-day') out.lz = cfg.lateZishi;
-  if (cfg.leapMonth !== DEFAULT_LEAP_MONTH) out.lm = cfg.leapMonth;   // 老分享链接不带 lm 的，现按新默认 split 解析（与主流排盘默认口径一致）
+  if (cfg.leapMonth !== DEFAULT_LEAP_MONTH) out.lm = cfg.leapMonth;   // 老分享鏈接不帶 lm 的，現按新默認 split 解析（與主流排盤默認口徑一致）
   return out;
 }
 
-/** URLSearchParams → SchoolConfig（缺省字段用默认值填充）*/
+/** URLSearchParams → SchoolConfig（缺省字段用默認值填充）*/
 export function paramsToConfig(params: URLSearchParams): SchoolConfig {
   return normalizeBrightness({
     brightnessSchool: (params.get('bs') as BrightnessSchoolOption) || SCHOOL_DEFAULT_CONFIG.brightnessSchool,
@@ -214,12 +214,12 @@ export function paramsToConfig(params: URLSearchParams): SchoolConfig {
   });
 }
 
-// ─── UI 显示用：每个开关的所有选项 + 中文标签 ──────────────────────────
+// ─── UI 顯示用：每個開關的所有選項 + 中文標籤 ──────────────────────────
 
 export const SCHOOL_OPTIONS = {
-  // ★ 2026-06-17 统一格式(用户要求):每组【默认项】固定排第一,且 desc 统一以「默认 · xxx」开头
+  // ★ 2026-06-17 統一格式(用戶要求):每組【默認項】固定排第一,且 desc 統一以「默認 · xxx」開頭
   brightnessSchool: [
-    // ★ 10-20 默认项 = 《斗数全书》（主流排盘默认口径「星曜亮度依据斗数全书」），底层就是 QS 表，所以不再另列 QS
+    // ★ 10-20 默認項 = 《斗數全書》（主流排盤默認口徑「星曜亮度依據斗數全書」），底層就是 QS 表，所以不再另列 QS
     { value: 'default', label: '《斗数全书》派', desc: '默认 · 与主流排盘软件默认一致' },
     { value: 'XD2', label: '现代修正 v2', desc: '现代修订亮度表（第二版）' },
     { value: 'XD1', label: '现代修正 v1', desc: '现代修订亮度表（第一版）' },
@@ -266,8 +266,8 @@ export const SCHOOL_OPTIONS = {
     { value: 'all-current', label: '日柱当日 / 时柱当日（八字）' },
     { value: 'day-cur-time-next', label: '日柱当日 / 时柱次日（八字）' },
   ],
-  // ★ 2026-06-17 全站约定:每组默认选项一律排第一；去「天机」二字(避商标侵权)
-  // ★ 2026-09-05 默认改为分半：主流排盘默认口径「月中分界」，150 组金标准盘对照唯此口径逐星全同
+  // ★ 2026-06-17 全站約定:每組默認選項一律排第一；去「天機」二字(避商標侵權)
+  // ★ 2026-09-05 默認改為分半：主流排盤默認口徑「月中分界」，150 組金標準盤對照唯此口徑逐星全同
   leapMonth: [
     { value: 'split', label: '视为分半', desc: '默认 · 「月中分界」，与主流排盘软件默认一致（前 15 天归本月 / 后 15 天归下月，150 组对照盘验证）' },
     { value: 'prev-month', label: '视为本月', desc: '闰四月整月当四月普通月排' },
@@ -276,7 +276,7 @@ export const SCHOOL_OPTIONS = {
   ],
 } as const;
 
-/** 10 类配置的中文标签（用于 UI 标题）*/
+/** 10 類配置的中文標籤（用於 UI 標題）*/
 export const SCHOOL_LABELS: Record<keyof SchoolConfig, string> = {
   brightnessSchool: '星曜亮度表',
   gengYearSihua: '庚年四化',
@@ -290,11 +290,11 @@ export const SCHOOL_LABELS: Record<keyof SchoolConfig, string> = {
   leapMonth: '闰月归属',
 };
 
-// ─── 开源自架版实际可切换的项目 ─────────────────────────────────────────
+// ─── 開源自架版實際可切換的項目 ─────────────────────────────────────────
 /**
- * 自架版真正实作的流派：前五项在 generateChart（algorithm.ts applyXxxVariant），
- * 晚子时在表单换算出生日时（birth-input.ts resolveBirthMoment）。
- * 天空、天使天伤、长生十二神的非默认排法定义无法从现有资料确认，不开放；设定面板与 sanitize 都只认下列七项。
+ * 自架版真正實作的流派：前五項在 generateChart（algorithm.ts applyXxxVariant），
+ * 晚子時在表單換算出生日時（birth-input.ts resolveBirthMoment）。
+ * 天空、天使天傷、長生十二神的非默認排法定義無法從現有資料確認，不開放；設定面板與 sanitize 都只認下列七項。
  */
 export const SCHOOL_SWITCHABLE_KEYS = [
   'brightnessSchool', 'gengYearSihua', 'kuiyueSchool', 'jiekongSchool', 'tianmaSchool', 'leapMonth', 'lateZishi',
@@ -302,7 +302,7 @@ export const SCHOOL_SWITCHABLE_KEYS = [
 
 export type SwitchableSchoolKey = typeof SCHOOL_SWITCHABLE_KEYS[number];
 
-/** 不可信输入（请求 body、URL、localStorage）→ 只留可切换项目且值合法的部分配置 */
+/** 不可信輸入（請求 body、URL、localStorage）→ 只留可切換項目且值合法的部分配置 */
 export function sanitizeSchoolConfig(input: unknown): Partial<SchoolConfig> {
   if (!input || typeof input !== 'object') return {};
   const out: Partial<Record<SwitchableSchoolKey, string>> = {};
@@ -313,13 +313,13 @@ export function sanitizeSchoolConfig(input: unknown): Partial<SchoolConfig> {
   return out as Partial<SchoolConfig>;
 }
 
-/** 可切换项目中与默认不同的那些（用来提示「解读依默认流派」） */
+/** 可切換項目中與默認不同的那些（用來提示「解讀依默認流派」） */
 export function nonDefaultSchoolKeys(cfg: Partial<SchoolConfig> | undefined): SwitchableSchoolKey[] {
   if (!cfg) return [];
   return SCHOOL_SWITCHABLE_KEYS.filter(k => cfg[k] !== undefined && cfg[k] !== SCHOOL_DEFAULT_CONFIG[k]);
 }
 
-/** 非默认的可切换项目 → 「星曜亮度表：中州派」这类文字 */
+/** 非默認的可切換項目 → 「星曜亮度表：中州派」這類文字 */
 export function describeNonDefaultSchool(cfg: Partial<SchoolConfig> | undefined): string[] {
   return nonDefaultSchoolKeys(cfg).map(k => {
     const option = SCHOOL_OPTIONS[k].find(o => o.value === cfg![k]);

@@ -2,15 +2,15 @@
 import { useEffect } from 'react';
 
 /**
- * 把画面上的简体字转成台湾正体（显示层转换，见 lib/i18n/hant.ts）
+ * 把畫面上的簡體字轉成台灣正體（顯示層轉換，見 lib/i18n/hant.ts）
  *
- * 在 hydration 之后才开始转（useEffect），避免与服务端 HTML 不一致；
- * 之后 React 更新的文字由 MutationObserver 接手再转一次。
- * 转换表约 1 MB，动态载入，不挡首屏。
+ * 在 hydration 之後才開始轉（useEffect），避免與服務端 HTML 不一致；
+ * 之後 React 更新的文字由 MutationObserver 接手再轉一次。
+ * 轉換表約 1 MB，動態載入，不擋首屏。
  */
 const ATTRS = ['placeholder', 'title', 'aria-label', 'alt'] as const;
 const SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEXTAREA', 'CODE', 'PRE']);
-// 只含 ASCII 的文字不必转
+// 只含 ASCII 的文字不必轉
 const HAS_CJK = /[㐀-鿿]/;
 
 export default function HantConverter() {
@@ -57,11 +57,11 @@ export default function HantConverter() {
       convertTree(document.body);
       convertTitle();
 
-      // 我们自己改写 nodeValue / 属性也会触发回调；转换后的字串再转一次结果不变，不会无限循环
+      // 我們自己改寫 nodeValue / 屬性也會觸發回調；轉換後的字串再轉一次結果不變，不會無限循環
       observer = new MutationObserver(mutations => {
         for (const m of mutations) {
           const inHead = document.head.contains(m.target);
-          if (inHead) convertTitle(); // 换页时 Next.js 会改 <title>
+          if (inHead) convertTitle(); // 換頁時 Next.js 會改 <title>
           else if (m.type === 'characterData') convertText(m.target as Text);
           else if (m.type === 'attributes') convertAttrs(m.target as Element);
           else m.addedNodes.forEach(convertTree);

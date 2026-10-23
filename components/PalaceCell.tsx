@@ -11,13 +11,13 @@ interface PalaceCellProps {
   isSelected?: boolean;
   isSanFang?: boolean;
   delay?: number;
-  /** 叠加四化：星名 → 四化类型（'禄'/'权'/'科'/'忌'） */
+  /** 疊加四化：星名 → 四化類型（'祿'/'權'/'科'/'忌'） */
   overlayStarSiHua?: Record<string, string>;
-  /** 叠加标签：'年'（流年）或 '限'（大限） */
+  /** 疊加標籤：'年'（流年）或 '限'（大限） */
   overlayLabel?: string;
-  /** 点击叠加四化 badge 回调 */
+  /** 點擊疊加四化 badge 回調 */
   onSiHuaClick?: (starName: string, siHua: string) => void;
-  /** 运限层在此宫的宫名（命/兄/夫…），配合 overlayLabel 显示成「年·财」 */
+  /** 運限層在此宮的宮名（命/兄/夫…），配合 overlayLabel 顯示成「年·財」 */
   layerPalaceName?: string;
 }
 
@@ -94,7 +94,7 @@ export default function PalaceCell({
           : 'none',
       }}
     >
-      {/* 大限年龄 */}
+      {/* 大限年齡 */}
       {daXianAge && (
         <div className={clsx(
           'absolute top-1 right-1 text-[9px] font-mono tabular-nums',
@@ -106,7 +106,7 @@ export default function PalaceCell({
         </div>
       )}
 
-      {/* 运限层宫名 */}
+      {/* 運限層宮名 */}
       {layerPalaceName && (
         <div
           className={clsx(
@@ -119,7 +119,7 @@ export default function PalaceCell({
         </div>
       )}
 
-      {/* 宫名行 */}
+      {/* 宮名行 */}
       <div className="flex items-center gap-1 mb-0.5 pr-8">
         <span className={clsx('text-[10px] font-medium tracking-wide',
           isMingGong ? 'text-amber-500' : isShenGong ? 'text-sky-500' : ''

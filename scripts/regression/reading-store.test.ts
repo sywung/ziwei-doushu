@@ -5,11 +5,11 @@ import path from 'node:path';
 import { READING_TOPICS, parseReadingKey, readingKey } from '../../lib/reading/key';
 import { ReadingNotFoundError, buildYearIndex, createReadingStore } from '../../lib/reading/store';
 
-// ── 键：补零、时辰与性别原样带入 ──
+// ── 鍵：補零、時辰與性別原樣帶入 ──
 assert.equal(readingKey({ year: 1990, month: 1, day: 1, hour: 0, gender: 'male' }), '1990-01-01-0-male');
 assert.equal(readingKey({ year: 2026, month: 12, day: 31, hour: 11, gender: 'female' }), '2026-12-31-11-female');
 
-// 不合法的输入要拒绝，不能被修正成另一张盘的键
+// 不合法的輸入要拒絕，不能被修正成另一張盤的鍵
 for (const bad of [
   { year: 1990, month: 2, day: 30, hour: 0, gender: 'male' as const },
   { year: 1991, month: 2, day: 29, hour: 0, gender: 'male' as const },
@@ -26,7 +26,7 @@ for (const bad of ['1990-1-01-0-male', '1990-01-01-0-man', '1990-02-30-0-male', 
   assert.equal(parseReadingKey(bad), null, bad);
 }
 
-// ── 索引与查询：用多字节中文内容，确认偏移按字节而非字符计算 ──
+// ── 索引與查詢：用多字節中文內容，確認偏移按字節而非字符計算 ──
 function row(key: string, ms: string | null, marker: string) {
   const c = Object.fromEntries(READING_TOPICS.map(t => [t, `**【${t}】**\n${marker}·${t}·紫微斗数💫`]));
   return JSON.stringify({ k: key, y: 0, m: 0, d: 0, h: 0, g: 'male', ms, t: {}, c });
@@ -53,17 +53,17 @@ async function main() {
     assert.equal(first.mainStar, '天府');
     assert.equal(first.content.love, '**【love】**\n甲·love·紫微斗数💫');
 
-    // 中间与最后一行：前面的行有多字节字符，字符计数会读错位置
+    // 中間與最後一行：前面的行有多字節字符，字符計數會讀錯位置
     const second = await store.get(keys[1]);
     assert.equal(second.mainStar, null);
     assert.equal(second.content.parents, '**【parents】**\n乙乙乙·parents·紫微斗数💫');
     const third = await store.get(keys[2]);
     assert.equal(third.content.overview, '**【overview】**\n丙·overview·紫微斗数💫');
 
-    // 真实资料每行约 100 KB，会跨过读档的 64 KB 区块边界
+    // 真實資料每行約 100 KB，會跨過讀檔的 64 KB 區塊邊界
     const longKeys = ['1990-02-01-0-male', '1990-02-01-0-female', '1990-02-01-1-male'];
     const longMarkers = ['长'.repeat(70_000), '短', '中'.repeat(30_000)];
-    await writeFile(file, longKeys.map((k, i) => row(k, '天机', longMarkers[i])).join('\n'));  // 末行无换行
+    await writeFile(file, longKeys.map((k, i) => row(k, '天机', longMarkers[i])).join('\n'));  // 末行無換行
     await writeFile(path.join(indexDir, 'year-1990.json'), JSON.stringify(await buildYearIndex(file)));
     const longStore = createReadingStore({ dataDir, indexDir });
     for (const [i, k] of longKeys.entries()) {
@@ -72,21 +72,21 @@ async function main() {
     await writeFile(file, [row(keys[0], '天府', '甲'), row(keys[1], null, '乙乙乙'), row(keys[2], '紫微', '丙')].join('\n') + '\n');
     await writeFile(path.join(indexDir, 'year-1990.json'), JSON.stringify(index));
 
-    // 资料集范围外、或该年份没有这个键 → ReadingNotFoundError
+    // 資料集範圍外、或該年份沒有這個鍵 → ReadingNotFoundError
     await assert.rejects(store.get('1949-01-01-0-male'), ReadingNotFoundError);
     await assert.rejects(store.get('1990-01-02-0-male'), ReadingNotFoundError);
     await assert.rejects(store.get('not-a-key'), RangeError);
 
-    // 数据档换过但索引没重建：两行等长，错位后读到的是另一张盘的合法 JSON，
-    // 只有键比对拦得住（不能靠 JSON.parse 失败碰巧拦下）
-    const [ka, kb] = [keys[0], keys[2]]; // 同长度的键
+    // 數據檔換過但索引沒重建：兩行等長，錯位後讀到的是另一張盤的合法 JSON，
+    // 只有鍵比對攔得住（不能靠 JSON.parse 失敗碰巧攔下）
+    const [ka, kb] = [keys[0], keys[2]]; // 同長度的鍵
     await writeFile(file, [row(ka, '天府', '甲'), row(kb, '天府', '乙')].join('\n') + '\n');
     await writeFile(path.join(indexDir, 'year-1990.json'), JSON.stringify(await buildYearIndex(file)));
     await writeFile(file, [row(kb, '天府', '乙'), row(ka, '天府', '甲')].join('\n') + '\n');
     const stale = createReadingStore({ dataDir, indexDir });
     await assert.rejects(stale.get(ka), /index out of sync/);
 
-    // CRLF 会让字节偏移全部错位，建索引时就要拒绝
+    // CRLF 會讓字節偏移全部錯位，建索引時就要拒絕
     await writeFile(file, row(keys[0], '天府', '甲') + '\r\n');
     await assert.rejects(buildYearIndex(file), /CRLF/);
   } finally {

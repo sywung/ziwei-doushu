@@ -8,7 +8,7 @@ import {
 import type { ZiweiChart } from '@/lib/ziwei/types';
 import { CHILDHOOD_DAXIAN_INDEX, getChildhoodYears } from '@/lib/ziwei/yunxian-context';
 
-/** 本命 + 六层运限（大限 / 小限 / 流年 / 流月 / 流日 / 流时） */
+/** 本命 + 六層運限（大限 / 小限 / 流年 / 流月 / 流日 / 流時） */
 export type TimeView = 'mingpan' | FlowLayerKey;
 
 interface TimeNavProps {
@@ -17,11 +17,11 @@ interface TimeNavProps {
   onViewChange: (view: TimeView) => void;
   target: FlowTarget;
   onTargetChange: (target: FlowTarget) => void;
-  /** 大限视图点选的大限；童限为 CHILDHOOD_DAXIAN_INDEX */
+  /** 大限視圖點選的大限；童限為 CHILDHOOD_DAXIAN_INDEX */
   daXianIndex: number;
   onDaXianChange: (index: number) => void;
   flow: FlowLayers | null;
-  /** 目标日期无效（如出生前）时的说明 */
+  /** 目標日期無效（如出生前）時的說明 */
   flowError: string | null;
 }
 
@@ -35,7 +35,7 @@ const SIHUA_COLORS: Record<string, string> = {
 const pad2 = (n: number) => String(n).padStart(2, '0');
 const toDateInput = (t: FlowTarget) => `${t.year}-${pad2(t.month)}-${pad2(t.day)}`;
 
-/** 公历日期加减（跨月、闰年由 Date 处理） */
+/** 公曆日期加減（跨月、閏年由 Date 處理） */
 function shiftTarget(t: FlowTarget, unit: 'year' | 'month' | 'day', delta: number): FlowTarget {
   const d = new Date(Date.UTC(t.year, t.month - 1, t.day));
   if (unit === 'year') d.setUTCFullYear(d.getUTCFullYear() + delta);
@@ -44,7 +44,7 @@ function shiftTarget(t: FlowTarget, unit: 'year' | 'month' | 'day', delta: numbe
   return { ...t, year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, day: d.getUTCDate() };
 }
 
-/** 各视图的「上一个 / 下一个」步进单位 */
+/** 各視圖的「上一個 / 下一個」步進單位 */
 const STEP_UNIT: Partial<Record<TimeView, 'year' | 'month' | 'day'>> = {
   xiaoxian: 'year', liunian: 'year', liuyue: 'month', liuri: 'day',
 };
@@ -58,7 +58,7 @@ export default function TimeNav({
 
   return (
     <div className="mb-3 space-y-1.5">
-      {/* ── 层级 Tab ── */}
+      {/* ── 層級 Tab ── */}
       <div
         className="grid grid-cols-7 rounded-xl p-1 gap-1"
         style={{ background: 'var(--t-surface)', border: '1px solid var(--t-border)' }}
@@ -71,7 +71,7 @@ export default function TimeNav({
         ))}
       </div>
 
-      {/* ── 大限选择 ── */}
+      {/* ── 大限選擇 ── */}
       {view === 'daxian' && (
         <div className="flex flex-wrap gap-1 px-1">
           {hasChildhood && (
@@ -88,7 +88,7 @@ export default function TimeNav({
         </div>
       )}
 
-      {/* ── 目标时刻（小限、流年、流月、流日、流时）── */}
+      {/* ── 目標時刻（小限、流年、流月、流日、流時）── */}
       {view !== 'mingpan' && view !== 'daxian' && (
         <div className="flex flex-wrap items-center gap-1.5 px-1 text-[10px]" style={{ color: 'var(--t-faint)' }}>
           {stepUnit && (
@@ -131,7 +131,7 @@ export default function TimeNav({
         </div>
       )}
 
-      {/* ── 叠加四化说明 ── */}
+      {/* ── 疊加四化說明 ── */}
       {flowError && view !== 'mingpan' && (
         <div className="px-1 text-[10px] text-red-400/80">{flowError}</div>
       )}
@@ -164,7 +164,7 @@ export default function TimeNav({
   );
 }
 
-/** 现在的公历日期与时辰（23 点起算次日子时的换日交给使用者自行调整日期） */
+/** 現在的公曆日期與時辰（23 點起算次日子時的換日交給使用者自行調整日期） */
 export function nowTarget(): FlowTarget {
   const now = new Date();
   return {

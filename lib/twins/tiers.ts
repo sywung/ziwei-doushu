@@ -1,4 +1,4 @@
-/** 命理学双子的比对层级（客户端、服务端共用；签名计算在 signature.ts，仅服务端） */
+/** 命理學雙子的比對層級（客戶端、服務端共用；簽名計算在 signature.ts，僅服務端） */
 export type TwinTier = 'main' | 'sihua' | 'full';
 export const TWIN_TIERS: TwinTier[] = ['main', 'sihua', 'full'];
 

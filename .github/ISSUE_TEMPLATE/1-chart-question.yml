@@ -1,65 +1,65 @@
-name: 排盘结果疑问 / Chart result question
-description: 觉得某张盘排得不对？请附上出生信息和对照结果，我们才能逐项核。
-title: "[排盘疑问] "
+name: 排盤結果疑問 / Chart result question
+description: 覺得某張盤排得不對？請附上出生信息和對照結果，我們才能逐項核。
+title: "[排盤疑問] "
 labels: ["question"]
 body:
   - type: markdown
     attributes:
       value: |
-        只写「不准」我们没法查。请按下面填完整，我们会逐项对照。
-        先看一眼：辅星亮度、闰月归属、晚子时是否换日在各流派本来就不同，这类差异不算 bug，但仍欢迎指出。
+        只寫「不準」我們沒法查。請按下面填完整，我們會逐項對照。
+        先看一眼：輔星亮度、閏月歸屬、晚子時是否換日在各流派本來就不同，這類差異不算 bug，但仍歡迎指出。
   - type: input
     id: date
     attributes:
-      label: 出生日期（公历）
+      label: 出生日期（公曆）
       placeholder: 例：1990-05-12
     validations:
       required: true
   - type: input
     id: time
     attributes:
-      label: 出生时间（几点几分）
+      label: 出生時間（幾點幾分）
       placeholder: 例：08:30
     validations:
       required: true
   - type: input
     id: place
     attributes:
-      label: 出生地或经度
-      description: 用来换算真太阳时；东西向经度差最多能差出一个时辰。
-      placeholder: 例：浙江杭州 / 东经 120.2°
+      label: 出生地或經度
+      description: 用來換算真太陽時；東西向經度差最多能差出一個時辰。
+      placeholder: 例：浙江杭州 / 東經 120.2°
   - type: dropdown
     id: gender
     attributes:
-      label: 性别
+      label: 性別
       options: ["男", "女"]
     validations:
       required: true
   - type: textarea
     id: ours
     attributes:
-      label: 本项目排出的结果
-      description: 截图，或贴出 generateChart 输出里相关的那几项。
+      label: 本項目排出的結果
+      description: 截圖，或貼出 generateChart 輸出裡相關的那幾項。
     validations:
       required: true
   - type: input
     id: ref
     attributes:
-      label: 拿什么对照
-      placeholder: 例：其它排盘软件 / 某本书第几页
+      label: 拿什麼對照
+      placeholder: 例：其它排盤軟件 / 某本書第幾頁
     validations:
       required: true
   - type: textarea
     id: theirs
     attributes:
-      label: 对照结果
-      description: 截图或文字。
+      label: 對照結果
+      description: 截圖或文字。
     validations:
       required: true
   - type: textarea
     id: diff
     attributes:
-      label: 具体哪一项不一致
-      placeholder: 例：命宫应在卯，这里排在戌
+      label: 具體哪一項不一致
+      placeholder: 例：命宮應在卯，這裡排在戌
     validations:
       required: true

@@ -1,6 +1,6 @@
 declare module 'lunar-javascript' {
   class Lunar {
-    /** month 为负表示闰月（如 -5 = 闰五月） */
+    /** month 為負表示閏月（如 -5 = 閏五月） */
     static fromYmd(year: number, month: number, day: number): Lunar;
     getYear(): number;
     getMonth(): number;  // negative = leap month
@@ -11,7 +11,7 @@ declare module 'lunar-javascript' {
     getMonthZhi(): string;
     getDayGan(): string;
     getDayZhi(): string;
-    /** 换算成公历(2026-08-05 补声明:lib/ziwei/share.ts 早在用，只是从前靠 as any 绕过) */
+    /** 換算成公曆(2026-08-05 補聲明:lib/ziwei/share.ts 早在用，只是從前靠 as any 繞過) */
     getSolar(): Solar;
   }
 
@@ -23,9 +23,9 @@ declare module 'lunar-javascript' {
     getDay(): number;
   }
 
-  /** 农历月信息(2026-06-10 补:闰月大小月边界 clamp 用) */
+  /** 農曆月信息(2026-06-10 補:閏月大小月邊界 clamp 用) */
   class LunarMonth {
-    /** month 为负表示闰月(如 -5 = 闰五月);查无此月返回 null */
+    /** month 為負表示閏月(如 -5 = 閏五月);查無此月返回 null */
     static fromYm(year: number, month: number): LunarMonth | null;
     getDayCount(): number;
   }

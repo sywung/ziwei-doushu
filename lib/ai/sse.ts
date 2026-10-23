@@ -1,13 +1,13 @@
 /**
- * 前后端共用的串流格式：每段 `data: {"delta":{"text":"…"}}`，结束送 `data: [DONE]`
- * （InsightPanel、合盘页沿用这个格式）。
+ * 前後端共用的串流格式：每段 `data: {"delta":{"text":"…"}}`，結束送 `data: [DONE]`
+ * （InsightPanel、合盤頁沿用這個格式）。
  */
 
 export const STREAM_INTERRUPTED_TEXT = '\n\n（AI 回应中断，请再试一次）';
 
 /**
- * 服务端：先等到第一段输出再开始回应。上游错误（金钥错误、额度用完）多半在第一段之前就发生，
- * 这样还能回正确的 HTTP 状态码，而不是 200 加一句「中断」。
+ * 服務端：先等到第一段輸出再開始回應。上游錯誤（金鑰錯誤、額度用完）多半在第一段之前就發生，
+ * 這樣還能回正確的 HTTP 狀態碼，而不是 200 加一句「中斷」。
  */
 export async function primeStream<T>(gen: AsyncGenerator<T>): Promise<AsyncIterable<T>> {
   const first = await gen.next();
@@ -18,7 +18,7 @@ export async function primeStream<T>(gen: AsyncGenerator<T>): Promise<AsyncItera
   })();
 }
 
-/** 服务端：把文字串流包成 SSE Response */
+/** 服務端：把文字串流包成 SSE Response */
 export function deltaStreamResponse(chunks: AsyncIterable<string>, onError: (err: unknown) => void): Response {
   const encoder = new TextEncoder();
   const send = (controller: ReadableStreamDefaultController<Uint8Array>, payload: string) =>
@@ -30,7 +30,7 @@ export function deltaStreamResponse(chunks: AsyncIterable<string>, onError: (err
         for await (const text of chunks) send(controller, JSON.stringify({ delta: { text } }));
       } catch (err) {
         onError(err);
-        // 已经开始回应就不能改状态码，改用一段提示文字收尾
+        // 已經開始回應就不能改狀態碼，改用一段提示文字收尾
         send(controller, JSON.stringify({ delta: { text: STREAM_INTERRUPTED_TEXT } }));
       }
       send(controller, '[DONE]');
@@ -43,8 +43,8 @@ export function deltaStreamResponse(chunks: AsyncIterable<string>, onError: (err
 }
 
 /**
- * 客户端：读 delta 串流，每收到文字就回呼累积结果。
- * 一行 SSE 可能被拆在两个 chunk 之间，必须缓冲不完整的尾巴，否则那段文字会被默默丢掉。
+ * 客戶端：讀 delta 串流，每收到文字就回呼累積結果。
+ * 一行 SSE 可能被拆在兩個 chunk 之間，必須緩衝不完整的尾巴，否則那段文字會被默默丟掉。
  */
 export async function readDeltaStream(res: Response, onText: (accumulated: string) => void): Promise<string> {
   if (!res.body) throw new Error('no response body');
@@ -75,7 +75,7 @@ export async function readDeltaStream(res: Response, onText: (accumulated: strin
   }
 }
 
-/** 客户端：依 HTTP 状态给使用者看的说明 */
+/** 客戶端：依 HTTP 狀態給使用者看的說明 */
 export function aiErrorMessage(status: number): string {
   if (status === 503) return 'AI 尚未设定（伺服器缺 AI_BASE_URL / AI_API_KEY / AI_MODEL），13 维解读不受影响。';
   if (status === 429) return 'AI 呼叫太频繁，请等一分钟再试。';

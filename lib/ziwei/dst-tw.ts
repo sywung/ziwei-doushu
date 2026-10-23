@@ -1,18 +1,18 @@
 /**
- * 台湾历史上「钟表比 UTC+8 快 1 小时」的期间：日治时期改用 UTC+9（1937-10-01 ~ 1945-09-20），
- * 以及 1946–1961、1974–1975、1979 年的夏令时（日光节约时间）。
+ * 台灣歷史上「鐘錶比 UTC+8 快 1 小時」的期間：日治時期改用 UTC+9（1937-10-01 ~ 1945-09-20），
+ * 以及 1946–1961、1974–1975、1979 年的夏令時（日光節約時間）。
  *
- * 资料来源：IANA tzdata Asia/Taipei（2026a，经 Node ICU 逐小时比对，见 scripts/regression/dst-tw.test.ts）。
- * 写成表而不在执行期查 Intl：浏览器内建 tzdata 版本不一，排盘结果不能因浏览器而异。
+ * 資料來源：IANA tzdata Asia/Taipei（2026a，經 Node ICU 逐小時比對，見 scripts/regression/dst-tw.test.ts）。
+ * 寫成表而不在執行期查 Intl：瀏覽器內建 tzdata 版本不一，排盤結果不能因瀏覽器而異。
  *
- * 区间以当时的「当地钟表时间」表示，起日 00:00 起、止日 00:00 前（止日不含）。
- * 夏令时结束那晚 23:00–24:00 会出现两次（拨回一小时），一律当作还在夏令时（第一次）。
+ * 區間以當時的「當地鐘錶時間」表示，起日 00:00 起、止日 00:00 前（止日不含）。
+ * 夏令時結束那晚 23:00–24:00 會出現兩次（撥回一小時），一律當作還在夏令時（第一次）。
  */
 import type { GregorianDate } from './true-solar-time';
 
 export type TaiwanClockKind = 'jst' | 'dst';
 
-/** [起 年,月,日, 止 年,月,日（不含）, 种类] */
+/** [起 年,月,日, 止 年,月,日（不含）, 種類] */
 const TW_CLOCK_AHEAD: readonly (readonly [number, number, number, number, number, number, TaiwanClockKind])[] = [
   [1937, 10, 1, 1945, 9, 21, 'jst'],
   [1946, 5, 15, 1946, 10, 1, 'dst'],
@@ -43,7 +43,7 @@ export const TAIWAN_CLOCK_KIND_LABEL: Record<TaiwanClockKind, string> = {
 
 const dayNumber = (y: number, m: number, d: number) => Date.UTC(y, m - 1, d) / 86_400_000;
 
-/** 该日期的台湾钟表若比 UTC+8 快 1 小时，回传期间种类；否则 null（以日为单位，区间起止都在午夜） */
+/** 該日期的台灣鐘錶若比 UTC+8 快 1 小時，回傳期間種類；否則 null（以日為單位，區間起止都在午夜） */
 export function taiwanClockAhead(date: GregorianDate): TaiwanClockKind | null {
   const n = dayNumber(date.year, date.month, date.day);
   for (const [y1, m1, d1, y2, m2, d2, kind] of TW_CLOCK_AHEAD) {
@@ -52,7 +52,7 @@ export function taiwanClockAhead(date: GregorianDate): TaiwanClockKind | null {
   return null;
 }
 
-/** 台湾钟表时间要减几分钟才是 UTC+8 标准时间 */
+/** 台灣鐘錶時間要減幾分鐘才是 UTC+8 標準時間 */
 export function taiwanClockAheadMinutes(date: GregorianDate): number {
   return taiwanClockAhead(date) ? 60 : 0;
 }

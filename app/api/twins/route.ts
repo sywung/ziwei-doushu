@@ -1,8 +1,8 @@
 /**
- * GET /api/twins?key=YYYY-MM-DD-时辰序号-性别
+ * GET /api/twins?key=YYYY-MM-DD-時辰序號-性別
  *
- * 在 1950–2026 全部命盘里找配置相同的盘（命理学双子）。
- * 索引档由环境变量 TWINS_INDEX_FILE 指定（见 scripts/twins/build-index.ts）。
+ * 在 1950–2026 全部命盤裡找配置相同的盤（命理學雙子）。
+ * 索引檔由環境變量 TWINS_INDEX_FILE 指定（見 scripts/twins/build-index.ts）。
  */
 import { NextResponse } from 'next/server';
 import { parseReadingKey } from '@/lib/reading/key';

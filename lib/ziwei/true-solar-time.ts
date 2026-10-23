@@ -1,11 +1,11 @@
 /**
- * 真太阳时统一计算。
+ * 真太陽時統一計算。
  *
- * 口径：地方真太阳时 = 东八区钟表时间 + 经度修正 + 均时差。
- * 均时差采用 NOAA 的 fractional-year 近似式，1900-2026 年范围内足以稳定
- * 判断紫微斗数的两小时时辰边界。
+ * 口徑：地方真太陽時 = 東八區鐘錶時間 + 經度修正 + 均時差。
+ * 均時差採用 NOAA 的 fractional-year 近似式，1900-2026 年範圍內足以穩定
+ * 判斷紫微斗數的兩小時時辰邊界。
  *
- * 参考：https://gml.noaa.gov/grad/solcalc/solareqns.PDF
+ * 參考：https://gml.noaa.gov/grad/solcalc/solareqns.PDF
  */
 
 export interface GregorianDate {
@@ -19,7 +19,7 @@ export type LateZishiRule = 'next-day' | 'current-day' | 'all-current' | 'day-cu
 export interface TrueSolarTimeInput extends GregorianDate {
   clockHour: number;
   clockMinute: number;
-  /** 未提供经度时保持原钟表时间，不做真太阳时校正。 */
+  /** 未提供經度時保持原鐘表時間，不做真太陽時校正。 */
   longitude?: number;
 }
 
@@ -69,7 +69,7 @@ function dayOfYear(year: number, month: number, day: number): number {
   return Math.floor((Date.UTC(year, month - 1, day) - Date.UTC(year, 0, 0)) / 86_400_000);
 }
 
-/** NOAA 均时差近似值，返回分钟；正值表示真太阳时快于平太阳时。 */
+/** NOAA 均時差近似值，返回分鐘；正值表示真太陽時快於平太陽時。 */
 export function equationOfTimeMinutes(
   year: number,
   month: number,
@@ -106,7 +106,7 @@ export function calculateTrueSolarTime(input: TrueSolarTimeInput): TrueSolarTime
   const totalCorrectionMinutes = longitudeCorrectionMinutes + eot;
   const rawMinutes = input.clockHour * 60 + input.clockMinute + totalCorrectionMinutes;
 
-  // 页面输入精度为分钟；显示和时辰边界统一按最近一秒，避免浮点毛刺。
+  // 頁面輸入精度為分鐘；顯示和時辰邊界統一按最近一秒，避免浮點毛刺。
   const roundedTotalSeconds = Math.round(rawMinutes * 60);
   const dayOffset = Math.floor(roundedTotalSeconds / SECONDS_PER_DAY);
   const secondOfDay = mod(roundedTotalSeconds, SECONDS_PER_DAY);
@@ -131,7 +131,7 @@ export function calculateTrueSolarTime(input: TrueSolarTimeInput): TrueSolarTime
   };
 }
 
-/** 把真太阳日与晚子时流派规则合并成最终排盘日相对输入日的偏移。 */
+/** 把真太陽日與晚子時流派規則合併成最終排盤日相對輸入日的偏移。 */
 export function resolveZiweiDayOffset(
   solar: Pick<TrueSolarTimeResult, 'dayOffset' | 'normalizedMinutes' | 'branch'>,
   lateZishi: LateZishiRule = 'next-day',

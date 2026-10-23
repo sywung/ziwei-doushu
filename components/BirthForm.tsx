@@ -14,12 +14,12 @@ import { calculateTrueSolarTime, sameGregorianDate, type LateZishiRule } from '@
 
 export interface BirthFormState {
   name: string;
-  /** 出生日期以公历或农历输入 */
+  /** 出生日期以公曆或農曆輸入 */
   calendar: CalendarKind;
   year: string;
   month: string;
   day: string;
-  /** 农历闰月（只在 calendar=lunar 时有意义） */
+  /** 農曆閏月（只在 calendar=lunar 時有意義） */
   isLeapMonth: boolean;
   clockHour: string;
   clockMinute: string;
@@ -27,7 +27,7 @@ export interface BirthFormState {
   province: string;
   city: string;
   longitude: number;
-  /** 台湾夏令时／日治时期出生：填的是当时钟表时间，要自动减 1 小时（默认 true） */
+  /** 台灣夏令時／日治時期出生：填的是當時鐘錶時間，要自動減 1 小時（默認 true） */
   dstAdjust?: boolean;
   gender: 'male' | 'female';
 }
@@ -37,9 +37,9 @@ interface BirthFormProps {
   loading?: boolean;
   initialData?: Partial<BirthFormState>;
   onFormSave?: (data: BirthFormState) => void;
-  /** 隐藏内部「立即起盘」按钮（合盘等场景由父级统一触发） */
+  /** 隱藏內部「立即起盤」按鈕（合盤等場景由父級統一觸發） */
   hideSubmit?: boolean;
-  /** 晚子时换日规则（流派设定），默认视为次日 */
+  /** 晚子時換日規則（流派設定），默認視為次日 */
   lateZishi?: LateZishiRule;
 }
 
@@ -68,7 +68,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [submitAttempted, setSubmitAttempted] = useState(false);
 
-  // 表单状态变化时实时同步给父级（合盘等场景下父级靠这个收集双方数据）
+  // 表單狀態變化時實時同步給父級（合盤等場景下父級靠這個收集雙方數據）
   useEffect(() => {
     onFormSave?.({ ...form });
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -79,7 +79,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
     return prov ? prov.cities : [];
   }, [form.province]);
 
-  // ─── 校验逻辑 ───────────────────────────────────────────
+  // ─── 校驗邏輯 ───────────────────────────────────────────
   const y = parseInt(form.year) || 0;
   const m = parseInt(form.month) || 0;
   const d = parseInt(form.day) || 0;
@@ -90,20 +90,20 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
   const clockMinute = parseInt(form.clockMinute) || 0;
   const longitude = form.province ? form.longitude : undefined;
 
-  // 换算公历、真太阳时、晚子时换日（与送出的 formToBirthInfo 同一套）
+  // 換算公曆、真太陽時、晚子時換日（與送出的 formToBirthInfo 同一套）
   const moment = useMemo(() => resolveBirthMoment({
     calendar: form.calendar, year: y, month: m, day: d, isLeapMonth: isLeap,
     unknownTime: form.unknownTime, clockHour, clockMinute, longitude,
     clockAheadMinutes: clockAheadFor(form),
   }, lateZishi), [form.calendar, y, m, d, isLeap, form.unknownTime, clockHour, clockMinute, longitude, lateZishi, form.province, form.dstAdjust]);
-  // 台湾出生、日期落在夏令时／日治时期：钟表比 UTC+8 快 1 小时
+  // 台灣出生、日期落在夏令時／日治時期：鐘錶比 UTC+8 快 1 小時
   const isTaiwan = form.province === TAIWAN_PROVINCE;
   const twClockKind = isTaiwan && moment && !form.unknownTime ? taiwanClockAhead(moment.inputDate) : null;
   const standardClock = (() => {
     const mins = ((clockHour * 60 + clockMinute - 60) % 1440 + 1440) % 1440;
     return `${String(Math.floor(mins / 60)).padStart(2, '0')}:${String(mins % 60).padStart(2, '0')}`;
   })();
-  // 日期还没填完时，时辰预览先只做经度修正
+  // 日期還沒填完時，時辰預覽先只做經度修正
   const solarPreview = moment?.solar ?? calculateTrueSolarTime({ year: 0, month: 0, day: 0, clockHour, clockMinute, longitude });
   const branch = form.unknownTime ? 0 : (moment?.branch ?? solarPreview.branch);
   const offsetMin = Math.round(solarPreview.totalCorrectionMinutes);
@@ -122,16 +122,16 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
   };
   const hasError = Object.values(errors).some(Boolean);
 
-  // ─── 完成度（用于进度条） ────────────────────────────────
+  // ─── 完成度（用於進度條） ────────────────────────────────
   const steps = [
     !!form.year && !!form.month && !!form.day && !errors.year && !errors.month && !errors.day,
     !!form.province && !!form.city,
     form.unknownTime || (!!form.clockHour && !!form.clockMinute),
-    true, // 性别有默认值
+    true, // 性別有默認值
   ];
   const completedSteps = steps.filter(Boolean).length;
 
-  // ─── Summary chip：全部必填完成后显示 ───────────────────
+  // ─── Summary chip：全部必填完成後顯示 ───────────────────
   const showSummary = steps[0] && steps[2] && !hasError;
   const summaryText = showSummary
     ? [
@@ -164,14 +164,14 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
     if (info) onSubmit(info);
   };
 
-  // ─── 样式变量 ────────────────────────────────────────────
+  // ─── 樣式變量 ────────────────────────────────────────────
   const bg = isDark ? 'rgba(8,16,40,0.85)' : 'rgba(255,255,255,0.92)';
   const border = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(200,160,60,0.2)';
-  // 暗色模式标签提亮：从 rgba(74,112,144,1) → rgba(180,200,225,0.9)
+  // 暗色模式標籤提亮：從 rgba(74,112,144,1) → rgba(180,200,225,0.9)
   const labelClr = isDark ? 'rgba(180,200,225,0.9)' : 'rgba(120,80,10,0.55)';
   const inputBg = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,252,240,0.8)';
   const inputBorder = isDark ? 'rgba(255,255,255,0.18)' : 'rgba(200,160,60,0.25)';
-  // 输入文字提亮：从 #c8d8f0 → #e8eef8
+  // 輸入文字提亮：從 #c8d8f0 → #e8eef8
   const inputClr = isDark ? '#e8eef8' : '#2a1a00';
   const focusBorder = isDark ? 'rgba(212,168,67,0.5)' : 'rgba(180,120,20,0.5)';
   const errorClr = isDark ? '#f87171' : '#dc2626';
@@ -224,12 +224,12 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
       transition={{ duration: 0.5 }}
       style={{ background: bg, border: `1px solid ${border}`, borderRadius: '24px', padding: '28px', backdropFilter: 'blur(20px)' }}
     >
-      {/* 标题 */}
+      {/* 標題 */}
       <h3 style={{ color: goldText, fontSize: '12px', letterSpacing: '0.4em', textAlign: 'center', marginBottom: '20px', fontWeight: 500 }}>
         ── 输入生辰八字 ──
       </h3>
 
-      {/* ── 进度条 ── */}
+      {/* ── 進度條 ── */}
       <div style={{ display: 'flex', gap: '4px', marginBottom: '20px' }}>
         {steps.map((done, i) => (
           <motion.div
@@ -351,7 +351,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
         )}
       </div>
 
-      {/* ── 出生地点 ── */}
+      {/* ── 出生地點 ── */}
       <div style={{ marginBottom: '16px' }}>
         <label style={{ display: 'block', fontSize: '11px', color: labelClr, marginBottom: '6px', letterSpacing: '0.05em' }}>出生地点（用于真太阳时校正）</label>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
@@ -406,7 +406,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
         </AnimatePresence>
       </div>
 
-      {/* ── 出生时间 ── */}
+      {/* ── 出生時間 ── */}
       <div style={{ marginBottom: '16px' }}>
         <label style={{ display: 'block', fontSize: '11px', color: labelClr, marginBottom: '6px', letterSpacing: '0.05em' }}>出生时间（{isTaiwan ? '台湾当地钟表时间' : '北京时间'}）</label>
         <div style={{ borderRadius: '14px', padding: '12px', background: panelBg, border: `1px solid ${panelBorder}`, opacity: form.unknownTime ? 0.45 : 1, pointerEvents: form.unknownTime ? 'none' : 'auto', transition: 'opacity 0.2s' }}>
@@ -430,7 +430,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
               ))}
             </select>
           </div>
-          {/* 真太阳时结果 */}
+          {/* 真太陽時結果 */}
           <div style={{ textAlign: 'center', padding: '4px 0' }}>
             <span style={{ fontSize: '10px', color: isDark ? 'rgba(170,195,220,0.75)' : 'rgba(140,100,20,0.5)' }}>真太阳时 → </span>
             <span style={{ fontSize: '15px', color: goldText, fontWeight: 600, letterSpacing: '0.08em' }}>
@@ -471,7 +471,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
         )}
       </div>
 
-      {/* ── 性别 ── */}
+      {/* ── 性別 ── */}
       <div style={{ marginBottom: '20px' }}>
         <label style={{ display: 'block', fontSize: '11px', color: labelClr, marginBottom: '6px', letterSpacing: '0.05em' }}>性别</label>
         <div style={{ display: 'flex', gap: '10px' }}>
@@ -505,7 +505,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
         </div>
       </div>
 
-      {/* ── 确认信息 Summary Chip ── */}
+      {/* ── 確認信息 Summary Chip ── */}
       <AnimatePresence>
         {showSummary && (
           <motion.div
@@ -532,7 +532,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
         )}
       </AnimatePresence>
 
-      {/* ── 提交按钮 ── */}
+      {/* ── 提交按鈕 ── */}
       {!hideSubmit && <motion.button
         type="submit"
         disabled={loading}

@@ -1,11 +1,11 @@
 /**
- * OpenAI 相容的串流对话（预设接 Azure OpenAI v1 端点，仅服务端）
+ * OpenAI 相容的串流對話（預設接 Azure OpenAI v1 端點，僅服務端）
  *
- * 环境变数：
+ * 環境變數：
  *   AI_BASE_URL   例：https://<资源名>.openai.azure.com/openai/v1
- *   AI_API_KEY    金钥（Azure 用 api-key 标头）
- *   AI_MODEL      部署名称
- * 三者缺一就视为未设定，API 回 503，前端显示「AI 尚未设定」。
+ *   AI_API_KEY    金鑰（Azure 用 api-key 標頭）
+ *   AI_MODEL      部署名稱
+ * 三者缺一就視為未設定，API 回 503，前端顯示「AI 尚未設定」。
  */
 
 export interface ChatMessage {
@@ -31,7 +31,7 @@ export function getAiConfig(env: NodeJS.ProcessEnv = process.env): AiConfig | nu
   return baseUrl && apiKey && model ? { baseUrl, apiKey, model } : null;
 }
 
-/** 逐段取出模型输出的文字；上游错误在第一个 chunk 前就抛出 */
+/** 逐段取出模型輸出的文字；上游錯誤在第一個 chunk 前就拋出 */
 export async function* streamChat(
   messages: ChatMessage[],
   opts: { maxTokens: number; signal?: AbortSignal; config?: AiConfig | null; fetchImpl?: typeof fetch },
@@ -50,7 +50,7 @@ export async function* streamChat(
     throw new AiUpstreamError(`upstream ${res.status}: ${detail}`, res.status);
   }
 
-  // SSE 一行可能被拆在两个 chunk 之间，要把不完整的尾巴留到下一次
+  // SSE 一行可能被拆在兩個 chunk 之間，要把不完整的尾巴留到下一次
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   let buffer = '';

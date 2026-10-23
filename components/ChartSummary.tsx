@@ -38,7 +38,7 @@ export default function ChartSummary({ chart }: ChartSummaryProps) {
       transition={{ delay: 0.3, duration: 0.5 }}
       className="space-y-4"
     >
-      {/* ── 命格总览 ── */}
+      {/* ── 命格總覽 ── */}
       <motion.div
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
@@ -148,7 +148,7 @@ export default function ChartSummary({ chart }: ChartSummaryProps) {
         </motion.div>
       )}
 
-      {/* ── 格局识别 ── */}
+      {/* ── 格局識別 ── */}
       {patterns.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 18 }}
@@ -226,7 +226,7 @@ export default function ChartSummary({ chart }: ChartSummaryProps) {
         </motion.div>
       )}
 
-      {/* ── 大限运程 ── */}
+      {/* ── 大限運程 ── */}
       <motion.div
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}

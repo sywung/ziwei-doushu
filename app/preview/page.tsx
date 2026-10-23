@@ -6,16 +6,16 @@ import ScrollIntro from '@/components/ScrollIntro';
 
 export default function PreviewPage() {
   const router = useRouter();
-  // replayKey 用于强制重置 ScrollIntro（用户点"再播放一次"时）
+  // replayKey 用於強制重置 ScrollIntro（用戶點"再播放一次"時）
   const [replayKey, setReplayKey] = useState(0);
   const [done, setDone] = useState(false);
 
   return (
     <>
-      {/* 卷轴开场动画 */}
+      {/* 卷軸開場動畫 */}
       <ScrollIntro key={replayKey} onComplete={() => setDone(true)} />
 
-      {/* 动画结束后的「样片说明 + 操作按钮」面板 */}
+      {/* 動畫結束後的「樣片說明 + 操作按鈕」面板 */}
       {done && (
         <main style={{
           minHeight: '100vh',
@@ -96,7 +96,7 @@ export default function PreviewPage() {
             <Link href="/heming" style={{ color: 'inherit', textDecoration: 'none' }}>合盘</Link>
           </div>
 
-          {/* 时间轴说明 */}
+          {/* 時間軸說明 */}
           <div style={{
             marginTop: '64px',
             padding: '24px 32px',

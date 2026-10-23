@@ -1,9 +1,9 @@
 'use client';
 
 /**
- * 古籍库搜索框 — client component
+ * 古籍庫搜索框 — client component
  *
- * 输入 → 实时搜索 → 跳转 /library/search?q=xxx
+ * 輸入 → 實時搜索 → 跳轉 /library/search?q=xxx
  */
 
 import { useState, useTransition } from 'react';

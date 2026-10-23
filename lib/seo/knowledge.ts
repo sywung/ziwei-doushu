@@ -1,8 +1,8 @@
 /**
- * SEO 知识页 — 数据 helper
+ * SEO 知識頁 — 數據 helper
  *
- * 14 主星 × 13 topic = 182 个独立 SEO URL
- * 每页都是 STAR_DB 中对应字段的 4 段 markers（一句话定调/核心论断/命盘依据/经典出处）
+ * 14 主星 × 13 topic = 182 個獨立 SEO URL
+ * 每頁都是 STAR_DB 中對應字段的 4 段 markers（一句話定調/核心論斷/命盤依據/經典出處）
  */
 
 import { STAR_DB } from '@/lib/ziwei/db-analysis';
@@ -14,7 +14,7 @@ export const ALL_STARS = [
   '太阴', '贪狼', '巨门', '天相', '天梁', '七杀', '破军',
 ];
 
-// 主星名 ↔ 拼音 slug 映射（URL 用 slug，避免中文 URL 在 Vercel/CDN 上的边界问题）
+// 主星名 ↔ 拼音 slug 映射（URL 用 slug，避免中文 URL 在 Vercel/CDN 上的邊界問題）
 export const STAR_TO_SLUG: Record<string, string> = {
   '紫微': 'ziwei',
   '天机': 'tianji',
@@ -131,7 +131,7 @@ export function getKnowledge(star: string, topic: TopicKey): KnowledgeData {
   };
 }
 
-/** 生成所有 14×13 组合（用于 generateStaticParams） */
+/** 生成所有 14×13 組合（用於 generateStaticParams） */
 export function getAllKnowledgeRoutes() {
   const routes: { star: string; slug: string; topic: TopicKey }[] = [];
   for (const star of ALL_STARS) {
@@ -143,7 +143,7 @@ export function getAllKnowledgeRoutes() {
   return routes;
 }
 
-/** 主星属性简介（用于 SEO 页"了解 XX 星"section） */
+/** 主星屬性簡介（用於 SEO 頁"瞭解 XX 星"section） */
 export const STAR_BRIEF_SEO: Record<string, string> = {
   '紫微': '紫微为帝星，主尊贵，化气为尊。落命主有领导气场、宜大平台高位。',
   '天机': '天机为智慧星，主善变机灵，化气为善。落命主聪明机变、宜辅佐策划。',

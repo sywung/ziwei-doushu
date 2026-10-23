@@ -1,12 +1,12 @@
 /**
- * 表单输入 → 排盘用公历日期与时辰
+ * 表單輸入 → 排盤用公曆日期與時辰
  *
- * 1. 农历输入先换成公历（闰月要该年真有此闰月，日数不超过该月天数）
- * 2. 当地钟表比 UTC+8 快（台湾夏令时、日治时期 UTC+9）时先减回标准时间
- * 3. 有出生地才做真太阳时（经度修正 + 均时差）；没有就照钟表时间
- * 4. 真太阳时跨日、晚子时（23:00 后）是否算次日，统一交给 resolveZiweiDayOffset 按流派决定
+ * 1. 農曆輸入先換成公曆（閏月要該年真有此閏月，日數不超過該月天數）
+ * 2. 當地鐘錶比 UTC+8 快（台灣夏令時、日治時期 UTC+9）時先減回標準時間
+ * 3. 有出生地才做真太陽時（經度修正 + 均時差）；沒有就照鐘錶時間
+ * 4. 真太陽時跨日、晚子時（23:00 後）是否算次日，統一交給 resolveZiweiDayOffset 按流派決定
  *
- * 命盘页与合盘页共用这一份，避免两边同一个出生时间排出不同的盘。
+ * 命盤頁與合盤頁共用這一份，避免兩邊同一個出生時間排出不同的盤。
  */
 import { Lunar, LunarMonth } from 'lunar-javascript';
 import {
@@ -23,18 +23,18 @@ export const LUNAR_DAY_NAMES = [
   '廿一', '廿二', '廿三', '廿四', '廿五', '廿六', '廿七', '廿八', '廿九', '三十',
 ];
 
-/** 该农历年的闰月（1–12），没有闰月回 0 */
+/** 該農曆年的閏月（1–12），沒有閏月回 0 */
 export function lunarLeapMonth(year: number): number {
   for (let m = 1; m <= 12; m++) if (LunarMonth.fromYm(year, -m)) return m;
   return 0;
 }
 
-/** 农历某月天数（29/30）；查无此月（如该年没有这个闰月）回 null */
+/** 農曆某月天數（29/30）；查無此月（如該年沒有這個閏月）回 null */
 export function lunarMonthDays(year: number, month: number, isLeap: boolean): number | null {
   return LunarMonth.fromYm(year, isLeap ? -month : month)?.getDayCount() ?? null;
 }
 
-/** 农历 → 公历；日期不存在回 null */
+/** 農曆 → 公曆；日期不存在回 null */
 export function lunarToSolar(year: number, month: number, day: number, isLeap: boolean): GregorianDate | null {
   const days = lunarMonthDays(year, month, isLeap);
   if (days === null || day < 1 || day > days) return null;
@@ -51,26 +51,26 @@ export interface BirthMomentInput {
   unknownTime: boolean;
   clockHour: number;
   clockMinute: number;
-  /** 没选出生地时不传，不做真太阳时校正 */
+  /** 沒選出生地時不傳，不做真太陽時校正 */
   longitude?: number;
-  /** 该出生日当地钟表比 UTC+8 快几分钟（如台湾夏令时回 60）；不传 = 0 */
+  /** 該出生日當地鐘錶比 UTC+8 快幾分鐘（如台灣夏令時回 60）；不傳 = 0 */
   clockAheadMinutes?: (date: GregorianDate) => number;
 }
 
 export interface BirthMoment {
-  /** 输入换算出的公历出生日（农历输入时即对应公历日） */
+  /** 輸入換算出的公曆出生日（農曆輸入時即對應公曆日） */
   inputDate: GregorianDate;
-  /** 排盘日：真太阳时跨日、晚子时换日之后 */
+  /** 排盤日：真太陽時跨日、晚子時換日之後 */
   chartDate: GregorianDate;
-  /** 时辰支 0–11 */
+  /** 時辰支 0–11 */
   branch: number;
-  /** 真太阳时细节；时辰不详时为 null */
+  /** 真太陽時細節；時辰不詳時為 null */
   solar: TrueSolarTimeResult | null;
-  /** 实际从钟表时间减掉的分钟数（夏令时等） */
+  /** 實際從鐘錶時間減掉的分鐘數（夏令時等） */
   clockAheadMinutes: number;
 }
 
-/** 表单输入 → 排盘日与时辰；日期不存在回 null */
+/** 表單輸入 → 排盤日與時辰；日期不存在回 null */
 export function resolveBirthMoment(input: BirthMomentInput, lateZishi: LateZishiRule = 'next-day'): BirthMoment | null {
   const inputDate = input.calendar === 'lunar'
     ? lunarToSolar(input.year, input.month, input.day, input.isLeapMonth)
@@ -79,10 +79,10 @@ export function resolveBirthMoment(input: BirthMomentInput, lateZishi: LateZishi
       : null;
   if (!inputDate) return null;
 
-  // 时辰不详：以本日子时（早子）起盘，不换日
+  // 時辰不詳：以本日子時（早子）起盤，不換日
   if (input.unknownTime) return { inputDate, chartDate: inputDate, branch: 0, solar: null, clockAheadMinutes: 0 };
 
-  // 减回标准时间可能跨到前一天（如夏令时 00:30 = 标准时间前一日 23:30），由 calculateTrueSolarTime 的 dayOffset 处理
+  // 減回標準時間可能跨到前一天（如夏令時 00:30 = 標準時間前一日 23:30），由 calculateTrueSolarTime 的 dayOffset 處理
   const ahead = input.clockAheadMinutes?.(inputDate) ?? 0;
   const solar = calculateTrueSolarTime({
     ...inputDate, clockHour: input.clockHour, clockMinute: input.clockMinute - ahead, longitude: input.longitude,

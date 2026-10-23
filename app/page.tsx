@@ -6,7 +6,7 @@ import StarField from '@/components/StarField';
 import { useTheme, type Theme } from '@/components/ThemeProvider';
 import { DONATE_URL } from '@/lib/site';
 
-// ─── 滚动入场 wrapper ────────────────────────────────────
+// ─── 滾動入場 wrapper ────────────────────────────────────
 function FadeIn({
   children, delay = 0, y = 28, className = '',
 }: {
@@ -27,15 +27,15 @@ function FadeIn({
 }
 
 function WeakBoundary({ line }: { line: string }) {
-  // 之前的版本有 1px 实线 + 12px 渐变阴影，主题切换时形成清晰横线很硬。
-  // 改为更柔和的 24px 渐变 + 低 opacity，section 衔接更自然。
+  // 之前的版本有 1px 實線 + 12px 漸變陰影，主題切換時形成清晰橫線很硬。
+  // 改為更柔和的 24px 漸變 + 低 opacity，section 銜接更自然。
   return (
     <div className="absolute top-0 left-0 right-0 h-16 pointer-events-none"
       style={{ background: `linear-gradient(to bottom, ${line}, transparent)`, opacity: 0.45 }} />
   );
 }
 
-// ─── 主题切换按钮 ────────────────────────────────────────
+// ─── 主題切換按鈕 ────────────────────────────────────────
 function ThemeToggle() {
   const { theme, toggle } = useTheme();
   const isDark = theme === 'dark';
@@ -79,7 +79,7 @@ function ThemeToggle() {
   );
 }
 
-// ─── 主星数据 ────────────────────────────────────────────
+// ─── 主星數據 ────────────────────────────────────────────
 const STARS = [
   { name: '紫微' }, { name: '天机' }, { name: '太阳' }, { name: '武曲' },
   { name: '天同' }, { name: '廉贞' }, { name: '天府' }, { name: '太阴' },
@@ -87,7 +87,7 @@ const STARS = [
   { name: '七杀' }, { name: '破军' },
 ];
 
-// ─── 功能模块 ────────────────────────────────────────────
+// ─── 功能模塊 ────────────────────────────────────────────
 const FEATURES = [
   {
     tag: '排盘体系',
@@ -134,7 +134,7 @@ const FEATURES = [
   },
 ];
 
-// ─── 倪海厦核心教义 ──────────────────────────────────────
+// ─── 倪海廈核心教義 ──────────────────────────────────────
 const NI_TEACHINGS = [
   {
     title: '命宫为本，三方为用',
@@ -154,12 +154,12 @@ const NI_TEACHINGS = [
   },
 ];
 
-// ─── 主题色彩 helper ─────────────────────────────────────
+// ─── 主題色彩 helper ─────────────────────────────────────
 function useColors(theme: Theme) {
   const d = theme === 'dark';
   return {
     bgBase:       d ? '#020810'                                : '#f5efe0',
-    // nav 用与 bgBase 完全相同的不透明色，避免半透明叠加产生色差带
+    // nav 用與 bgBase 完全相同的不透明色，避免半透明疊加產生色差帶
     navBg:        d ? '#020810'                                : '#f5efe0',
     navBorder:    d ? 'rgba(255,255,255,0.05)'                : 'rgba(160,120,30,0.15)',
     goldGrad:     d ? 'linear-gradient(160deg,#c8993a 0%,#f0d070 40%,#c8993a 70%,#f0c755 100%)'
@@ -167,12 +167,12 @@ function useColors(theme: Theme) {
     goldSolid:    d ? '#d4a843'                               : '#8b6410',
     goldLine:     d ? 'rgba(212,168,67,0.4)'                  : 'rgba(140,100,20,0.4)',
     tagText:      d ? 'rgba(212,168,67,0.6)'                  : 'rgba(120,80,10,0.65)',
-    // 亮色文字用冷灰系（A 方案核心）：暖底 + 冷字 → 视觉不审美疲劳
+    // 亮色文字用冷灰系（A 方案核心）：暖底 + 冷字 → 視覺不審美疲勞
     textPrimary:  d ? '#e8eef6'                               : '#1a1d24',
     textSecond:   d ? '#b8c6df'                               : '#3a3f4a',
     textMuted:    d ? '#9db0d0'                               : '#5a6275',
     textFaint:    d ? 'rgba(240,246,255,0.56)'                : '#9da4b3',
-    // 冷色 accent（B 方案核心）：呼应暗色 quan 蓝；用于装饰性 glow / 链接 / 高亮
+    // 冷色 accent（B 方案核心）：呼應暗色 quan 藍；用於裝飾性 glow / 鏈接 / 高亮
     accent:       d ? '#3a78d4'                               : '#3a5a82',
     accentSoft:   d ? 'rgba(58,120,212,0.18)'                 : 'rgba(58,90,130,0.10)',
     cardBg:       d ? 'rgba(255,255,255,0.05)'                : 'rgba(255,255,255,0.88)',
@@ -181,7 +181,7 @@ function useColors(theme: Theme) {
     featureBg:    d ? 'rgba(255,255,255,0.04)'                : 'rgba(255,255,255,0.75)',
     featureBord:  d ? 'rgba(255,255,255,0.08)'                : 'rgba(200,160,60,0.2)',
     glowTint:     d ? 'rgba(212,168,67,0.07)'                 : 'rgba(180,140,40,0.06)',
-    // 亮色 glow 真用蓝/紫——给整体氛围加冷色点缀
+    // 亮色 glow 真用藍/紫——給整體氛圍加冷色點綴
     glowBlue:     d ? 'rgba(40,80,160,0.12)'                  : 'rgba(58,90,130,0.06)',
     glowPurple:   d ? 'rgba(120,50,180,0.08)'                 : 'rgba(96,80,140,0.04)',
     niBg:         d ? 'rgba(255,255,255,0.04)'                : 'rgba(255,255,255,0.8)',
@@ -204,7 +204,7 @@ function useColors(theme: Theme) {
   };
 }
 
-// ─── 四化简介数据 ─────────────────────────────────────────
+// ─── 四化簡介數據 ─────────────────────────────────────────
 const SIHUA_BRIEF: Record<string, { attr: string; brief: string }> = {
   '化禄': { attr: '吉化·增益', brief: '福星到宫，主财运与福气增益。所在宫位事物顺遂，能力增强，是命盘中最受欢迎的化星。' },
   '化权': { attr: '吉化·权威', brief: '权力星到宫，主掌控与领导力。所在宫位主强势与决断，喜入官禄宫与命宫，主事业上的实权。' },
@@ -212,7 +212,7 @@ const SIHUA_BRIEF: Record<string, { attr: string; brief: string }> = {
   '化忌': { attr: '凶化·阻碍', brief: '劫数星到宫，主执念与阻碍。所在宫位需特别关注，该宫人生课题将成为重要考验。' },
 };
 
-// ─── 主星简介数据 ─────────────────────────────────────────
+// ─── 主星簡介數據 ─────────────────────────────────────────
 const STAR_BRIEF: Record<string, { attr: string; brief: string }> = {
   '紫微': { attr: '土·帝王星', brief: '天皇贵星，统御众星。坐命者有孤傲之气，主权威显达，天生具备领导气质，适合独当一面的领导岗位。' },
   '天机': { attr: '木·智慧星', brief: '益寿星，主智谋与变动。聪慧机灵，善于筹谋，心思细腻，宜从事策划、顾问、技术类工作。' },
@@ -230,7 +230,7 @@ const STAR_BRIEF: Record<string, { attr: string; brief: string }> = {
   '破军': { attr: '水·耗星', brief: '耗星，主变动与开拓。勇于突破，不惧改变，一生变动大但有魄力，适合开拓型工作，走别人没走过的路。' },
 };
 
-// ─── 功能视觉装饰 ────────────────────────────────────────
+// ─── 功能視覺裝飾 ────────────────────────────────────────
 function FeatureVisual({ index, colors: c }: { index: number; colors: ReturnType<typeof useColors> }) {
   if (index === 0) {
     return (
@@ -396,7 +396,7 @@ function FeatureVisual({ index, colors: c }: { index: number; colors: ReturnType
   return null;
 }
 
-// ─── 主页 ─────────────────────────────────────────────────
+// ─── 主頁 ─────────────────────────────────────────────────
 export default function HomePage() {
   const router = useRouter();
   const { theme } = useTheme();
@@ -407,8 +407,8 @@ export default function HomePage() {
   const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '28%']);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.55], [1, 0]);
 
-  // 把 body / html 背景同步到 home 主题色，消除半透明 nav 透出 #fafaf9 的色差
-  // useLayoutEffect 保证在浏览器绘制前同步更新，避免与根 div 的 transition 不同步
+  // 把 body / html 背景同步到 home 主題色，消除半透明 nav 透出 #fafaf9 的色差
+  // useLayoutEffect 保證在瀏覽器繪製前同步更新，避免與根 div 的 transition 不同步
   useLayoutEffect(() => {
     document.documentElement.style.background = c.bgBase;
     document.body.style.background = c.bgBase;
@@ -422,7 +422,7 @@ export default function HomePage() {
     <div style={{ background: c.bgBase, transition: 'background 0.35s ease' }} className="overflow-x-hidden">
       <StarField />
 
-      {/* 全局光晕 */}
+      {/* 全局光暈 */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] rounded-full"
           style={{ background: `radial-gradient(ellipse, ${c.glowTint} 0%, transparent 70%)` }} />
@@ -432,7 +432,7 @@ export default function HomePage() {
           style={{ background: `radial-gradient(ellipse, ${c.glowPurple} 0%, transparent 70%)` }} />
       </div>
 
-      {/* ── 顶部导航 ── nav 与 hero 同色（c.bgBase），无 blur 无 border，彻底无色差带 */}
+      {/* ── 頂部導航 ── nav 與 hero 同色（c.bgBase），無 blur 無 border，徹底無色差帶 */}
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-8 py-3 sm:py-4 gap-2"
         style={{
           background: c.navBg,
@@ -463,7 +463,7 @@ export default function HomePage() {
       {/* ══ HERO ══════════════════════════════════════════ */}
       <section ref={heroRef} className="relative min-h-[82svh] lg:min-h-[92vh] flex flex-col items-center justify-center px-6 z-10 pb-24 pt-10">
         <motion.div style={{ y: heroY, opacity: heroOpacity, maxWidth: '960px' }} className="text-center w-full mx-auto mt-10">
-          {/* 标签行 */}
+          {/* 標籤行 */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             className="flex items-center justify-center gap-3 mb-8">
@@ -474,7 +474,7 @@ export default function HomePage() {
             <div className="h-px w-12" style={{ background: `linear-gradient(to left, transparent, ${c.goldLine})` }} />
           </motion.div>
 
-          {/* 主标题 */}
+          {/* 主標題 */}
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
             style={{ position: 'relative', display: 'inline-block' }}>
@@ -536,7 +536,7 @@ export default function HomePage() {
           </motion.div>
         </motion.div>
 
-        {/* 滚动提示（绝对定位，不影响 hero opacity 计算） */}
+        {/* 滾動提示（絕對定位，不影響 hero opacity 計算） */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           transition={{ delay: 2, duration: 1 }}
           className="absolute bottom-6 left-0 right-0 flex flex-col items-center gap-2 pointer-events-none">
@@ -546,7 +546,7 @@ export default function HomePage() {
         </motion.div>
       </section>
 
-      {/* ══ 哲学引言 ══════════════════════════════════════ */}
+      {/* ══ 哲學引言 ══════════════════════════════════════ */}
       <section className="relative z-10 overflow-hidden min-h-[82svh] lg:min-h-[92vh] flex items-center" style={{ padding: '72px 24px' }}>
         <WeakBoundary line={c.navBorder} />
         <div className="absolute inset-0"
@@ -589,7 +589,7 @@ export default function HomePage() {
         </FadeIn>
       </section>
 
-      {/* ══ 功能详解 ══════════════════════════════════════ */}
+      {/* ══ 功能詳解 ══════════════════════════════════════ */}
       <section className="relative z-10">
         {FEATURES.map((feature, i) => (
           <div key={i}
@@ -597,7 +597,7 @@ export default function HomePage() {
             style={{ background: i % 2 === 1 ? c.altSection : 'transparent' }}>
             <div className="mx-auto w-full" style={{ maxWidth: '1280px' }}>
               <div className={`grid grid-cols-1 ${i % 2 === 0 ? 'lg:grid-cols-[0.45fr_0.55fr]' : 'lg:grid-cols-[0.55fr_0.45fr]'} gap-10 lg:gap-16 items-start ${i % 2 === 1 ? 'lg:grid-flow-dense' : ''}`}>
-                {/* 文字区 */}
+                {/* 文字區 */}
                 <div className={i % 2 === 1 ? 'lg:col-start-2' : ''}>
                   <FadeIn delay={0}>
                     <div className="flex items-center gap-3 mb-6">
@@ -628,7 +628,7 @@ export default function HomePage() {
                     ))}
                   </div>
                 </div>
-                {/* 视觉装饰区 */}
+                {/* 視覺裝飾區 */}
                 <div className={i % 2 === 1 ? 'lg:col-start-1 lg:row-start-1' : ''}>
                   <FadeIn delay={0.15}>
                     <div className="relative rounded-2xl overflow-hidden p-8 md:p-12"
@@ -648,7 +648,7 @@ export default function HomePage() {
         ))}
       </section>
 
-      {/* ══ 天·地·人 三分理论 ════════════════════════════ */}
+      {/* ══ 天·地·人 三分理論 ════════════════════════════ */}
       <section className="relative z-10 flex items-center px-6 md:px-10 lg:px-14 py-20"
         style={{ background: c.altSection, minHeight: '82svh' }}>
         <WeakBoundary line={c.navBorder} />
@@ -708,7 +708,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ══ 倪海厦介绍 ════════════════════════════════════ */}
+      {/* ══ 倪海廈介紹 ════════════════════════════════════ */}
       <section className="relative z-10 flex items-center px-6 md:px-10 lg:px-14 py-20" style={{ minHeight: '82svh' }}>
         <WeakBoundary line={c.navBorder} />
         <div className="mx-auto w-full" style={{ maxWidth: '1280px' }}>
@@ -808,7 +808,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ══ 合盘入口 ══════════════════════════════════════ */}
+      {/* ══ 合盤入口 ══════════════════════════════════════ */}
       <section className="relative z-10 px-6 md:px-10 lg:px-14 py-20">
         <div className="mx-auto" style={{ maxWidth: '1280px' }}>
           <div className="rounded-2xl p-10 md:p-14 text-center"
@@ -860,7 +860,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ══ 最终 CTA ══════════════════════════════════════ */}
+      {/* ══ 最終 CTA ══════════════════════════════════════ */}
       <section className="relative z-10 py-40 px-6 text-center" style={{ background: c.altSection }}>
         <FadeIn>
           <p className="text-[10px] tracking-[0.6em] uppercase mb-6" style={{ color: c.tagText }}>开始你的命盘之旅</p>

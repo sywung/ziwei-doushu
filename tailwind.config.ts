@@ -9,7 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // 2.0 设计系统色
+        // 2.0 設計系統色
         bg: {
           0: "#FAFAF9",
           1: "#F4F3EF",
@@ -27,7 +27,7 @@ const config: Config = {
           DEFAULT: "#B8922A",
           dim: "#7A5F1A",
         },
-        // 四化语义色
+        // 四化語義色
         lu:   "#2D7A4A",
         quan: "#1A56A8",
         ke:   "#8A7018",

@@ -7,8 +7,8 @@ import type { TwinsResult } from '@/lib/twins/store';
 import type { BirthInfo, ZiweiChart } from '@/lib/ziwei/types';
 
 /**
- * 命理学双子：1950–2026 每个出生时刻里，与本盘配置相同的盘
- * 点样本即以同一性别起那张盘，方便对照同配置的人生解读。
+ * 命理學雙子：1950–2026 每個出生時刻裡，與本盤配置相同的盤
+ * 點樣本即以同一性別起那張盤，方便對照同配置的人生解讀。
  */
 interface TwinsPanelProps {
   chart: ZiweiChart;
@@ -23,7 +23,7 @@ type State =
 export default function TwinsPanel({ chart, onOpen }: TwinsPanelProps) {
   const [state, setState] = useState<State>({ status: 'loading' });
   const [tier, setTier] = useState<TwinTier>('full');
-  // 同年同构：同一农历年出生（流年干支相同、运限节奏同步）；跨年：全部年代
+  // 同年同構：同一農曆年出生（流年干支相同、運限節奏同步）；跨年：全部年代
   const [scope, setScope] = useState<'all' | 'sameYear'>('all');
 
   useEffect(() => {

@@ -1,14 +1,14 @@
 /**
- * 回归：台湾「钟表快 1 小时」期间表必须与 IANA tzdata（Asia/Taipei）逐日一致。
- * oracle 是 Node ICU 内建的 tzdata，与被测的手写表互相独立。
+ * 迴歸：台灣「鐘錶快 1 小時」期間表必須與 IANA tzdata（Asia/Taipei）逐日一致。
+ * oracle 是 Node ICU 內建的 tzdata，與被測的手寫表互相獨立。
  */
 import assert from 'node:assert/strict';
 import { taiwanClockAhead, taiwanClockAheadMinutes } from '../../lib/ziwei/dst-tw';
 
 const fmt = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Taipei', timeZoneName: 'longOffset' });
-/** 当地钟表 hour 点时，Asia/Taipei 相对 UTC 的分钟数 */
+/** 當地鐘錶 hour 點時，Asia/Taipei 相對 UTC 的分鐘數 */
 function ianaOffsetAt(y: number, m: number, d: number, hour: number): number {
-  // 先假设 +8 换成 UTC 瞬间；期间切换都在当地午夜，所以白天取样不会落在模糊时段
+  // 先假設 +8 換成 UTC 瞬間；期間切換都在當地午夜，所以白天取樣不會落在模糊時段
   const name = fmt.formatToParts(new Date(Date.UTC(y, m - 1, d, hour - 8))).find(p => p.type === 'timeZoneName')!.value;
   const [, sign, hh, mm] = /GMT([+-])(\d{2}):(\d{2})/.exec(name)!;
   return (sign === '+' ? 1 : -1) * (Number(hh) * 60 + Number(mm));

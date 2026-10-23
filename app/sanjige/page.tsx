@@ -1,5 +1,5 @@
 /**
- * 三纪 · 字幕导播：倪师判语逐句对照 B 站原视频
+ * 三紀 · 字幕導播：倪師判語逐句對照 B 站原視頻
  */
 import Link from 'next/link';
 import SanjiBrowser from './SanjiBrowser';

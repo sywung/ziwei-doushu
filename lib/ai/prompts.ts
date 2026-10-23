@@ -1,5 +1,5 @@
 /**
- * AI 解读的提示词与对话验证（仅服务端）
+ * AI 解讀的提示詞與對話驗證（僅服務端）
  */
 import type { ChatMessage } from './llm';
 
@@ -55,7 +55,7 @@ export const HEMING_DEFAULT_QUESTION = `请做两人合盘分析，按以下结�
 **【相处建议】**
 具体可行的相处建议。`;
 
-/** 验证前端送来的对话：只收 user / assistant、字串内容、数量与长度有上限；最后一则必须是 user */
+/** 驗證前端送來的對話：只收 user / assistant、字串內容、數量與長度有上限；最後一則必須是 user */
 export function sanitizeMessages(input: unknown): ChatMessage[] | null {
   if (!Array.isArray(input) || input.length === 0 || input.length > MAX_MESSAGES) return null;
   let total = 0;

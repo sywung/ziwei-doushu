@@ -1,6 +1,6 @@
 /**
- * /knowledge — 知识库主页
- * 列出 14 主星简介与古籍检索；开源版 STAR_DB 为空，13 宫论断页不会生成（getKnowledge 皆不存在）
+ * /knowledge — 知識庫主頁
+ * 列出 14 主星簡介與古籍檢索；開源版 STAR_DB 為空，13 宮論斷頁不會生成（getKnowledge 皆不存在）
  */
 
 import Link from 'next/link';
@@ -18,7 +18,7 @@ export default function KnowledgeHomePage() {
 
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
-      {/* 顶栏 */}
+      {/* 頂欄 */}
       <div className="px-6 py-4 flex items-center justify-between"
         style={{ borderBottom: '1px solid rgba(184,146,42,0.15)', background: 'var(--bg-page)' }}>
         <Link href="/" style={{ fontSize: '12px', color: 'var(--ac)', letterSpacing: '0.3em', textDecoration: 'none' }}>
@@ -76,7 +76,7 @@ export default function KnowledgeHomePage() {
           ))}
         </div>
 
-        {/* 详细列表（每个主星 + 简介 + 进入按钮） */}
+        {/* 詳細列表（每個主星 + 簡介 + 進入按鈕） */}
         <div className="mt-14 space-y-4">
           {ALL_STARS.map(star => (
             <div key={star} id={STAR_TO_SLUG[star]} style={{

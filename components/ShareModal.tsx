@@ -75,7 +75,7 @@ export default function ShareModal({ open, onClose, shareUrl, chart, birth, high
               boxShadow: '0 24px 60px rgba(0,0,0,0.3)',
             }}
           >
-            {/* 顶部标题 */}
+            {/* 頂部標題 */}
             <div style={{
               padding: '14px 18px',
               borderBottom: '1px solid rgba(184,146,42,0.15)',
@@ -93,7 +93,7 @@ export default function ShareModal({ open, onClose, shareUrl, chart, birth, high
               >×</button>
             </div>
 
-            {/* 卡片图预览（实际渲染） */}
+            {/* 卡片圖預覽（實際渲染） */}
             <div style={{ padding: '20px', background: '#fbf6e8', display: 'flex', justifyContent: 'center', overflowX: 'auto' }}>
               {chart && (
                 <ShareCardCanvas chart={chart} birth={birth} highlight={highlight} />
@@ -104,7 +104,7 @@ export default function ShareModal({ open, onClose, shareUrl, chart, birth, high
               ↑ 朋友圈 / 微信 / 抖音 / 小红书 都能用
             </div>
 
-            {/* 操作区 */}
+            {/* 操作區 */}
             <div style={{ padding: '0 20px 20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <button onClick={downloadImage} disabled={downloading}
                 style={{

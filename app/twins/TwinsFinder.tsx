@@ -22,7 +22,7 @@ function majorStars(p: Palace | undefined): string {
   return names.length ? names.join('、') : '无主星';
 }
 
-/** 命盘指纹：决定这张本命盘的几个要素 */
+/** 命盤指紋：決定這張本命盤的幾個要素 */
 function Fingerprint({ chart }: { chart: ZiweiChart }) {
   const { birthInfo: b } = chart;
   const ming = chart.palaces.find(p => p.branch === chart.mingGongBranch);
@@ -64,7 +64,7 @@ function Fingerprint({ chart }: { chart: ZiweiChart }) {
   );
 }
 
-/** 各省代表城市（列表第一个）＋使用者所选城市，在钟表几点出生会排成同一张盘 */
+/** 各省代表城市（列表第一個）＋使用者所選城市，在鐘錶幾點出生會排成同一張盤 */
 function ClockTable({ chart, lateZishi, highlight }: { chart: ZiweiChart; lateZishi: LateZishiRule; highlight?: string }) {
   const rows = useMemo(() => {
     const date = { year: chart.birthInfo.year, month: chart.birthInfo.month, day: chart.birthInfo.day };
@@ -72,7 +72,7 @@ function ClockTable({ chart, lateZishi, highlight }: { chart: ZiweiChart; lateZi
     const chosen = PROVINCES.flatMap(p => p.cities.map(c => ({ province: p.name, ...c }))).find(c => c.name === highlight);
     if (chosen && !cities.some(c => c.name === chosen.name)) cities.unshift(chosen);
     return cities.map(c => {
-      // 台湾以当时当地钟表表示（夏令时、日治时期快 1 小时）
+      // 台灣以當時當地鐘錶表示（夏令時、日治時期快 1 小時）
       const ahead = c.province === TAIWAN_PROVINCE ? taiwanClockAheadMinutes : undefined;
       return {
         ...c,
@@ -115,7 +115,7 @@ export default function TwinsFinder() {
   const [city, setCity] = useState<string | undefined>();
   const [lateZishi, setLateZishi] = useState<LateZishiRule>(SCHOOL_DEFAULT_CONFIG.lateZishi);
 
-  // 晚子时口径沿用命盘页的流派设定；双子索引按默认流派建，其余流派不影响这里
+  // 晚子時口徑沿用命盤頁的流派設定；雙子索引按默認流派建，其餘流派不影響這裡
   useEffect(() => {
     setLateZishi(sanitizeSchoolConfig(loadSchoolConfig()).lateZishi ?? SCHOOL_DEFAULT_CONFIG.lateZishi);
   }, []);

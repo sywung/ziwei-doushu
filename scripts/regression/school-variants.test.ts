@@ -7,14 +7,14 @@ import { chartFromUntrusted } from '../../lib/ai/chart-context';
 import { SCHOOL_DEFAULT_CONFIG, sanitizeSchoolConfig, type GengYearSihua } from '../../lib/ziwei/school-config';
 import type { BirthInfo, ZiweiChart } from '../../lib/ziwei/types';
 
-// 期望值一律按口诀手写，不引用引擎用的表，避免「表错测试也跟着错」
+// 期望值一律按口訣手寫，不引用引擎用的表，避免「表錯測試也跟著錯」
 
 const branchOf = (chart: ZiweiChart, star: string) =>
   chart.palaces.filter(p => p.stars.some(s => s.name === star)).map(p => BRANCHES[p.branch]);
 const siHuaOf = (chart: ZiweiChart) =>
   Object.fromEntries(chart.palaces.flatMap(p => p.stars.filter(s => s.siHua).map(s => [s.name, s.siHua])));
 
-// 跨 10 个年干、12 个月的样本（避开闰月，月份口径才单纯）
+// 跨 10 個年干、12 個月的樣本（避開閏月，月份口徑才單純）
 const samples: BirthInfo[] = [];
 for (let y = 1980; y < 1990; y++) {
   for (let m = 1; m <= 12; m++) {
@@ -25,7 +25,7 @@ for (let y = 1980; y < 1990; y++) {
 }
 const stemOf = (b: BirthInfo) => generateChart(b).lunarInfo.yearStem;
 
-// ── 默认配置 = 不传配置；亮度表不会漏到下一张盘 ──
+// ── 默認配置 = 不傳配置；亮度表不會漏到下一張盤 ──
 for (const b of samples.slice(0, 20)) {
   const plain = generateChart(b);
   assert.deepEqual(generateChart(b, { school: SCHOOL_DEFAULT_CONFIG }), plain, 'explicit default');
@@ -34,7 +34,7 @@ for (const b of samples.slice(0, 20)) {
   assert.deepEqual(plain.school, SCHOOL_DEFAULT_CONFIG);
 }
 
-// ── 亮度表：换派至少改到一些星的亮度，落宫不变 ──
+// ── 亮度表：換派至少改到一些星的亮度，落宮不變 ──
 let brightDiff = 0;
 for (const b of samples) {
   const a = generateChart(b);
@@ -46,9 +46,9 @@ for (const b of samples) {
 }
 assert.ok(brightDiff > 0, 'ZZ brightness identical to default');
 
-// ── 魁钺：网络流传「甲戊庚牛羊、乙己鼠猴乡、丙丁猪鸡位、六辛逢马虎、壬癸兔蛇藏」──
+// ── 魁鉞：網絡流傳「甲戊庚牛羊、乙己鼠猴鄉、丙丁豬雞位、六辛逢馬虎、壬癸兔蛇藏」──
 const NETWORK_KY = ['丑未', '子申', '亥酉', '亥酉', '丑未', '子申', '丑未', '午寅', '卯巳', '卯巳'];
-// 全书理解 2：与默认派只差庚辛（午寅）、壬癸（巳卯）
+// 全書理解 2：與默認派只差庚辛（午寅）、壬癸（巳卯）
 const QS2_KY = ['丑未', '子申', '亥酉', '亥酉', '丑未', '子申', '午寅', '午寅', '巳卯', '巳卯'];
 for (const b of samples) {
   const stem = stemOf(b);
@@ -58,7 +58,7 @@ for (const b of samples) {
   assert.equal(branchOf(qs2, '天魁')[0] + branchOf(qs2, '天钺')[0], QS2_KY[stem], `qs2 ky stem ${stem}`);
 }
 
-// ── 截空：单星派、占验派只安一颗截空 ──
+// ── 截空：單星派、占驗派只安一顆截空 ──
 const SINGLE_JK = ['申', '午', '辰', '寅', '子', '酉', '未', '巳', '卯', '丑'];
 const ZHANYAN_JK = ['申', '午', '辰', '寅', '戌', '酉', '未', '巳', '卯', '亥'];
 for (const b of samples) {
@@ -71,7 +71,7 @@ for (const b of samples) {
   assert.equal(branchOf(generateChart(b), '副截').length, 1, 'default keeps 副截');
 }
 
-// ── 天马依月支：生月三合局的驿马 ──
+// ── 天馬依月支：生月三合局的驛馬 ──
 const YIMA: Record<string, string> = {
   寅: '申', 午: '申', 戌: '申', 申: '寅', 子: '寅', 辰: '寅',
   巳: '亥', 酉: '亥', 丑: '亥', 亥: '巳', 卯: '巳', 未: '巳',
@@ -86,7 +86,7 @@ for (const b of samples) {
 }
 assert.ok(tianmaMoved > 0, 'month tianma never differs from year tianma');
 
-// ── 庚年四化：只影响庚年生人；运限层遇庚干也跟着换 ──
+// ── 庚年四化：只影響庚年生人；運限層遇庚幹也跟著換 ──
 const GENG: Record<GengYearSihua, Record<string, string>> = {
   GYWYT: { 太阳: '禄', 武曲: '权', 太阴: '科', 天同: '忌' },
   GYWTY: { 太阳: '禄', 武曲: '权', 天同: '科', 太阴: '忌' },
@@ -106,20 +106,20 @@ for (const [school, expected] of Object.entries(GENG) as [GengYearSihua, Record<
   assert.deepEqual(flows.layers.liunian.siHua, Object.fromEntries(Object.entries(expected)), `geng liunian ${school}`);
 }
 
-// ── 闰月口径可经 school.leapMonth 传入，与旧参数 leapMonth 一致 ──
-const leapBirth: BirthInfo = { year: 2020, month: 6, day: 10, hour: 5, gender: 'female' }; // 闰四月十九
+// ── 閏月口徑可經 school.leapMonth 傳入，與舊參數 leapMonth 一致 ──
+const leapBirth: BirthInfo = { year: 2020, month: 6, day: 10, hour: 5, gender: 'female' }; // 閏四月十九
 assert.ok(Solar.fromYmd(2020, 6, 10).getLunar().getMonth() < 0, 'sample must be in a leap month');
 for (const lm of ['split', 'next-month', 'prev-month', 'origin-month'] as const) {
   assert.deepEqual(generateChart(leapBirth, { school: { leapMonth: lm } }), generateChart(leapBirth, { leapMonth: lm }), `leap ${lm}`);
 }
 
-// ── 不可信输入：只收七项可切换流派的合法值（天空等未实作的项目丢掉）──
+// ── 不可信輸入：只收七項可切換流派的合法值（天空等未實作的項目丟掉）──
 assert.deepEqual(sanitizeSchoolConfig({
   brightnessSchool: 'ZZ', kuiyueSchool: 'bogus', lateZishi: 'current-day', tiankongSchool: 'shun-jia-shi', __proto__: { x: 1 },
 }), { brightnessSchool: 'ZZ', lateZishi: 'current-day' });
 assert.deepEqual(sanitizeSchoolConfig('ZZ'), {});
 assert.deepEqual(sanitizeSchoolConfig(null), {});
-// AI 端按前端送来的流派重排（偷塞非法值则被忽略）
+// AI 端按前端送來的流派重排（偷塞非法值則被忽略）
 const viaApi = chartFromUntrusted({ birthInfo: gengBirth, school: { gengYearSihua: 'GYWFX', jiekongSchool: 'nope' } });
 assert.deepEqual(siHuaOf(viaApi!), GENG.GYWFX, 'api honours school');
 assert.equal(viaApi!.school!.jiekongSchool, 'double', 'api drops invalid value');

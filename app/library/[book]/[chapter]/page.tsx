@@ -1,5 +1,5 @@
 /**
- * /library/[book]/[chapter] — 单章节阅读页
+ * /library/[book]/[chapter] — 單章節閱讀頁
  */
 
 import Link from 'next/link';
@@ -47,7 +47,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ book: 
       </div>
 
       <article className="max-w-3xl mx-auto px-6 py-12">
-        {/* 标题 */}
+        {/* 標題 */}
         <div className="text-center mb-10">
           <div style={{ fontSize: '11px', color: 'var(--tx-3)', letterSpacing: '0.25em', marginBottom: '8px' }}>
             《{book.title}》· {book.dynasty}
@@ -134,7 +134,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ book: 
           ))}
         </div>
 
-        {/* 章节导航 */}
+        {/* 章節導航 */}
         <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
           {prevIdx >= 0 ? (
             <Link

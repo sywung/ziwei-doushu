@@ -1,7 +1,7 @@
 /**
- * 把命盘与解读整理成给模型看的文字（仅服务端）
+ * 把命盤與解讀整理成給模型看的文字（僅服務端）
  *
- * 模型只能依据这里列出的星曜与断语回答；命盘一律由服务端按出生资料重排，不信任前端传来的 chart 物件。
+ * 模型只能依據這裡列出的星曜與斷語回答；命盤一律由服務端按出生資料重排，不信任前端傳來的 chart 物件。
  */
 import { readingKey, isReadingYearCovered, READING_TOPICS, type Reading } from '../reading/key';
 import { createReadingStore } from '../reading/store';
@@ -12,7 +12,7 @@ import { TOPIC_LABEL } from '../ziwei/db-analysis';
 import { FLOW_LAYER_LABEL, flowPalaceShortName, getFlowLayers, type FlowTarget } from '../ziwei/flow-layers';
 import type { BirthInfo, Palace, Star, ZiweiChart } from '../ziwei/types';
 
-/** 每个维度只带开头这么多字进 prompt，13 维合计约 1.2 万字 */
+/** 每個維度只帶開頭這麼多字進 prompt，13 維合計約 1.2 萬字 */
 export const READING_EXCERPT_CHARS = 900;
 
 const readingStore = createReadingStore({
@@ -20,14 +20,14 @@ const readingStore = createReadingStore({
   indexDir: process.env.READING_INDEX_DIR ?? '/data/v4/index',
 });
 
-/** 从前端传来的（不可信）物件取出出生资料并重排命盘；格式不对回 null */
+/** 從前端傳來的（不可信）物件取出出生資料並重排命盤；格式不對回 null */
 export function chartFromUntrusted(input: unknown): ZiweiChart | null {
   const b = (input as { birthInfo?: Partial<BirthInfo> } | null)?.birthInfo;
   if (!b) return null;
   try {
     const info = { year: b.year!, month: b.month!, day: b.day!, hour: b.hour!, gender: b.gender! };
-    readingKey(info); // 验证日期、时辰、性别
-    // 流派也来自前端：只收白名单内的合法值，否则 AI 看到的盘与画面上的不同
+    readingKey(info); // 驗證日期、時辰、性別
+    // 流派也來自前端：只收白名單內的合法值，否則 AI 看到的盤與畫面上的不同
     return generateChart(info, { school: sanitizeSchoolConfig((input as { school?: unknown }).school) });
   } catch {
     return null;
@@ -46,7 +46,7 @@ function palaceText(p: Palace): string {
   return `${p.name}（${STEMS[p.stem]}${BRANCHES[p.branch]}${age}）：主星 ${major}；吉星 ${by(['lucky'])}；煞星 ${by(['sha'])}`;
 }
 
-/** 命盘结构：基本资料、十二宫（自命宫起逆排）、目前大限与今年流年四化 */
+/** 命盤結構：基本資料、十二宮（自命宮起逆排）、目前大限與今年流年四化 */
 export function describeChart(chart: ZiweiChart, now: FlowTarget): string {
   const { birthInfo: b, lunarInfo: l } = chart;
   const lines = [
@@ -74,19 +74,19 @@ export function describeChart(chart: ZiweiChart, now: FlowTarget): string {
       const sihua = Object.entries(layer.siHua).map(([star, h]) => `${star}化${h}`).join('、');
       const mingPalace = chart.palaces.find(p => p.branch === layer.mingBranch)?.name ?? '';
       lines.push(`- ${FLOW_LAYER_LABEL[key]} ${layer.ganzhi}：${FLOW_LAYER_LABEL[key]}命宫落本命${mingPalace}（${BRANCHES[layer.mingBranch]}），四化 ${sihua}`);
-      // 该层十二宫对应（如流年财帛落本命哪宫）
+      // 該層十二宮對應（如流年財帛落本命哪宮）
       const map = chart.palaces
         .map(p => `${flowPalaceShortName(layer.mingBranch!, p.branch)}→${p.name}`)
         .join(' ');
       lines.push(`  ${FLOW_LAYER_LABEL[key]}宫位对应：${map}`);
     }
   } catch {
-    // 出生前等无运限的情况，不附运限
+    // 出生前等無運限的情況，不附運限
   }
   return lines.join('\n');
 }
 
-/** 解读资料集里这张盘的 13 维断语节录；资料集没涵盖就回 null */
+/** 解讀資料集裡這張盤的 13 維斷語節錄；資料集沒涵蓋就回 null */
 export async function readingExcerpts(chart: ZiweiChart): Promise<string | null> {
   if (!isReadingYearCovered(chart.birthInfo.year)) return null;
   let reading: Reading;
@@ -104,7 +104,7 @@ export async function readingExcerpts(chart: ZiweiChart): Promise<string | null>
 }
 
 export function currentTarget(): FlowTarget {
-  // 以台湾时间（UTC+8）为准，伺服器时区可能是 UTC
+  // 以台灣時間（UTC+8）為準，伺服器時區可能是 UTC
   const now = new Date(Date.now() + 8 * 3600_000);
   return {
     year: now.getUTCFullYear(), month: now.getUTCMonth() + 1, day: now.getUTCDate(),

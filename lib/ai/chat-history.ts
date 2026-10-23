@@ -1,18 +1,18 @@
 /**
- * AI 问盘对话纪录：只存在使用者自己的浏览器（localStorage），不上传、不存服务器。
+ * AI 問盤對話紀錄：只存在使用者自己的瀏覽器（localStorage），不上傳、不存服務器。
  *
- * 每张盘（出生资料 + 流派）一份；只存 AI 来回的对话，不存资料集解读（每则上万字，重新载入即可）
- * 与错误讯息。超过上限时丢掉最旧的几则；localStorage 满了或被禁用就不存，不影响问盘。
+ * 每張盤（出生資料 + 流派）一份；只存 AI 來回的對話，不存資料集解讀（每則上萬字，重新載入即可）
+ * 與錯誤訊息。超過上限時丟掉最舊的幾則；localStorage 滿了或被禁用就不存，不影響問盤。
  */
 
 export interface StoredChatMessage {
   role: 'user' | 'assistant';
   content: string;
-  /** 点宫位、四化自动送出的提问，画面上不显示提问泡泡 */
+  /** 點宮位、四化自動送出的提問，畫面上不顯示提問泡泡 */
   hidden?: boolean;
 }
 
-/** Storage 的最小介面，测试时可换成记忆体实作 */
+/** Storage 的最小介面，測試時可換成記憶體實作 */
 export interface ChatStorage {
   getItem(key: string): string | null;
   setItem(key: string, value: string): void;
@@ -35,7 +35,7 @@ function isStoredMessage(value: unknown): value is StoredChatMessage {
     && (m.hidden === undefined || typeof m.hidden === 'boolean');
 }
 
-/** 由新到旧保留，直到超过则数或字数上限 */
+/** 由新到舊保留，直到超過則數或字數上限 */
 export function trimHistory(messages: StoredChatMessage[]): StoredChatMessage[] {
   const kept: StoredChatMessage[] = [];
   let chars = 0;
@@ -44,9 +44,9 @@ export function trimHistory(messages: StoredChatMessage[]): StoredChatMessage[] 
     if (chars > MAX_STORED_CHARS) break;
     kept.unshift(messages[i]);
   }
-  // 不要以 AI 回答开头：缺了对应的提问，送回 AI 时上下文会错位
+  // 不要以 AI 回答開頭：缺了對應的提問，送回 AI 時上下文會錯位
   while (kept.length && kept[0].role === 'assistant') kept.shift();
-  // 也不要以提问结尾：没拿到回答（AI 失败）的提问下次再问会变成两则 user 连续
+  // 也不要以提問結尾：沒拿到回答（AI 失敗）的提問下次再問會變成兩則 user 連續
   while (kept.length && kept[kept.length - 1].role === 'user') kept.pop();
   return kept;
 }
@@ -70,7 +70,7 @@ export function saveChatHistory(storage: ChatStorage | undefined, chartKey: stri
     if (kept.length) storage.setItem(chatHistoryKey(chartKey), JSON.stringify(kept));
     else storage.removeItem(chatHistoryKey(chartKey));
   } catch (err) {
-    // 配额满或被禁用：这次不存，问盘照常
+    // 配額滿或被禁用：這次不存，問盤照常
     console.warn('[chat-history] save failed', err);
   }
 }
@@ -79,7 +79,7 @@ export function clearChatHistory(storage: ChatStorage | undefined, chartKey: str
   try { storage?.removeItem(chatHistoryKey(chartKey)); } catch { /* 被禁用就算了 */ }
 }
 
-/** 浏览器端取 localStorage；服务端或被禁用时为 undefined */
+/** 瀏覽器端取 localStorage；服務端或被禁用時為 undefined */
 export function browserChatStorage(): ChatStorage | undefined {
   try {
     return typeof window === 'undefined' ? undefined : window.localStorage;

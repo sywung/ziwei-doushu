@@ -1,43 +1,43 @@
 /**
- * 古籍原典查询库 — 类型定义
+ * 古籍原典查詢庫 — 類型定義
  *
- * 设计：所有古籍以 JSON 静态数据打包到代码（公版无版权风险）
- * Next.js 启动时一次性加载到内存，零 DB 依赖
+ * 設計：所有古籍以 JSON 靜態數據打包到代碼（公版無版權風險）
+ * Next.js 啟動時一次性加載到內存，零 DB 依賴
  */
 
 export interface Paragraph {
-  /** 段落唯一 id（用于锚点跳转） */
+  /** 段落唯一 id（用於錨點跳轉） */
   id: string;
-  /** 段落序号（章节内） */
+  /** 段落序號（章節內） */
   idx: number;
   /** 段落原文（古文） */
   text: string;
-  /** 现代翻译（可选，未来填充） */
+  /** 現代翻譯（可選，未來填充） */
   translation?: string;
-  /** 倪师注解（可选，标注来源） */
+  /** 倪師註解（可選，標註來源） */
   niNote?: string;
 }
 
 export interface Chapter {
-  /** 章节标题（如"卷一"、"总论篇"）*/
+  /** 章節標題（如"卷一"、"總論篇"）*/
   title: string;
-  /** 章节副标题/简介（可选）*/
+  /** 章節副標題/簡介（可選）*/
   subtitle?: string;
   paragraphs: Paragraph[];
 }
 
 export interface Book {
-  /** 书名 */
+  /** 書名 */
   title: string;
-  /** 书 slug（URL 用，如 'guisuifu'）*/
+  /** 書 slug（URL 用，如 'guisuifu'）*/
   slug: string;
   /** 朝代 */
   dynasty: string;
-  /** 作者（多人或不详时填"不详"或多人）*/
+  /** 作者（多人或不詳時填"不詳"或多人）*/
   author: string;
-  /** 简介 */
+  /** 簡介 */
   intro: string;
-  /** 总字数（粗略）*/
+  /** 總字數（粗略）*/
   wordCount: number;
   chapters: Chapter[];
 }
@@ -47,7 +47,7 @@ export interface SearchHit {
   bookTitle: string;
   chapterTitle: string;
   paragraphId: string;
-  /** 高亮片段（含 <mark> 标签） */
+  /** 高亮片段（含 <mark> 標籤） */
   snippet: string;
   /** 原文 */
   text: string;

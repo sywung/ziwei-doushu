@@ -1,10 +1,10 @@
 'use client';
 
 /**
- * 命盘分享卡 — 真正的 12 宫命盘缩略图
+ * 命盤分享卡 — 真正的 12 宮命盤縮略圖
  *
- * 设计：左侧 12 宫缩略命盘 + 右侧关键信息
- * 浏览器原生中文字体，不依赖 SSR
+ * 設計：左側 12 宮縮略命盤 + 右側關鍵信息
+ * 瀏覽器原生中文字體，不依賴 SSR
  */
 
 import type { ZiweiChart } from '@/lib/ziwei/types';
@@ -12,7 +12,7 @@ import { SITE_HOST } from '@/lib/site';
 
 const BRANCH_NAMES = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
 
-// 紫微斗数 12 宫地支布局（按"地支盘"标准排列，固定）
+// 紫微斗數 12 宮地支佈局（按"地支盤"標準排列，固定）
 // 寅卯辰巳 → 上行
 // 丑    午
 // 子    未
@@ -46,7 +46,7 @@ export default function ShareCardCanvas({ chart, birth, highlight }: ShareCardPr
   const shenBranchName = BRANCH_NAMES[chart.shenGongBranch] || '';
   const dx = chart.daXians?.[chart.currentDaXianIndex];
 
-  // 把每个宫位组织成 12 个格子，按布局画
+  // 把每個宮位組織成 12 個格子，按佈局畫
   const cells = ZHIWEI_LAYOUT.map(slot => {
     const palace = chart.palaces.find(p => p.branch === slot.branch);
     const majors = palace?.stars.filter(s => s.type === 'major') ?? [];
@@ -55,7 +55,7 @@ export default function ShareCardCanvas({ chart, birth, highlight }: ShareCardPr
     return { ...slot, palace, majors, isMing, isShen };
   });
 
-  // 卡片尺寸：680x420（适合微信缩略 + 朋友圈）
+  // 卡片尺寸：680x420（適合微信縮略 + 朋友圈）
   return (
     <div id="share-card" style={{
       width: '680px',
@@ -70,7 +70,7 @@ export default function ShareCardCanvas({ chart, birth, highlight }: ShareCardPr
       display: 'flex',
       flexDirection: 'column',
     }}>
-      {/* 装饰光晕 */}
+      {/* 裝飾光暈 */}
       <div style={{
         position: 'absolute', top: '-60px', left: '-60px',
         width: '180px', height: '180px', borderRadius: '50%',
@@ -82,7 +82,7 @@ export default function ShareCardCanvas({ chart, birth, highlight }: ShareCardPr
         background: 'radial-gradient(circle, rgba(196,90,45,0.12) 0%, transparent 70%)',
       }} />
 
-      {/* 顶部 */}
+      {/* 頂部 */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', position: 'relative', zIndex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{
@@ -109,9 +109,9 @@ export default function ShareCardCanvas({ chart, birth, highlight }: ShareCardPr
         </div>
       </div>
 
-      {/* 主体：左 12 宫格子 + 右关键信息 */}
+      {/* 主體：左 12 宮格子 + 右關鍵信息 */}
       <div style={{ display: 'flex', gap: '16px', flex: 1, position: 'relative', zIndex: 1, minHeight: 0 }}>
-        {/* 左：12 宫缩略命盘 */}
+        {/* 左：12 宮縮略命盤 */}
         <div style={{
           width: '300px',
           height: '288px',
@@ -126,7 +126,7 @@ export default function ShareCardCanvas({ chart, birth, highlight }: ShareCardPr
           position: 'relative',
         }}>
           {cells.map((cell, i) => {
-            // 中央 4 个格子（row 1-2, col 1-2）合并为中心说明区
+            // 中央 4 個格子（row 1-2, col 1-2）合併為中心說明區
             if ((cell.row === 1 || cell.row === 2) && (cell.col === 1 || cell.col === 2)) return null;
             return (
               <div key={i} style={{
@@ -143,7 +143,7 @@ export default function ShareCardCanvas({ chart, birth, highlight }: ShareCardPr
                 position: 'relative',
                 overflow: 'hidden',
               }}>
-                {/* 宫名 + 地支 */}
+                {/* 宮名 + 地支 */}
                 <div style={{
                   fontSize: '8px',
                   color: cell.isMing ? '#8b6a14' : '#a89b7c',
@@ -185,7 +185,7 @@ export default function ShareCardCanvas({ chart, birth, highlight }: ShareCardPr
             );
           })}
 
-          {/* 中央说明区（占据 4 个格子）*/}
+          {/* 中央說明區（佔據 4 個格子）*/}
           <div style={{
             gridRow: '2 / 4',
             gridColumn: '2 / 4',
@@ -205,9 +205,9 @@ export default function ShareCardCanvas({ chart, birth, highlight }: ShareCardPr
           </div>
         </div>
 
-        {/* 右：关键信息 */}
+        {/* 右：關鍵信息 */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          {/* 命宫主星 */}
+          {/* 命宮主星 */}
           <div>
             <div style={{ fontSize: '10px', color: '#a89b7c', letterSpacing: '0.25em', marginBottom: '2px' }}>命 宫 · {mingBranchName}</div>
             <div style={{
@@ -235,7 +235,7 @@ export default function ShareCardCanvas({ chart, birth, highlight }: ShareCardPr
             )}
           </div>
 
-          {/* 当前大限 + slogan */}
+          {/* 當前大限 + slogan */}
           <div>
             {dx && (
               <div style={{
@@ -271,7 +271,7 @@ export default function ShareCardCanvas({ chart, birth, highlight }: ShareCardPr
   );
 }
 
-/** 截图工具：把上面的 div 转成 PNG dataURL */
+/** 截圖工具：把上面的 div 轉成 PNG dataURL */
 export async function captureShareCard(): Promise<string | null> {
   try {
     const html2canvas = (await import('html2canvas')).default;

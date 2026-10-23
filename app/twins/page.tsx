@@ -1,5 +1,5 @@
 /**
- * 命理学双子：同一张本命盘在各地的出生时刻表，以及 1950–2026 年里配置相同的盘
+ * 命理學雙子：同一張本命盤在各地的出生時刻表，以及 1950–2026 年裡配置相同的盤
  */
 import Link from 'next/link';
 import TwinsFinder from './TwinsFinder';

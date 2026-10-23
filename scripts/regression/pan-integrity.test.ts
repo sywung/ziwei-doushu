@@ -1,15 +1,15 @@
 /**
- * 回归测试 — 排盘完整性 (2026-05-15)
+ * 迴歸測試 — 排盤完整性 (2026-05-15)
  *
- * 起因: 用户反馈"天机天梁在财帛宫被说成夫妻宫"。
- * 排查结论: 算法层 100% 正确, 是 AI context 文本歧义。
- * 但为防止未来真的有人改坏排盘核心 (algorithm.ts / school-patches),
- * 把"排盘必须满足的紫微斗数铁律"固化成断言, 进 CI 每次 push 跑。
+ * 起因: 用戶反饋"天機天梁在財帛宮被說成夫妻宮"。
+ * 排查結論: 算法層 100% 正確, 是 AI context 文本歧義。
+ * 但為防止未來真的有人改壞排盤核心 (algorithm.ts / school-patches),
+ * 把"排盤必須滿足的紫微斗數鐵律"固化成斷言, 進 CI 每次 push 跑。
  *
  * 跑: npx tsx scripts/regression/pan-integrity.test.ts
- * 失败 exit 1 → CI 红
+ * 失敗 exit 1 → CI 紅
  *
- * 不引 vitest, 用项目现有 tsx + 自定义断言惯例 (同 test-school-patches.ts)
+ * 不引 vitest, 用項目現有 tsx + 自定義斷言慣例 (同 test-school-patches.ts)
  */
 import { generateChart } from '../../lib/ziwei/algorithm';
 import type { BirthInfo, ZiweiChart } from '../../lib/ziwei/types';
@@ -21,7 +21,7 @@ let failures = 0;
 const fail = (msg: string) => { console.error(`  ✗ ${msg}`); failures++; };
 const ok = (msg: string) => console.log(`  ✓ ${msg}`);
 
-// ── 采样: 跨年代/月/时辰/性别, 覆盖足够多命盘形态 ──
+// ── 採樣: 跨年代/月/時辰/性別, 覆蓋足夠多命盤形態 ──
 const samples: BirthInfo[] = [];
 for (let y = 1960; y <= 2010; y += 7)
   for (let m = 1; m <= 12; m += 3)
@@ -42,27 +42,27 @@ for (const bi of samples) {
 
   const tag = `${bi.year}-${bi.month}-${bi.day} h${bi.hour} ${bi.gender}`;
 
-  // 铁律 1: 必须正好 12 宫
+  // 鐵律 1: 必須正好 12 宮
   if (chart.palaces.length !== 12) { fail(`${tag}: 宫数 ${chart.palaces.length} ≠ 12`); continue; }
 
-  // 铁律 2: 12 宫名齐全且唯一(命宫/兄弟/.../父母)
+  // 鐵律 2: 12 宮名齊全且唯一(命宮/兄弟/.../父母)
   const names = chart.palaces.map(p => p.name).sort();
   const expect = [...PALACE_12].sort();
   if (JSON.stringify(names) !== JSON.stringify(expect)) {
     fail(`${tag}: 宫名集合不对 = ${names.join(',')}`); continue;
   }
 
-  // 铁律 3: 12 宫地支 0-11 各且仅一次
+  // 鐵律 3: 12 宮地支 0-11 各且僅一次
   const branches = chart.palaces.map(p => p.branch).sort((a,b)=>a-b);
   if (JSON.stringify(branches) !== JSON.stringify([0,1,2,3,4,5,6,7,8,9,10,11])) {
     fail(`${tag}: 地支不是 0-11 全覆盖 = ${branches.join(',')}`); continue;
   }
 
-  // 铁律 4: 命宫唯一 + isMingGong 标记一致
+  // 鐵律 4: 命宮唯一 + isMingGong 標記一致
   const mingByName = chart.palaces.filter(p => p.name === '命宫');
   if (mingByName.length !== 1) { fail(`${tag}: 命宫数量 ${mingByName.length}`); continue; }
 
-  // 铁律 5: 十二宫逆时针排布 — 从命宫地支起, 第 k 宫地支 = (命宫地支 - k + 12) % 12
+  // 鐵律 5: 十二宮逆時針排布 — 從命宮地支起, 第 k 宮地支 = (命宮地支 - k + 12) % 12
   const mingBranch = mingByName[0].branch;
   for (let k = 0; k < 12; k++) {
     const expectBranch = ((mingBranch - k) % 12 + 12) % 12;
@@ -74,7 +74,7 @@ for (const bi of samples) {
     }
   }
 
-  // 铁律 6: 机梁同宫只可能在 辰 或 戌
+  // 鐵律 6: 機梁同宮只可能在 辰 或 戌
   const jl = chart.palaces.find(p => {
     const ms = p.stars.filter(s => s.type === 'major').map(s => s.name);
     return ms.includes('天机') && ms.includes('天梁');
@@ -86,10 +86,10 @@ for (const bi of samples) {
     }
   }
 
-  // 铁律 7: 紫微 与 天府 永远是固定相对位置 — 同盘必同时存在, 且
-  //   紫微地支 + 天府地支 关系符合"寅申线对称"(紫微+天府 地支和 ≡ 4 mod 12 是错的简化,
-  //   正确铁律: 天府地支 = (4 - 紫微地支 + 12*N) → 即 紫府永远关于 寅(2)/申(8) 轴对称,
-  //   等价: (紫微branch + 天府branch) % 12 === 4)
+  // 鐵律 7: 紫微 與 天府 永遠是固定相對位置 — 同盤必同時存在, 且
+  //   紫微地支 + 天府地支 關係符合"寅申線對稱"(紫微+天府 地支和 ≡ 4 mod 12 是錯的簡化,
+  //   正確鐵律: 天府地支 = (4 - 紫微地支 + 12*N) → 即 紫府永遠關於 寅(2)/申(8) 軸對稱,
+  //   等價: (紫微branch + 天府branch) % 12 === 4)
   let ziB = -1, fuB = -1;
   for (const p of chart.palaces) for (const s of p.stars) {
     if (s.name === '紫微') ziB = p.branch;

@@ -1,5 +1,5 @@
 /**
- * 三纪语料查询（仅服务端）：`<dataDir>/<tianji|renji>/entries.jsonl` 整份载入内存（两份合计约 2.4 万条）
+ * 三紀語料查詢（僅服務端）：`<dataDir>/<tianji|renji>/entries.jsonl` 整份載入內存（兩份合計約 2.4 萬條）
  */
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -11,9 +11,9 @@ import {
 export interface SanjiQuery {
   book?: string;
   chapter?: string;
-  /** 已转成简体的关键字；比对原话、章目、子类 */
+  /** 已轉成簡體的關鍵字；比對原話、章目、子類 */
   q?: string;
-  /** 只取这些 id（收藏） */
+  /** 只取這些 id（收藏） */
   ids?: number[];
   offset?: number;
   limit?: number;
@@ -45,13 +45,13 @@ export function createSanjiStore(dataDir: string) {
     if (!p) {
       const file = path.join(dataDir, corpus, 'entries.jsonl');
       p = readFile(file, 'utf8').then(text => parseEntries(text, file));
-      p.catch(() => cache.delete(corpus)); // 读失败不要永久缓存失败结果
+      p.catch(() => cache.delete(corpus)); // 讀失敗不要永久緩存失敗結果
       cache.set(corpus, p);
     }
     return p;
   };
 
-  /** 书册与章目（保持语料原顺序） */
+  /** 書冊與章目（保持語料原順序） */
   async function books(corpus: SanjiCorpus): Promise<SanjiBook[]> {
     const byBook = new Map<string, Map<string, number>>();
     for (const e of await load(corpus)) {

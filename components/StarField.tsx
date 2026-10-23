@@ -45,8 +45,8 @@ export default function StarField() {
         if (p.alpha <= 0) { p.alpha = 0; p.alphaDir = 1; }
 
         const color = isLight
-          ? `rgba(160, 110, 20, ${p.alpha})`   // 亮色: 金色尘埃
-          : `rgba(200, 220, 255, ${p.alpha})`;  // 暗色: 蓝白星光
+          ? `rgba(160, 110, 20, ${p.alpha})`   // 亮色: 金色塵埃
+          : `rgba(200, 220, 255, ${p.alpha})`;  // 暗色: 藍白星光
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);

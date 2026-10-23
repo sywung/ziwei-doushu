@@ -1,9 +1,9 @@
 /**
- * v4.0 解读数据集查询（仅服务端）
+ * v4.0 解讀數據集查詢（僅服務端）
  *
- * 数据：`<dataDir>/year-YYYY.jsonl`，每年约 700 MB、8,760 行，不能每次查询都整档扫描。
- * 先用 scripts/reading/build-index.ts 为每个年份建 `<indexDir>/year-YYYY.json`
- * （键 → [字节偏移, 字节长度]），查询时只读那一行。
+ * 數據：`<dataDir>/year-YYYY.jsonl`，每年約 700 MB、8,760 行，不能每次查詢都整檔掃描。
+ * 先用 scripts/reading/build-index.ts 為每個年份建 `<indexDir>/year-YYYY.json`
+ * （鍵 → [字節偏移, 字節長度]），查詢時只讀那一行。
  */
 import { createReadStream } from 'node:fs';
 import { open, readFile } from 'node:fs/promises';
@@ -27,15 +27,15 @@ const CR = 0x0d;
 const KEY_HEAD_BYTES = 64;
 
 /**
- * 逐字节扫描一个年份档，算出每行的字节偏移与长度。
- * 不用 readline：它会把 \r\n 当换行默默吃掉，偏移就会错一个字节。
+ * 逐字節掃描一個年份檔，算出每行的字節偏移與長度。
+ * 不用 readline：它會把 \r\n 當換行默默吃掉，偏移就會錯一個字節。
  */
 export async function buildYearIndex(file: string): Promise<YearIndex> {
   const index: YearIndex = {};
-  let pos = 0;          // 档案内目前字节位置
+  let pos = 0;          // 檔案內目前字節位置
   let lineStart = 0;
   let lineNo = 1;
-  let head: Buffer[] = [];  // 本行开头最多 KEY_HEAD_BYTES 字节，用来取键
+  let head: Buffer[] = [];  // 本行開頭最多 KEY_HEAD_BYTES 字節，用來取鍵
   let headLen = 0;
   let prevByte = -1;
 
@@ -72,7 +72,7 @@ export async function buildYearIndex(file: string): Promise<YearIndex> {
     }
     pos += chunk.length;
   }
-  endLine(pos); // 最后一行没有换行符时
+  endLine(pos); // 最後一行沒有換行符時
   return index;
 }
 
@@ -83,7 +83,7 @@ export function createReadingStore({ dataDir, indexDir }: ReadingStoreOptions) {
     let cached = indexCache.get(year);
     if (!cached) {
       cached = readFile(path.join(indexDir, `year-${year}.json`), 'utf8').then(s => JSON.parse(s) as YearIndex);
-      cached.catch(() => indexCache.delete(year)); // 读失败不要永久缓存失败结果
+      cached.catch(() => indexCache.delete(year)); // 讀失敗不要永久緩存失敗結果
       indexCache.set(year, cached);
     }
     return cached;
@@ -101,7 +101,7 @@ export function createReadingStore({ dataDir, indexDir }: ReadingStoreOptions) {
     }
   }
 
-  /** 查一张盘的 13 维解读；数据集里没有时抛 ReadingNotFoundError */
+  /** 查一張盤的 13 維解讀；數據集裡沒有時拋 ReadingNotFoundError */
   async function get(key: string): Promise<Reading> {
     const parsed = parseReadingKey(key);
     if (!parsed) throw new RangeError(`invalid reading key: ${key}`);
@@ -111,7 +111,7 @@ export function createReadingStore({ dataDir, indexDir }: ReadingStoreOptions) {
     if (!entry) throw new ReadingNotFoundError(`key ${key} not in dataset`);
 
     const row = JSON.parse(await readLine(parsed.year, entry[0], entry[1]));
-    // 索引与数据档不同步时，偏移会指到别人的盘；宁可报错也不能回错的解读
+    // 索引與數據檔不同步時，偏移會指到別人的盤；寧可報錯也不能回錯的解讀
     if (row.k !== key) throw new Error(`index out of sync: expected ${key}, got ${row.k}`);
 
     const content = {} as Record<ReadingTopic, string>;

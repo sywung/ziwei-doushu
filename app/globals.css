@@ -2,19 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── 2.0 设计系统 Token ─────────────────────────────────── */
+/* ─── 2.0 設計系統 Token ─────────────────────────────────── */
 :root {
-  /* 字体 */
+  /* 字體 */
   --font: -apple-system, 'PingFang SC', 'Helvetica Neue', 'Segoe UI', sans-serif;
   --font-mono: 'SF Mono', 'Menlo', 'Noto Sans Mono', 'Consolas', monospace;
 
-  /* 背景层级 */
+  /* 背景層級 */
   --bg-0: #FAFAF9;
   --bg-1: #F4F3EF;
   --bg-2: #ECEAE4;
   --bg-inv: #0D0D0B;
 
-  /* 文字层级 */
+  /* 文字層級 */
   --tx-0: #0D0D0B;
   --tx-1: #1A1A18;
   --tx-2: #4A4A45;
@@ -22,34 +22,34 @@
   --tx-inv: #F0EDE8;
   --tx-inv2: rgba(240,237,232,0.65);
 
-  /* 唯一强调色：墨金 */
+  /* 唯一強調色：墨金 */
   --ac:     #B8922A;
   --ac-dim: #7A5F1A;
   --ac-bg:  rgba(184,146,42,0.07);
   --ac-bdr: rgba(184,146,42,0.22);
 
-  /* 四化语义色（仅用于命盘数据，不用于UI装饰） */
+  /* 四化語義色（僅用於命盤數據，不用於UI裝飾） */
   --lu:   #2D7A4A;
   --quan: #1A56A8;
   --ke:   #8A7018;
   --ji:   #A83228;
 
-  /* 边框 */
+  /* 邊框 */
   --bdr:      rgba(0,0,0,0.07);
   --bdr-med:  rgba(0,0,0,0.11);
   --bdr-heavy:rgba(0,0,0,0.18);
 
-  /* 阴影 */
+  /* 陰影 */
   --sh-xs: 0 1px 2px rgba(0,0,0,0.05);
   --sh-sm: 0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
   --sh-md: 0 4px 20px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.05);
   --sh-lg: 0 12px 40px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.06);
 
-  /* 卡片/内容块背景 */
+  /* 卡片/內容塊背景 */
   --bg-card: #FFFFFF;
   --bg-page: #fbf6e8;
 
-  /* 圆角 */
+  /* 圓角 */
   --r-xs:  4px;
   --r-sm:  8px;
   --r-md:  12px;
@@ -58,9 +58,9 @@
   --r-pill:999px;
 }
 
-/* ─── 命盘元件 Token（--t-*）──────────────────────────────
-   命盘、解读面板、运限列等元件用 --t-*，开源版原本没有定义（全部是无效值，颜色只能靠继承）。
-   这里接到上面的设计 token，深浅主题跟着切换。 */
+/* ─── 命盤元件 Token（--t-*）──────────────────────────────
+   命盤、解讀面板、運限列等元件用 --t-*，開源版原本沒有定義（全部是無效值，顏色只能靠繼承）。
+   這裡接到上面的設計 token，深淺主題跟著切換。 */
 :root {
   --t-bg: var(--bg-0);
   --t-surface: var(--bg-1);
@@ -74,7 +74,7 @@
   --t-gold: var(--ac);
 }
 
-/* ─── 暗色模式 Token 覆盖 ──────────────────────────────── */
+/* ─── 暗色模式 Token 覆蓋 ──────────────────────────────── */
 [data-theme="dark"] {
   --bg-0: #020810;
   --bg-1: #0a1020;
@@ -106,7 +106,7 @@
   --bg-page: #020810;
 }
 
-/* ─── 全局基础 ───────────────────────────────────────────── */
+/* ─── 全局基礎 ───────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 
 html {
@@ -123,18 +123,18 @@ body {
   line-height: 1.6;
 }
 
-/* ─── 滚动条 ─────────────────────────────────────────────── */
+/* ─── 滾動條 ─────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg-1); }
 ::-webkit-scrollbar-thumb { background: var(--bdr-heavy); border-radius: 3px; }
 
-/* ─── 选中文字 ───────────────────────────────────────────── */
+/* ─── 選中文字 ───────────────────────────────────────────── */
 ::selection {
   background: rgba(184,146,42,0.15);
   color: var(--ac-dim);
 }
 
-/* ─── 工具类 ─────────────────────────────────────────────── */
+/* ─── 工具類 ─────────────────────────────────────────────── */
 
 /* 容器 */
 .container-page {
@@ -164,13 +164,13 @@ body {
   border-radius: var(--r-md);
 }
 
-/* 深色区块 */
+/* 深色區塊 */
 .section-dark {
   background: var(--bg-inv);
   color: var(--tx-inv);
 }
 
-/* 按钮 */
+/* 按鈕 */
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -272,7 +272,7 @@ body {
   line-height: 1.4;
 }
 
-/* 输入框 */
+/* 輸入框 */
 .input-base {
   width: 100%;
   background: var(--bg-card);
@@ -288,14 +288,14 @@ body {
 .input-base:focus { border-color: var(--tx-0); }
 .input-base::placeholder { color: var(--tx-3); }
 
-/* 分隔线 */
+/* 分隔線 */
 .divider {
   width: 100%;
   height: 1px;
   background: var(--bdr);
 }
 
-/* 标签 */
+/* 標籤 */
 .label-section {
   font-size: 11px;
   letter-spacing: 0.08em;
@@ -304,7 +304,7 @@ body {
   font-weight: 500;
 }
 
-/* 进场动画 */
+/* 進場動畫 */
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -316,7 +316,7 @@ body {
 .animate-fade-up { animation: fade-up 0.5s ease forwards; }
 .animate-fade-in { animation: fade-in 0.4s ease forwards; }
 
-/* ─── 渐变文字（3.0 主标题用） ──────────────────────────── */
+/* ─── 漸變文字（3.0 主標題用） ──────────────────────────── */
 .grad-text {
   -webkit-background-clip: text;
   background-clip: text;
@@ -331,7 +331,7 @@ body {
   background-image: linear-gradient(160deg, #6a4206 0%, #9a6a10 40%, #6a4206 70%, #885010 100%);
 }
 
-/* ─── 命盘工作台响应式 ─────────────────────────────────── */
+/* ─── 命盤工作台響應式 ─────────────────────────────────── */
 .chart-page-root {
   min-height: 100vh;
   display: flex;
@@ -378,10 +378,10 @@ body {
 }
 .chart-topbar-back-sep { width: 1px; height: 20px; background: var(--bdr-med); }
 
-/* 手机版 */
+/* 手機版 */
 @media (max-width: 767px) {
   .chart-page-root {
-    height: auto;        /* 允许全页滚动 */
+    height: auto;        /* 允許全頁滾動 */
     min-height: 100vh;
   }
   .chart-workspace {
@@ -420,7 +420,7 @@ body {
   .chart-topbar button,
   .chart-topbar span { white-space: nowrap; }
 
-  /* 命盘宫格：紧凑 */
+  /* 命盤宮格：緊湊 */
   .palace-cell {
     min-height: 74px !important;
     padding: 6px 5px 5px !important;
@@ -432,19 +432,19 @@ body {
   }
 }
 
-/* 极小屏（<360）进一步收紧 */
+/* 極小屏（<360）進一步收緊 */
 @media (max-width: 359px) {
   .palace-cell { min-height: 68px !important; padding: 5px 4px !important; }
   .chart-workspace-left { padding: 10px 8px 16px; }
   .chart-topbar { padding: 0 8px; gap: 6px; }
 }
 
-/* ─── 打印样式 ───────────────────────────────────────────── */
+/* ─── 打印樣式 ───────────────────────────────────────────── */
 @media print {
   .no-print { display: none !important; }
   body { background: white; color: #1a1a18; }
   @page { margin: 1.2cm; size: A4 landscape; }
-  /* 深色主题下列印也用浅色 token，否则整页黑底 */
+  /* 深色主題下列印也用淺色 token，否則整頁黑底 */
   :root[data-theme="dark"] {
     --bg-0: #FFFFFF; --bg-1: #F4F3EF; --bg-2: #ECEAE4; --bg-card: #FFFFFF; --bg-page: #FFFFFF;
     --tx-0: #0D0D0B; --tx-1: #1A1A18; --tx-2: #4A4A45; --tx-3: #6A6A62;
@@ -453,7 +453,7 @@ body {
   }
 }
 
-/* 原生下拉框（年 / 月 / 日 / 时辰 / 省市）：深色主题下选项列表用实色底。
-   select 本身是半透明底 + 浅色字，Windows 上原生下拉列表是白底，浅灰字配白底看不清（#14） */
+/* 原生下拉框（年 / 月 / 日 / 時辰 / 省市）：深色主題下選項列表用實色底。
+   select 本身是半透明底 + 淺色字，Windows 上原生下拉列表是白底，淺灰字配白底看不清（#14） */
 [data-theme="dark"] select { color-scheme: dark; }
 [data-theme="dark"] select option { background-color: var(--bg-2); color: var(--tx-1); }

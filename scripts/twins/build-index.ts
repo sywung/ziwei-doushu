@@ -1,11 +1,11 @@
 /**
- * 建命理学双子索引：1950–2026 每天 × 12 时辰（与 v4 解读数据集同范围）
+ * 建命理學雙子索引：1950–2026 每天 × 12 時辰（與 v4 解讀數據集同範圍）
  *
  *   npx tsx scripts/twins/build-index.ts <outFile> [--jobs N] [--years 1990-1991]
  *
- * 每张盘约 13 ms，337,488 张（星曜与性别无关，只算一次）按年份切给 N 个子进程平行算，
- * 最后合并成 { keys, tiers: { main|sihua|full: { 签名: 键编号[] } } }。
- * 键为 `YYYY-MM-DD-时辰序号`（不含性别；查询结果两种性别都适用）。
+ * 每張盤約 13 ms，337,488 張（星曜與性別無關，只算一次）按年份切給 N 個子進程平行算，
+ * 最後合併成 { keys, tiers: { main|sihua|full: { 簽名: 鍵編號[] } } }。
+ * 鍵為 `YYYY-MM-DD-時辰序號`（不含性別；查詢結果兩種性別都適用）。
  */
 import { spawn } from 'node:child_process';
 import { createWriteStream } from 'node:fs';
@@ -62,7 +62,7 @@ async function main() {
   const jobsArg = args.indexOf('--jobs');
   const jobs = jobsArg >= 0 ? Number(args[jobsArg + 1]) : Math.max(1, cpus().length - 1);
 
-  // --years 1990-1991 只算部分年份（试跑用）
+  // --years 1990-1991 只算部分年份（試跑用）
   const yearsArg = args.indexOf('--years');
   const [yearMin, yearMax] = yearsArg >= 0
     ? args[yearsArg + 1].split('-').map(Number)

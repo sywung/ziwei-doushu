@@ -1,9 +1,9 @@
 /**
- * 同盘时刻表：某地要在钟表几点出生，才会排出同一个排盘日＋时辰（＝同一张本命盘）。
+ * 同盤時刻表：某地要在鐘錶幾點出生，才會排出同一個排盤日＋時辰（＝同一張本命盤）。
  *
- * 用 resolveBirthMoment 正向逐分钟扫「排盘日前一天到后一天」的钟表时间，收集结果落在
- * 同一排盘日＋时辰的分钟，再合并成连续区间。真太阳时（经度＋均时差）与晚子时换日规则
- * 都和起盘表单同一套，不另写反推公式。
+ * 用 resolveBirthMoment 正向逐分鐘掃「排盤日前一天到後一天」的鐘表時間，收集結果落在
+ * 同一排盤日＋時辰的分鐘，再合併成連續區間。真太陽時（經度＋均時差）與晚子時換日規則
+ * 都和起盤表單同一套，不另寫反推公式。
  */
 import { resolveBirthMoment } from '../ziwei/birth-input';
 import { sameGregorianDate, shiftGregorianDate, type GregorianDate, type LateZishiRule } from '../ziwei/true-solar-time';
@@ -11,14 +11,14 @@ import { sameGregorianDate, shiftGregorianDate, type GregorianDate, type LateZis
 const MINUTES_PER_DAY = 1440;
 
 export interface ClockWindow {
-  /** 相对排盘日 00:00 的分钟数（可为负：前一天）；区间含头含尾 */
+  /** 相對排盤日 00:00 的分鐘數（可為負：前一天）；區間含頭含尾 */
   startMinute: number;
   endMinute: number;
 }
 
 /**
- * 在经度 longitude 出生、钟表时间落在哪些区间，会排成 chartDate 的 branch 时辰。
- * clockAheadMinutes：当地钟表比 UTC+8 快的分钟数（台湾夏令时等），区间以当时的当地钟表表示。
+ * 在經度 longitude 出生、鐘錶時間落在哪些區間，會排成 chartDate 的 branch 時辰。
+ * clockAheadMinutes：當地鐘錶比 UTC+8 快的分鐘數（台灣夏令時等），區間以當時的當地鐘錶表示。
  */
 export function clockWindows(
   chartDate: GregorianDate, branch: number, longitude: number, lateZishi: LateZishiRule = 'next-day',
@@ -50,7 +50,7 @@ function clockText(minuteFromChartDay: number): { day: number; text: string } {
   return { day, text: `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}` };
 }
 
-/** 「当日 07:18–09:17」「前一日 23:05–当日 01:04」 */
+/** 「當日 07:18–09:17」「前一日 23:05–當日 01:04」 */
 export function formatClockWindow(w: ClockWindow): string {
   const a = clockText(w.startMinute);
   const b = clockText(w.endMinute);

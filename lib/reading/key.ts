@@ -1,9 +1,9 @@
 /**
- * v4.0 13 维解读数据集的键（客户端、服务端共用）
+ * v4.0 13 維解讀數據集的鍵（客戶端、服務端共用）
  *
- * 数据集每行一张盘，键 `k` = `YYYY-MM-DD-时辰序号-性别`，例：`1990-01-01-0-male`。
- * 日期为公历「排盘日」、时辰为 0–11 的地支序号，与 BirthInfo 的 year/month/day/hour 同口径
- * （真太阳时校正、子时换日都已在表单里折算进 BirthInfo），所以可直接由命盘组键。
+ * 數據集每行一張盤，鍵 `k` = `YYYY-MM-DD-時辰序號-性別`，例：`1990-01-01-0-male`。
+ * 日期為公曆「排盤日」、時辰為 0–11 的地支序號，與 BirthInfo 的 year/month/day/hour 同口徑
+ * （真太陽時校正、子時換日都已在表單裡折算進 BirthInfo），所以可直接由命盤組鍵。
  */
 import type { BirthInfo } from '../ziwei/types';
 
@@ -19,7 +19,7 @@ export type ReadingTopic = typeof READING_TOPICS[number];
 
 export interface Reading {
   key: string;
-  /** 命宫第一颗主星；命宫无主星时为 null */
+  /** 命宮第一顆主星；命宮無主星時為 null */
   mainStar: string | null;
   content: Record<ReadingTopic, string>;
 }
@@ -32,7 +32,7 @@ export function isReadingYearCovered(year: number): boolean {
   return Number.isInteger(year) && year >= READING_YEAR_MIN && year <= READING_YEAR_MAX;
 }
 
-/** 组数据集键；输入不合法时抛 RangeError（不做任何修正，避免查到别人的盘） */
+/** 組數據集鍵；輸入不合法時拋 RangeError（不做任何修正，避免查到別人的盤） */
 export function readingKey({ year, month, day, hour, gender }: KeyInput): string {
   const probe = new Date(Date.UTC(year, month - 1, day));
   const dateOk =
@@ -48,7 +48,7 @@ export function readingKey({ year, month, day, hour, gender }: KeyInput): string
   return `${year}-${pad2(month)}-${pad2(day)}-${hour}-${gender}`;
 }
 
-/** 解析键；格式不对返回 null */
+/** 解析鍵；格式不對返回 null */
 export function parseReadingKey(key: string): KeyInput | null {
   const m = /^(\d{4})-(\d{2})-(\d{2})-(\d{1,2})-(male|female)$/.exec(key);
   if (!m) return null;

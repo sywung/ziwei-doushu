@@ -1,7 +1,7 @@
 /**
  * POST /api/heming  { chartA: { birthInfo }, chartB: { birthInfo }, question?: string }
  *
- * 合盘 AI 分析：两张盘的结构 + 断语节录 + 合盘方法论，回传 delta SSE。
+ * 合盤 AI 分析：兩張盤的結構 + 斷語節錄 + 合盤方法論，回傳 delta SSE。
  */
 import { NextResponse } from 'next/server';
 import { chartFromUntrusted, currentTarget, describeChart, readingExcerpts } from '@/lib/ai/chart-context';

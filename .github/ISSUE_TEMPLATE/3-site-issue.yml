@@ -1,28 +1,28 @@
-name: 正式站问题 / metisziwei.com issue
-description: 线上网站（metisziwei.com）登录、支付、显示等问题
+name: 正式站問題 / metisziwei.com issue
+description: 線上網站（metisziwei.com）登錄、支付、顯示等問題
 labels: ["bug"]
 body:
   - type: input
     id: url
     attributes:
-      label: 出问题的页面地址
+      label: 出問題的頁面地址
       placeholder: https://metisziwei.com/……
     validations:
       required: true
   - type: textarea
     id: steps
     attributes:
-      label: 怎么出现的
-      placeholder: 点了什么、填了什么、看到什么报错
+      label: 怎麼出現的
+      placeholder: 點了什麼、填了什麼、看到什麼報錯
     validations:
       required: true
   - type: input
     id: env
     attributes:
-      label: 浏览器与系统
-      placeholder: 例：Windows 11 / Chrome 153 / 公司网络开了代理
+      label: 瀏覽器與系統
+      placeholder: 例：Windows 11 / Chrome 153 / 公司網絡開了代理
   - type: textarea
     id: screenshot
     attributes:
-      label: 截图
-      description: 请勿贴出手机号、验证码、他人的生辰等隐私信息。
+      label: 截圖
+      description: 請勿貼出手機號、驗證碼、他人的生辰等隱私信息。

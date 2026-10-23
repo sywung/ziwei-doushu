@@ -92,7 +92,7 @@ export default function ChatPanel({ chart }: ChatPanelProps) {
 
   return (
     <div className="flex flex-col h-full rounded-xl overflow-hidden card-glass">
-      {/* 标题 */}
+      {/* 標題 */}
       <div className="px-4 py-3 flex-shrink-0" style={{ borderBottom: '1px solid var(--t-border)' }}>
         <h3 className="text-xs font-medium tracking-widest" style={{ color: 'var(--t-gold)' }}>AI 命盘解读</h3>
         <p className="text-[10px] mt-0.5" style={{ color: 'var(--t-faint)' }}>倪海厦正宗紫微斗数 · 智慧解析</p>
@@ -145,7 +145,7 @@ export default function ChatPanel({ chart }: ChatPanelProps) {
         </AnimatePresence>
       </div>
 
-      {/* 预设问题 */}
+      {/* 預設問題 */}
       {messages.length === 0 && (
         <div className="px-3 pb-2 flex-shrink-0">
           <div className="grid grid-cols-2 gap-1.5">
@@ -176,7 +176,7 @@ export default function ChatPanel({ chart }: ChatPanelProps) {
         </div>
       )}
 
-      {/* 输入框 */}
+      {/* 輸入框 */}
       <div className="px-3 pb-3 pt-2 flex-shrink-0" style={{ borderTop: '1px solid var(--t-border)' }}>
         <div className="flex gap-2">
           <input

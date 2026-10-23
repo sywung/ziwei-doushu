@@ -10,7 +10,7 @@
 
 </div>
 
-A Zi Wei Dou Shu (紫微斗数, "Purple Star Astrology") charting engine following the teaching system of **Ni Haixia's *Tian Ji* (倪海厦《天纪》)**. It includes the full charting algorithm, the Four Transformations (四化), a pattern knowledge base, public-domain classical texts, and a **518,400-chart sample dataset**, plus a **674,976-chart × 13-topic interpretation dataset (v4.0, 2026-10-15): 8.77 million readings, about 20.4 billion characters of text, 56.6 GB uncompressed** — up from 518,400 charts and 33.1 GB in v3.0.
+A Zi Wei Dou Shu (紫微斗數, "Purple Star Astrology") charting engine following the teaching system of **Ni Haixia's *Tian Ji* (倪海廈《天紀》)**. It includes the full charting algorithm, the Four Transformations (四化), a pattern knowledge base, public-domain classical texts, and a **518,400-chart sample dataset**, plus a **674,976-chart × 13-topic interpretation dataset (v4.0, 2026-10-15): 8.77 million readings, about 20.4 billion characters of text, 56.6 GB uncompressed** — up from 518,400 charts and 33.1 GB in v3.0.
 
 | Dataset | Charts | Readings | Uncompressed | Years | Characters per chart |
 |---|---|---|---|---|---|
@@ -43,10 +43,10 @@ This repo is an open snapshot of the engine behind [metisziwei.com](https://meti
 | China DST | 1986–1991 daylight-saving periods are removed automatically |
 | Leap months | Four configurable conventions (previous month / next month / split by day / same month) |
 | Late Zi hour | 23:00–23:59 is charted on the next day, 00:00–00:59 on the same day; switchable |
-| Star brightness | 7 levels (庙 旺 得 利 平 不 陷); brightness tables of different schools are switchable, not hard-coded |
+| Star brightness | 7 levels (廟 旺 得 利 平 不 陷); brightness tables of different schools are switchable, not hard-coded |
 | Four Transformations | Natal, decade (大限) and annual (流年) transformations, plus flying-star self-transformations |
 | Twelve spirits | Natal layer by year branch, annual layer by the annual branch |
-| Patterns | 1,100+ lines of pattern rules (紫府同宫, 日月并明, 七杀朝斗, …) |
+| Patterns | 1,100+ lines of pattern rules (紫府同宮, 日月並明, 七殺朝斗, …) |
 
 Engine code lives in `lib/ziwei/` (entry point: `generateChart()` in `algorithm.ts`). Inputs are a **Gregorian** date and an **hour branch index 0–11** (子 = 0 … 亥 = 11), not a clock hour.
 

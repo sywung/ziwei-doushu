@@ -4,7 +4,7 @@ export const STEMS = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '�
 // 地支 Earthly Branches
 export const BRANCHES = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
 
-// 时辰对应地支
+// 時辰對應地支
 export const SHICHEN = [
   { branch: 0, name: '子时', range: '23:00-01:00' },
   { branch: 1, name: '丑时', range: '01:00-03:00' },
@@ -20,30 +20,30 @@ export const SHICHEN = [
   { branch: 11, name: '亥时', range: '21:00-23:00' },
 ];
 
-// 十二宫名顺序；地支索引从命宫起每减 1 前进一宫（排盘界面为逆时针）
+// 十二宮名順序；地支索引從命宮起每減 1 前進一宮（排盤界面為逆時針）
 export const PALACE_NAMES_ORDER = [
   '命宫', '兄弟宫', '夫妻宫', '子女宫', '财帛宫', '疾厄宫',
   '迁移宫', '交友宫', '官禄宫', '田宅宫', '福德宫', '父母宫'
 ];
 
-// 纳音五行（30组干支对的五行）
+// 納音五行（30組干支對的五行）
 export const NAYIN_ELEMENTS = [
   '金','火','木','土','金','火','水','土','金','木',
   '水','土','火','木','水','金','火','木','土','金',
   '火','水','土','金','木','水','土','火','木','水'
 ];
 
-// 五行 → 局数
+// 五行 → 局數
 export const ELEMENT_TO_JU: Record<string, number> = {
   '水': 2, '木': 3, '金': 4, '土': 5, '火': 6
 };
 
-// 局数名称
+// 局數名稱
 export const JU_NAMES: Record<number, string> = {
   2: '水二局', 3: '木三局', 4: '金四局', 5: '土五局', 6: '火六局'
 };
 
-// 四化表（年干 → [化禄, 化权, 化科, 化忌]）
+// 四化表（年干 → [化祿, 化權, 化科, 化忌]）
 export const SI_HUA_TABLE: Record<number, [string, string, string, string]> = {
   0: ['廉贞', '破军', '武曲', '太阳'],   // 甲
   1: ['天机', '天梁', '紫微', '太阴'],   // 乙
@@ -57,21 +57,21 @@ export const SI_HUA_TABLE: Record<number, [string, string, string, string]> = {
   9: ['破军', '巨门', '太阴', '贪狼'],   // 癸
 };
 
-// 天魁天钺表（年干 → [天魁branch, 天钺branch]）
+// 天魁天鉞表（年干 → [天魁branch, 天鉞branch]）
 export const TIANKUI_TABLE: Record<number, [number, number]> = {
-  0: [1, 7],   // 甲: 魁丑 钺未
-  1: [0, 8],   // 乙: 魁子 钺申
-  2: [11, 9],  // 丙: 魁亥 钺酉
-  3: [11, 9],  // 丁: 魁亥 钺酉
-  4: [1, 7],   // 戊: 魁丑 钺未
-  5: [0, 8],   // 己: 魁子 钺申
-  6: [1, 7],   // 庚: 魁丑 钺未
-  7: [6, 2],   // 辛: 魁午 钺寅
-  8: [3, 5],   // 壬: 魁卯 钺巳
-  9: [3, 5],   // 癸: 魁卯 钺巳
+  0: [1, 7],   // 甲: 魁丑 鉞未
+  1: [0, 8],   // 乙: 魁子 鉞申
+  2: [11, 9],  // 丙: 魁亥 鉞酉
+  3: [11, 9],  // 丁: 魁亥 鉞酉
+  4: [1, 7],   // 戊: 魁丑 鉞未
+  5: [0, 8],   // 己: 魁子 鉞申
+  6: [1, 7],   // 庚: 魁丑 鉞未
+  7: [6, 2],   // 辛: 魁午 鉞寅
+  8: [3, 5],   // 壬: 魁卯 鉞巳
+  9: [3, 5],   // 癸: 魁卯 鉞巳
 };
 
-// 禄存表（年干 → 禄存branch）
+// 祿存表（年干 → 祿存branch）
 export const LUCUN_TABLE: Record<number, number> = {
   0: 2,   // 甲: 寅
   1: 3,   // 乙: 卯
@@ -85,7 +85,7 @@ export const LUCUN_TABLE: Record<number, number> = {
   9: 0,   // 癸: 子
 };
 
-// 天马表（年支三合 → 天马branch）
+// 天馬錶（年支三合 → 天馬branch）
 // 寅午戌→申, 申子辰→寅, 巳酉丑→亥, 亥卯未→巳
 export const TIANMA_TABLE: Record<number, number> = {
   2: 8,   // 寅年 → 申
@@ -102,12 +102,12 @@ export const TIANMA_TABLE: Record<number, number> = {
   7: 5,   // 未年 → 巳
 };
 
-// ★ 所有星曜亮度（主星 + 辅星）已迁移到 algorithm.ts → astro.config({ brightness })
-// 覆写范围：9 颗主星 + 3 颗辅星（文曲/铃星/擎羊），共 24 处差异修正。
-// 其余星曜（武曲/廉贞/贪狼/巨门/破军/文昌/火星/陀罗）iztro 默认值与全书一致，无需覆写。
-// 旧 STAR_BRIGHTNESS 是死代码（从未被引用），已在 2026-05-08 清理。
+// ★ 所有星曜亮度（主星 + 輔星）已遷移到 algorithm.ts → astro.config({ brightness })
+// 覆寫範圍：9 顆主星 + 3 顆輔星（文曲/鈴星/擎羊），共 24 處差異修正。
+// 其餘星曜（武曲/廉貞/貪狼/巨門/破軍/文昌/火星/陀羅）iztro 默認值與全書一致，無需覆寫。
+// 舊 STAR_BRIGHTNESS 是死代碼（從未被引用），已在 2026-05-08 清理。
 
-// 主星描述（倪师体系）
+// 主星描述（倪師體系）
 export const STAR_DESCRIPTIONS: Record<string, { keywords: string; nature: string; element: string }> = {
   '紫微': { keywords: '帝王·尊贵·独立', nature: '中性偏吉', element: '土' },
   '天机': { keywords: '智慧·机变·谋略', nature: '吉星', element: '木' },

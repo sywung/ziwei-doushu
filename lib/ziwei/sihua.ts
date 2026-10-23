@@ -1,11 +1,11 @@
 /**
- * 四化工具模块 — 年干 / 大限宫干 / 流年干 / 流月干 / 流日干 / 流时干
- *                + 宫干自化检测 + 来因宫追溯
+ * 四化工具模塊 — 年干 / 大限宮干 / 流年干 / 流月干 / 流日干 / 流時干
+ *                + 宮干自化檢測 + 來因宮追溯
  *
- * 排盘口径（2026-07-21 铁律：排盘以金标准盘为准）：
- *   本命四化 = 出生年天干四化（盘上朱红印章，始终显示）
- *   运限四化 = 大限宫干 / 流年干 / 流月干 / 流日干 / 流时干 → 叠层色章
- * 论断正文仍按倪师；本模块供排盘叠层使用。
+ * 排盤口徑（2026-07-21 鐵律：排盤以金標準盤為準）：
+ *   本命四化 = 出生年天干四化（盤上硃紅印章，始終顯示）
+ *   運限四化 = 大限宮干 / 流年干 / 流月干 / 流日干 / 流時干 → 疊層色章
+ * 論斷正文仍按倪師；本模塊供排盤疊層使用。
  */
 
 import { Lunar } from 'lunar-javascript';
@@ -16,10 +16,10 @@ import { SCHOOL_SIHUA_GENG_VARIANTS, SCHOOL_STAR_ID_TO_NAME } from './school-dat
 import type { GengYearSihua } from './school-config';
 
 // ─── 1) 由天干索引取四化四星 ───────────────────────────────────
-/** 天干索引 0-9 → { 禄, 权, 科, 忌 } 对应星名 */
+/** 天干索引 0-9 → { 祿, 權, 科, 忌 } 對應星名 */
 const GENG_STEM_INDEX = 6;
 
-/** 天干索引 → [禄, 权, 科, 忌] 星名；庚干依流派「庚年四化」取变体（默认阳武阴同 = SI_HUA_TABLE） */
+/** 天干索引 → [祿, 權, 科, 忌] 星名；庚幹依流派「庚年四化」取變體（默認陽武陰同 = SI_HUA_TABLE） */
 function siHuaRow(stemIndex: number, geng?: GengYearSihua): readonly [string, string, string, string] | undefined {
   if (stemIndex === GENG_STEM_INDEX && geng && geng !== 'GYWYT') {
     const [, lu, quan, ke, ji] = SCHOOL_SIHUA_GENG_VARIANTS[geng].map(id => SCHOOL_STAR_ID_TO_NAME[id]);
@@ -34,30 +34,30 @@ export function getSiHuaByStem(stemIndex: number, geng?: GengYearSihua): Record<
   return { 禄: arr[0], 权: arr[1], 科: arr[2], 忌: arr[3] };
 }
 
-/** 星名 → 四化类型（由某天干确定） */
+/** 星名 → 四化類型（由某天干確定） */
 export function buildStarSiHuaMap(stemIndex: number, geng?: GengYearSihua): Record<string, SiHua> {
   const arr = siHuaRow(stemIndex, geng);
   if (!arr) return {};
   return { [arr[0]]: '禄', [arr[1]]: '权', [arr[2]]: '科', [arr[3]]: '忌' };
 }
 
-// ─── 2) 公历年 → 年柱天干索引 ──────────────────────────────────
-/** 公历年份 → 年柱天干索引（0=甲, ... 9=癸） */
+// ─── 2) 公曆年 → 年柱天干索引 ──────────────────────────────────
+/** 公曆年份 → 年柱天干索引（0=甲, ... 9=癸） */
 export function getYearStemIndex(year: number): number {
   return ((year - 4) % 10 + 10) % 10;
 }
 
-/** 公历年份 → 年柱地支索引（0=子, ... 11=亥） */
+/** 公曆年份 → 年柱地支索引（0=子, ... 11=亥） */
 export function getYearBranchIndex(year: number): number {
   return ((year - 4) % 12 + 12) % 12;
 }
 
-// ─── 3) 大限四化：取大限宫的宫干（非本命年干）───────────────
+// ─── 3) 大限四化：取大限宮的宮干（非本命年干）───────────────
 /**
- * 大限宫干四化
- * @param chart 命盘
- * @param dxIndex 大限索引（chart.daXians[dxIndex]）；童限传 CHILDHOOD_DAXIAN_INDEX
- * @returns 该大限的四化四星
+ * 大限宮干四化
+ * @param chart 命盤
+ * @param dxIndex 大限索引（chart.daXians[dxIndex]）；童限傳 CHILDHOOD_DAXIAN_INDEX
+ * @returns 該大限的四化四星
  */
 export function getDaXianSiHua(
   chart: ZiweiChart,
@@ -97,7 +97,7 @@ export function getLiuNianSiHua(year: number): {
 // ─── 5) 流月四化（月柱天干，由年干 + 月序推） ───────────────
 /**
  * 流月天干（五虎遁：甲己年起丙寅、乙庚年起戊寅、丙辛年起庚寅、丁壬年起壬寅、戊癸年起甲寅）
- * month: 农历月 1-12
+ * month: 農曆月 1-12
  */
 export function getLiuYueStemIndex(yearStem: number, month: number): number {
   // 五虎遁：正月（寅月）天干
@@ -109,15 +109,15 @@ export function getLiuYueStemIndex(yearStem: number, month: number): number {
     4: 0, 9: 0,  // 戊癸 → 甲
   };
   const yinStem = startStemOfYin[yearStem] ?? 0;
-  // 从寅（正月）到目标月（month 取 1-12）
+  // 從寅（正月）到目標月（month 取 1-12）
   return (yinStem + ((month - 1) % 12) + 10) % 10;
 }
 
 export interface LiuYueSiHuaOptions {
-  /** 闰月流月按实际农历日的前后半月取本月/下月口径。 */
+  /** 閏月流月按實際農曆日的前後半月取本月/下月口徑。 */
   isLeapMonth?: boolean;
   liuriDay?: number;
-  /** 闰十二月后半段跨到次年正月时使用的年干。 */
+  /** 閏十二月後半段跨到次年正月時使用的年干。 */
   nextYearStem?: number;
 }
 
@@ -148,10 +148,10 @@ export function getLiuYueSiHua(yearStem: number, month: number, options: LiuYueS
   };
 }
 
-// ─── 5b) 流日四化（农历日柱天干）──────────────────────────────
+// ─── 5b) 流日四化（農曆日柱天干）──────────────────────────────
 /**
- * 流日天干四化：用农历年月日取日柱干（通行口径「显示日干四化」）。
- * 闰月传 isLeapMonth=true（lunar-javascript 以负月表示闰月）。
+ * 流日天干四化：用農曆年月日取日柱幹（通行口徑「顯示日干四化」）。
+ * 閏月傳 isLeapMonth=true（lunar-javascript 以負月表示閏月）。
  */
 export function getLiuRiSiHua(
   lunarYear: number,
@@ -175,8 +175,8 @@ export function getLiuRiSiHua(
   }
 }
 
-// ─── 5c) 流时四化（五鼠遁：日干起子时天干）───────────────────
-/** 时支 0=子…11=亥；日干推时干后取四化 */
+// ─── 5c) 流時四化（五鼠遁：日干起子時天干）───────────────────
+/** 時支 0=子…11=亥；日干推時干後取四化 */
 export function getLiuShiSiHua(dayStemIndex: number, hourBranch: number): {
   stemIndex: number;
   stemName: string;
@@ -199,13 +199,13 @@ export function getLiuShiSiHua(dayStemIndex: number, hourBranch: number): {
   };
 }
 
-// ─── 6) 宫干自化检测 ──────────────────────────────────────────
+// ─── 6) 宮干自化檢測 ──────────────────────────────────────────
 /**
- * 自化：该宫宫干引发的四化，被化星恰在本宫
- * e.g. 宫干为甲（廉破武阳），如果本宫主星含"廉贞"，则该宫有"自化禄"
+ * 自化：該宮宮干引發的四化，被化星恰在本宮
+ * e.g. 宮干為甲（廉破武陽），如果本宮主星含"廉貞"，則該宮有"自化祿"
  */
 export interface SelfSihua {
-  siHua: SiHua;        // 禄/权/科/忌
+  siHua: SiHua;        // 祿/權/科/忌
   starName: string;    // 被化的星
 }
 
@@ -222,16 +222,16 @@ export function detectSelfSihua(palace: Palace, geng?: GengYearSihua): SelfSihua
   return found;
 }
 
-// ─── 7) 来因宫追溯 ────────────────────────────────────────────
+// ─── 7) 來因宮追溯 ────────────────────────────────────────────
 /**
- * 来因宫：对某颗星某种化，追溯是哪个宫的宫干"飞"过来的
+ * 來因宮：對某顆星某種化，追溯是哪個宮的宮干"飛"過來的
  *
- * 倪师体系常用：化忌的来因宫——化忌由哪个宫位的"宫干"引发，那个宫位就是问题的根源宫位
+ * 倪師體系常用：化忌的來因宮——化忌由哪個宮位的"宮干"引發，那個宮位就是問題的根源宮位
  *
- * @param chart 命盘
- * @param starName 被化的星名（如 "太阴"）
- * @param sihua  四化类型（如 "忌"）
- * @returns 引发该化的宫位数组（通常只有一个，但若多宫宫干相同可能多个）
+ * @param chart 命盤
+ * @param starName 被化的星名（如 "太陰"）
+ * @param sihua  四化類型（如 "忌"）
+ * @returns 引發該化的宮位數組（通常只有一個，但若多宮宮干相同可能多個）
  */
 export function findIncomingPalaces(
   chart: ZiweiChart,
@@ -249,7 +249,7 @@ export function findIncomingPalaces(
 }
 
 /**
- * 批量计算盘面所有宫位的自化列表
+ * 批量計算盤面所有宮位的自化列表
  */
 export function buildAllSelfSihua(chart: ZiweiChart): Record<number, SelfSihua[]> {
   const result: Record<number, SelfSihua[]> = {};
@@ -260,11 +260,11 @@ export function buildAllSelfSihua(chart: ZiweiChart): Record<number, SelfSihua[]
   return result;
 }
 
-// ─── 8) 综合覆盖（overlay）：多个四化层叠加后的效果 ──────────
+// ─── 8) 綜合覆蓋（overlay）：多個四化層疊加後的效果 ──────────
 /**
- * 生成某星名 → 多层四化的合成视图
- * 用于在宫位上同时显示：本命化 / 大限化 / 流年化
- * 优先级：本命 < 大限 < 流年（但都标出来）
+ * 生成某星名 → 多層四化的合成視圖
+ * 用於在宮位上同時顯示：本命化 / 大限化 / 流年化
+ * 優先級：本命 < 大限 < 流年（但都標出來）
  */
 export interface SiHuaOverlay {
   native?: SiHua;    // 本命（年干）

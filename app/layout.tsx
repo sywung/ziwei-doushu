@@ -21,16 +21,16 @@ export const metadata: Metadata = {
     locale: 'zh_TW',
     type: 'website',
   },
-  // 站长平台验证（拿到 verification code 后填入对应字段，重新部署即可）
+  // 站長平台驗證（拿到 verification code 後填入對應字段，重新部署即可）
   verification: {
-    // Google Search Console: 在 https://search.google.com/search-console 添加站点后获取
+    // Google Search Console: 在 https://search.google.com/search-console 添加站點後獲取
     google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || undefined,
-    // Bing Webmaster Tools: 在 https://www.bing.com/webmasters 添加站点后获取
+    // Bing Webmaster Tools: 在 https://www.bing.com/webmasters 添加站點後獲取
     other: {
       'msvalidate.01': process.env.NEXT_PUBLIC_BING_VERIFICATION || '',
-      // 百度站长（等执照下来后）
+      // 百度站長（等執照下來後）
       'baidu-site-verification': process.env.NEXT_PUBLIC_BAIDU_VERIFICATION || '',
-      // 360 站长（等执照下来后）
+      // 360 站長（等執照下來後）
       '360-site-verification': process.env.NEXT_PUBLIC_360_VERIFICATION || '',
     },
   },

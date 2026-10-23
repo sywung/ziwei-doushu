@@ -9,7 +9,7 @@ interface SchoolPanelProps {
   onChange: (next: SchoolConfig) => void;
 }
 
-/** 排盘流派设定：只列 generateChart 实作的六项（见 SCHOOL_SWITCHABLE_KEYS） */
+/** 排盤流派設定：只列 generateChart 實作的六項（見 SCHOOL_SWITCHABLE_KEYS） */
 export default function SchoolPanel({ value, onChange }: SchoolPanelProps) {
   const changed = nonDefaultSchoolKeys(value);
 

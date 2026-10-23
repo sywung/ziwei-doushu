@@ -1,11 +1,11 @@
 /**
- * 全站共用的 AI 呼叫速率上限（仅服务端、单一程序内）：防止误触或前端回圈烧掉模型费用。
- * 自架、区网使用，不分使用者。
+ * 全站共用的 AI 呼叫速率上限（僅服務端、單一程序內）：防止誤觸或前端迴圈燒掉模型費用。
+ * 自架、區網使用，不分使用者。
  */
 export function createRateLimiter(maxPerWindow: number, windowMs: number, now: () => number = Date.now) {
   const hits: number[] = [];
   return {
-    /** 还有额度就记一次并回 true */
+    /** 還有額度就記一次並回 true */
     take(): boolean {
       const t = now();
       while (hits.length && hits[0] <= t - windowMs) hits.shift();

@@ -1,7 +1,7 @@
 /**
- * 古籍原典查询库 · 主页
+ * 古籍原典查詢庫 · 主頁
  *
- * 列出所有收录古籍 + 全局搜索入口
+ * 列出所有收錄古籍 + 全局搜索入口
  */
 
 import Link from 'next/link';
@@ -16,7 +16,7 @@ export const metadata = {
 export default function LibraryHomePage() {
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
-      {/* 顶栏 */}
+      {/* 頂欄 */}
       <div className="px-6 py-4 flex items-center justify-between"
         style={{ borderBottom: '1px solid rgba(184,146,42,0.15)', background: 'var(--bg-page)' }}>
         <Link href="/" style={{ fontSize: '12px', color: 'var(--ac)', letterSpacing: '0.3em', textDecoration: 'none' }}>
@@ -98,7 +98,7 @@ export default function LibraryHomePage() {
           ))}
         </div>
 
-        {/* 底部说明 */}
+        {/* 底部說明 */}
         <div style={{ marginTop: '60px', padding: '24px', background: 'rgba(184,146,42,0.05)', borderRadius: '10px', textAlign: 'center' }}>
           <div style={{ fontSize: '11px', color: 'var(--ac-dim)', fontWeight: 600, letterSpacing: '0.15em', marginBottom: '8px' }}>
             关于本库

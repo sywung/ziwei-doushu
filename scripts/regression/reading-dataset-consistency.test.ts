@@ -1,10 +1,10 @@
 /**
- * v4 解读数据集 × 本仓库排盘引擎 一致性（需要真实资料，不在 npm test 里）
+ * v4 解讀數據集 × 本倉庫排盤引擎 一致性（需要真實資料，不在 npm test 裡）
  *
  *   READING_DATA_DIR=/path/jsonl READING_INDEX_DIR=/path/index npm run test:reading-data
  *
- * 解读是按数据集那张盘写的；若本引擎排出的盘不同（命宫主星对不上），
- * 显示出来的就是别人的解读。每年等距抽样，比对命宫第一颗主星（数据集字段 ms）。
+ * 解讀是按數據集那張盤寫的；若本引擎排出的盤不同（命宮主星對不上），
+ * 顯示出來的就是別人的解讀。每年等距抽樣，比對命宮第一顆主星（數據集字段 ms）。
  */
 import assert from 'node:assert/strict';
 import { generateChart } from '../../lib/ziwei/algorithm';
@@ -26,7 +26,7 @@ async function main() {
 
   for (let year = READING_YEAR_MIN; year <= READING_YEAR_MAX; year++) {
     for (let i = 0; i < SAMPLES_PER_YEAR; i++) {
-      // 等距铺满全年、12 时辰、男女；跳过不存在的日期由 Date 换算保证
+      // 等距鋪滿全年、12 時辰、男女；跳過不存在的日期由 Date 換算保證
       const dayOfYear = Math.floor((i * 365) / SAMPLES_PER_YEAR);
       const date = new Date(Date.UTC(year, 0, 1 + dayOfYear));
       const info = {

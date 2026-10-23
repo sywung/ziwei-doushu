@@ -1,5 +1,5 @@
 /**
- * /library/search?q=xxx — 搜索结果页
+ * /library/search?q=xxx — 搜索結果頁
  */
 
 import Link from 'next/link';

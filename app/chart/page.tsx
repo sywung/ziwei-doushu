@@ -15,24 +15,24 @@ import {
 import type { BirthInfo, ZiweiChart, Palace } from '@/lib/ziwei/types';
 
 /**
- * 命盘页 —— 开源版「排盘引擎 Demo」
+ * 命盤頁 —— 開源版「排盤引擎 Demo」
  *
- * 这是一个最小可运行示例：用本仓库的排盘引擎 generateChart() 配合基础 UI
- * 组件，渲染一张完整紫微命盘 + 13 维解读，并支持本命 / 大限 / 小限 / 流年 / 流月 / 流日 / 流时切换
- * （运限切换在 ChartBoard 内的 TimeNav）。
+ * 這是一個最小可運行示例：用本倉庫的排盤引擎 generateChart() 配合基礎 UI
+ * 組件，渲染一張完整紫微命盤 + 13 維解讀，並支持本命 / 大限 / 小限 / 流年 / 流月 / 流日 / 流時切換
+ * （運限切換在 ChartBoard 內的 TimeNav）。
  *
- * 说明：线上商业版的完整交互界面（重设计的新 UI、AI 流式解读、合盘、分享
- * 卡片等）不在开源范围内；但排盘内核——安星算法、四化、格局识别、古籍库——
- * 完全开放（见 lib/ziwei/*），可自由二次开发出你自己的界面。
+ * 說明：線上商業版的完整交互界面（重設計的新 UI、AI 流式解讀、合盤、分享
+ * 卡片等）不在開源範圍內；但排盤內核——安星算法、四化、格局識別、古籍庫——
+ * 完全開放（見 lib/ziwei/*），可自由二次開發出你自己的界面。
  */
 export default function ChartPage() {
   const [chart, setChart] = useState<ZiweiChart | null>(null);
   const [selectedPalace, setSelectedPalace] = useState<Palace | null>(null);
   const [school, setSchool] = useState<SchoolConfig>(SCHOOL_DEFAULT_CONFIG);
-  // 最近一次表单输入：改「晚子时」时要从原始钟表时间重算出生日；从命理学双子开的盘没有表单，为 null
+  // 最近一次表單輸入：改「晚子時」時要從原始鐘錶時間重算出生日；從命理學雙子開的盤沒有表單，為 null
   const [lastForm, setLastForm] = useState<BirthFormState | null>(null);
 
-  // 流派存在 localStorage；只在浏览器端读，避免 SSR 与客户端不一致
+  // 流派存在 localStorage；只在瀏覽器端讀，避免 SSR 與客戶端不一致
   useEffect(() => {
     setSchool({ ...SCHOOL_DEFAULT_CONFIG, ...sanitizeSchoolConfig(loadSchoolConfig()) });
   }, []);
@@ -45,7 +45,7 @@ export default function ChartPage() {
     setChart(generateChart(info ?? chart.birthInfo, { school: next }));
   };
 
-  // ── 未起盘：展示出生信息表单 ──
+  // ── 未起盤：展示出生信息表單 ──
   if (!chart) {
     return (
       <main style={{ maxWidth: 720, margin: '0 auto', padding: '48px 20px' }}>
@@ -64,9 +64,9 @@ export default function ChartPage() {
     );
   }
 
-  // 换盘（例如点命理学双子）时用键让命盘与解读面板重新挂载，否则解读停在上一张盘
+  // 換盤（例如點命理學雙子）時用鍵讓命盤與解讀面板重新掛載，否則解讀停在上一張盤
   const chartKey = readingKey(chart.birthInfo);
-  // 流派不同盘就不同：AI 对话纪录按「盘＋流派」分开存
+  // 流派不同盤就不同：AI 對話紀錄按「盤＋流派」分開存
   const schoolQuery = new URLSearchParams(configToParams(school)).toString();
   const historyKey = schoolQuery ? `${chartKey}?${schoolQuery}` : chartKey;
   const openChart = (info: BirthInfo) => {
@@ -76,7 +76,7 @@ export default function ChartPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // ── 已起盘：命盘 + 解读 ──
+  // ── 已起盤：命盤 + 解讀 ──
   return (
     <main style={{ maxWidth: 1280, margin: '0 auto', padding: '24px 16px' }}>
       <button
@@ -116,7 +116,7 @@ export default function ChartPage() {
           <ChartBoard key={historyKey} chart={chart} onPalaceSelect={setSelectedPalace} />
           <TwinsPanel chart={chart} onOpen={openChart} />
         </div>
-        {/* 解读一则上万字：面板限高、内部捲动，否则新内容会长在页面下方看不到 */}
+        {/* 解讀一則上萬字：面板限高、內部捲動，否則新內容會長在頁面下方看不到 */}
         <div style={{ position: 'sticky', top: 16, height: 'calc(100vh - 32px)' }}>
           <InsightPanel key={historyKey} historyKey={historyKey} chart={chart} selectedPalace={selectedPalace} />
         </div>

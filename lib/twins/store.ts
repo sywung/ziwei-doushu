@@ -1,5 +1,5 @@
 /**
- * 命理学双子查询（仅服务端）：索引由 scripts/twins/build-index.ts 产生
+ * 命理學雙子查詢（僅服務端）：索引由 scripts/twins/build-index.ts 產生
  */
 import { readFile } from 'node:fs/promises';
 import { Solar } from 'lunar-javascript';
@@ -11,18 +11,18 @@ export interface TwinsIndex {
   version: 1;
   yearMin: number;
   yearMax: number;
-  /** `YYYY-MM-DD-时辰序号`（不含性别） */
+  /** `YYYY-MM-DD-時辰序號`（不含性別） */
   keys: string[];
   tiers: Record<TwinTier, Record<string, number[]>>;
 }
 
 export interface TwinTierResult {
   tier: TwinTier;
-  /** 不含本盘自己（同日同时辰） */
+  /** 不含本盤自己（同日同時辰） */
   total: number;
-  /** 均匀抽样的同配置盘 */
+  /** 均勻抽樣的同配置盤 */
   samples: string[];
-  /** 其中与本盘同一农历年出生的（同年同构：流年干支相同，运限节奏同步） */
+  /** 其中與本盤同一農曆年出生的（同年同構：流年干支相同，運限節奏同步） */
   sameYear: { total: number; samples: string[] };
 }
 
@@ -32,13 +32,13 @@ export interface TwinsResult {
   tiers: TwinTierResult[];
 }
 
-/** 索引键 `YYYY-MM-DD-时辰` 的农历年（春节前属上一年） */
+/** 索引鍵 `YYYY-MM-DD-時辰` 的農曆年（春節前屬上一年） */
 export function lunarYearOfKey(key: string): number {
   const [y, m, d] = key.split('-').map(Number);
   return Solar.fromYmd(y, m, d).getLunar().getYear();
 }
 
-/** 从 n 个里等距取 k 个，让样本铺满整个年代范围而不是全挤在最早几年 */
+/** 從 n 個裡等距取 k 個，讓樣本鋪滿整個年代範圍而不是全擠在最早幾年 */
 function spreadSample<T>(items: T[], k: number): T[] {
   if (items.length <= k) return items;
   return Array.from({ length: k }, (_, i) => items[Math.floor((i * items.length) / k)]);
@@ -53,7 +53,7 @@ export function createTwinsStore(indexFile: string) {
         if (index.version !== 1) throw new Error(`unsupported twins index version ${index.version}`);
         return index;
       });
-      cached.catch(() => { cached = null; }); // 读失败不要永久缓存失败结果
+      cached.catch(() => { cached = null; }); // 讀失敗不要永久緩存失敗結果
     }
     return cached;
   };
@@ -69,7 +69,7 @@ export function createTwinsStore(indexFile: string) {
       yearMax: index.yearMax,
       tiers: TWIN_TIERS.map(tier => {
         const keys = (index.tiers[tier][sigs[tier]] ?? []).map(id => index.keys[id]).filter(k => k !== selfKey);
-        // 先用公历年粗筛（农历年只可能等于公历年或前一年），再换算农历年
+        // 先用公曆年粗篩（農曆年只可能等於公曆年或前一年），再換算農曆年
         const sameYear = keys.filter(k => {
           const y = Number(k.slice(0, 4));
           return (y === selfLunarYear || y === selfLunarYear + 1) && lunarYearOfKey(k) === selfLunarYear;

@@ -18,7 +18,7 @@ export function useHistory() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setHistory(JSON.parse(raw));
-    } catch { /* localStorage 不可用时静默失败 */ }
+    } catch { /* localStorage 不可用時靜默失敗 */ }
   }, []);
 
   const save = useCallback((form: BirthFormState) => {
@@ -37,7 +37,7 @@ export function useHistory() {
     };
 
     setHistory(prev => {
-      // 去重：相同出生年月日+性别+时辰视为同一条记录
+      // 去重：相同出生年月日+性別+時辰視為同一條記錄
       const deduped = prev.filter(e =>
         !(e.form.year === form.year &&
           e.form.month === form.month &&

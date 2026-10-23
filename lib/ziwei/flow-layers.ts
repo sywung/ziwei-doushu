@@ -1,13 +1,13 @@
 /**
- * 全时序运限层：大限 / 小限 / 流年 / 流月 / 流日 / 流时
+ * 全時序運限層：大限 / 小限 / 流年 / 流月 / 流日 / 流時
  *
- * 每层要两样东西：
- *   1) 该层「命宫」落在本命盘哪个地支 → 推出该层十二宫名（命兄夫子财疾迁友官田福父，逆排）
- *   2) 该层四化
- * 来源分工：
- *   - 大限：chart.daXians（含童限口径，见 yunxian-context）
- *   - 小限、流年、流月、流日、流时的落宫：iztro horoscope()
- *   - 四化一律走 sihua.ts（金标准盘口径；与 iztro mutagen 抽样 2,700 组一致，闰月流月以 sihua.ts 为准）
+ * 每層要兩樣東西：
+ *   1) 該層「命宮」落在本命盤哪個地支 → 推出該層十二宮名（命兄夫子財疾遷友官田福父，逆排）
+ *   2) 該層四化
+ * 來源分工：
+ *   - 大限：chart.daXians（含童限口徑，見 yunxian-context）
+ *   - 小限、流年、流月、流日、流時的落宮：iztro horoscope()
+ *   - 四化一律走 sihua.ts（金標準盤口徑；與 iztro mutagen 抽樣 2,700 組一致，閏月流月以 sihua.ts 為準）
  */
 import { Solar } from 'lunar-javascript';
 import { createAstrolabe, type LunarMonthPolicy } from './algorithm';
@@ -27,15 +27,15 @@ export const FLOW_LAYER_LABEL: Record<FlowLayerKey, string> = {
   daxian: '大限', xiaoxian: '小限', liunian: '流年', liuyue: '流月', liuri: '流日', liushi: '流时',
 };
 
-/** 盘面上的短标：限·命、年·财… */
+/** 盤面上的短標：限·命、年·財… */
 export const FLOW_LAYER_TAG: Record<FlowLayerKey, string> = {
   daxian: '限', xiaoxian: '小', liunian: '年', liuyue: '月', liuri: '日', liushi: '时',
 };
 
-/** 十二宫短名，自命宫起逆时针（地支递减）排列 */
+/** 十二宮短名，自命宮起逆時針（地支遞減）排列 */
 const PALACE_SHORT = ['命', '兄', '夫', '子', '财', '疾', '迁', '友', '官', '田', '福', '父'];
 
-/** 公历日期 + 时辰序号（0=子 … 11=亥） */
+/** 公曆日期 + 時辰序號（0=子 … 11=亥） */
 export interface FlowTarget {
   year: number;
   month: number;
@@ -45,10 +45,10 @@ export interface FlowTarget {
 
 export interface FlowLayer {
   key: FlowLayerKey;
-  /** 该层命宫所在地支；童限之外查不到大限时为 null */
+  /** 該層命宮所在地支；童限之外查不到大限時為 null */
   mingBranch: number | null;
   stemIndex: number | null;
-  /** 该层干支，如「丙午」；大限只有宫干 */
+  /** 該層干支，如「丙午」；大限只有宮干 */
   ganzhi: string;
   /** 星名 → 四化 */
   siHua: Record<string, SiHua>;
@@ -56,17 +56,17 @@ export interface FlowLayer {
 
 export interface FlowLayers {
   layers: Record<FlowLayerKey, FlowLayer>;
-  /** 目标日期的农历，如「二〇二六年九月十三」 */
+  /** 目標日期的農曆，如「二〇二六年九月十三」 */
   lunarDate: string;
-  /** 目标日期所属农历年（流年以农历年计，春节前仍属上一年） */
+  /** 目標日期所屬農曆年（流年以農曆年計，春節前仍屬上一年） */
   lunarYear: number;
-  /** 小限虚岁 */
+  /** 小限虛歲 */
   nominalAge: number;
-  /** 实际采用的大限索引（-1：超出大限范围；CHILDHOOD_DAXIAN_INDEX：童限） */
+  /** 實際採用的大限索引（-1：超出大限範圍；CHILDHOOD_DAXIAN_INDEX：童限） */
   daXianIndex: number;
 }
 
-/** 该层宫名：branch 相对该层命宫的位置 */
+/** 該層宮名：branch 相對該層命宮的位置 */
 export function flowPalaceShortName(mingBranch: number, branch: number): string {
   return PALACE_SHORT[((mingBranch - branch) % 12 + 12) % 12];
 }
@@ -79,8 +79,8 @@ function layerFrom(
 }
 
 /**
- * 计算目标时刻的各运限层。
- * @param daXianIndex 指定大限（大限视图点选）；不传则按目标日期所属虚岁取大限
+ * 計算目標時刻的各運限層。
+ * @param daXianIndex 指定大限（大限視圖點選）；不傳則按目標日期所屬虛歲取大限
  */
 export function getFlowLayers(chart: ZiweiChart, target: FlowTarget, daXianIndex?: number): FlowLayers {
   const { year, month, day, hour } = target;
@@ -92,22 +92,22 @@ export function getFlowLayers(chart: ZiweiChart, target: FlowTarget, daXianIndex
     throw new RangeError(`hour must be a branch index 0–11; received ${hour}`);
   }
 
-  // 庚干四化按命盘流派（chart.school）取变体，运限层与本命盘同一口径
+  // 庚幹四化按命盤流派（chart.school）取變體，運限層與本命盤同一口徑
   const geng = chart.school?.gengYearSihua;
   const layer = (key: FlowLayerKey, mingBranch: number | null, stemIndex: number | null, ganzhi: string) =>
     layerFrom(key, mingBranch, stemIndex, ganzhi, geng);
   const birthInfo = chart.birthInfo as BirthInfo & { leapMonthPolicy?: LunarMonthPolicy };
   const astrolabe = createAstrolabe(birthInfo, birthInfo.leapMonthPolicy);
   const horo = astrolabe.horoscope(`${year}-${month}-${day}`, hour);
-  // 出生前没有运限；iztro 此时回传负虚岁与 index -1，不能拿去查宫
+  // 出生前沒有運限；iztro 此時回傳負虛歲與 index -1，不能拿去查宮
   if (horo.age.nominalAge < 1) throw new RangeError(`target ${year}-${month}-${day} is before birth`);
   const branchOfIndex = (index: number) => BRANCHES.indexOf(astrolabe.palaces[index].earthlyBranch as string);
   const stemOf = (name: string) => STEMS.indexOf(name);
 
-  // 目标日期的农历（流年、流月、流日四化都按农历）
+  // 目標日期的農曆（流年、流月、流日四化都按農曆）
   const lunar = Solar.fromYmd(year, month, day).getLunar();
   const lunarYear = lunar.getYear();
-  const rawLunarMonth = lunar.getMonth(); // 闰月为负
+  const rawLunarMonth = lunar.getMonth(); // 閏月為負
   const lunarDay = lunar.getDay();
   const isLeapMonth = rawLunarMonth < 0;
 
@@ -134,14 +134,14 @@ export function getFlowLayers(chart: ZiweiChart, target: FlowTarget, daXianIndex
     `${horo.age.heavenlyStem}${horo.age.earthlyBranch}`,
   );
 
-  // ── 流年：农历年干 ──
+  // ── 流年：農曆年干 ──
   const ln = getLiuNianSiHua(lunarYear);
   const liunian = layer(
     'liunian', branchOfIndex(horo.yearly.index), ln.stemIndex,
     `${horo.yearly.heavenlyStem}${horo.yearly.earthlyBranch}`,
   );
 
-  // ── 流月：五虎遁；闰月按前后半月归属（sihua.ts 口径）──
+  // ── 流月：五虎遁；閏月按前後半月歸屬（sihua.ts 口徑）──
   const nextYearStem = (ln.stemIndex + 1) % 10;
   const ly = getLiuYueSiHua(ln.stemIndex, Math.abs(rawLunarMonth), { isLeapMonth, liuriDay: lunarDay, nextYearStem });
   const liuyue = layer(
@@ -149,7 +149,7 @@ export function getFlowLayers(chart: ZiweiChart, target: FlowTarget, daXianIndex
     `${ly.stemName}${horo.monthly.earthlyBranch}`,
   );
 
-  // ── 流日、流时：日干 → 五鼠遁时干 ──
+  // ── 流日、流時：日干 → 五鼠遁時干 ──
   const lr = getLiuRiSiHua(lunarYear, Math.abs(rawLunarMonth), lunarDay, isLeapMonth);
   const liuri = layer(
     'liuri', branchOfIndex(horo.daily.index), lr?.stemIndex ?? stemOf(horo.daily.heavenlyStem),

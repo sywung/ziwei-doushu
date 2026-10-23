@@ -6,15 +6,15 @@ import type { GregorianDate, LateZishiRule } from './true-solar-time';
 
 export const TAIWAN_PROVINCE = '台湾省';
 
-/** 出生地的钟表若曾快于 UTC+8（台湾夏令时、日治时期），且使用者没取消「按当时钟表时间」，回传换算函式 */
+/** 出生地的鐘表若曾快於 UTC+8（台灣夏令時、日治時期），且使用者沒取消「按當時鐘錶時間」，回傳換算函式 */
 export function clockAheadFor(form: Pick<BirthFormState, 'province' | 'dstAdjust'>): ((date: GregorianDate) => number) | undefined {
   return form.province === TAIWAN_PROVINCE && form.dstAdjust !== false ? taiwanClockAheadMinutes : undefined;
 }
 
-/** BirthFormState → BirthInfo；日期不存在（含该年没有所填闰月）回 null
+/** BirthFormState → BirthInfo；日期不存在（含該年沒有所填閏月）回 null
  *
- * 公历/农历换算、真太阳时、晚子时换日都在 birth-input.ts。
- * 晚子时（真太阳时 23:00 后）默认按次日排盘，可经流派「晚子时」改为当日。
+ * 公曆/農曆換算、真太陽時、晚子時換日都在 birth-input.ts。
+ * 晚子時（真太陽時 23:00 後）默認按次日排盤，可經流派「晚子時」改為當日。
  */
 export function formToBirthInfo(form: BirthFormState, opts: { lateZishi?: LateZishiRule } = {}): BirthInfo | null {
   const moment = resolveBirthMoment({
@@ -41,7 +41,7 @@ export function formToBirthInfo(form: BirthFormState, opts: { lateZishi?: LateZi
   };
 }
 
-/** BirthFormState → URLSearchParams（用于分享链接） */
+/** BirthFormState → URLSearchParams（用於分享鏈接） */
 export function formToSearchParams(form: BirthFormState): URLSearchParams {
   const p = new URLSearchParams();
   if (form.name) p.set('n', form.name);
@@ -66,7 +66,7 @@ export function formToSearchParams(form: BirthFormState): URLSearchParams {
   return p;
 }
 
-/** URLSearchParams → Partial<BirthFormState>，不完整时返回 null */
+/** URLSearchParams → Partial<BirthFormState>，不完整時返回 null */
 export function searchParamsToForm(params: URLSearchParams): Partial<BirthFormState> | null {
   const year = params.get('y');
   const month = params.get('m');

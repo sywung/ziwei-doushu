@@ -1,10 +1,10 @@
 /**
- * 自动生成 sitemap.xml
+ * 自動生成 sitemap.xml
  *
  * 包含：
- *  - 主页、起盘页、合盘页
- *  - /library 古籍库（主页 + 3 部古籍 + 章节页）
- *  - /knowledge 知识库（主页 + 14×13 主题页）
+ *  - 主頁、起盤頁、合盤頁
+ *  - /library 古籍庫（主頁 + 3 部古籍 + 章節頁）
+ *  - /knowledge 知識庫（主頁 + 14×13 主題頁）
  */
 
 import type { MetadataRoute } from 'next';
@@ -27,7 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/privacy`, priority: 0.3, changeFrequency: 'monthly', lastModified: lastmod },
   ];
 
-  // 古籍页
+  // 古籍頁
   const libraryPages: MetadataRoute.Sitemap = ALL_BOOKS.flatMap(book => {
     const bookHome: MetadataRoute.Sitemap[number] = {
       url: `${BASE_URL}/library/${book.slug}`,
@@ -44,7 +44,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     return [bookHome, ...chapters];
   });
 
-  // 知识库 14×13
+  // 知識庫 14×13
   const knowledgePages: MetadataRoute.Sitemap = getAllKnowledgeRoutes().map(({ slug, topic }) => ({
     url: `${BASE_URL}/knowledge/${slug}/${topic}`,
     priority: 0.7,

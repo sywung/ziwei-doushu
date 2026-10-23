@@ -9,7 +9,7 @@ const PAGE_SIZE = 50;
 const SEARCH_DEBOUNCE_MS = 300;
 const FAVS_STORAGE_KEY = 'sanji-favs';
 
-/** 收藏只存在这个浏览器（localStorage 可能被挡，失败就当没有收藏） */
+/** 收藏只存在這個瀏覽器（localStorage 可能被擋，失敗就當沒有收藏） */
 function loadFavs(): Set<string> {
   try {
     return new Set(JSON.parse(localStorage.getItem(FAVS_STORAGE_KEY) ?? '[]') as string[]);
@@ -45,7 +45,7 @@ export default function SanjiBrowser() {
 
   useEffect(() => { setFavs(loadFavs()); }, []);
 
-  // 换语料：重载书册、清掉筛选
+  // 換語料：重載書冊、清掉篩選
   useEffect(() => {
     let cancelled = false;
     setBooks([]); setBook(''); setChapter(''); setOffset(0);
@@ -56,7 +56,7 @@ export default function SanjiBrowser() {
     return () => { cancelled = true; };
   }, [corpus]);
 
-  // 关键字去抖
+  // 關鍵字去抖
   useEffect(() => {
     const timer = setTimeout(() => { setKeyword(keywordInput.trim()); setOffset(0); }, SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
@@ -67,7 +67,7 @@ export default function SanjiBrowser() {
     [favs, corpus],
   );
 
-  // 判语列表
+  // 判語列表
   useEffect(() => {
     if (favOnly && favIds.length === 0) {
       setList({ status: 'ok', result: { total: 0, offset: 0, entries: [] } });
@@ -105,7 +105,7 @@ export default function SanjiBrowser() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,520px)] items-start">
-      {/* ── 左：筛选 + 判语列表 ── */}
+      {/* ── 左：篩選 + 判語列表 ── */}
       <section aria-label="判语列表">
         <div className="flex flex-wrap items-center gap-2 mb-3">
           {SANJI_CORPORA.map(c => (

@@ -1,8 +1,8 @@
 /**
- * GET /api/reading?key=YYYY-MM-DD-时辰序号-性别
+ * GET /api/reading?key=YYYY-MM-DD-時辰序號-性別
  *
- * 从 v4.0 13 维解读数据集查本命盘解读，内容转成台湾正体后回传。
- * 数据目录由环境变量 READING_DATA_DIR / READING_INDEX_DIR 指定（见 lib/reading/store.ts）。
+ * 從 v4.0 13 維解讀數據集查本命盤解讀，內容轉成台灣正體後回傳。
+ * 數據目錄由環境變量 READING_DATA_DIR / READING_INDEX_DIR 指定（見 lib/reading/store.ts）。
  */
 import { NextResponse } from 'next/server';
 import { toHant } from '@/lib/i18n/hant';
@@ -27,7 +27,7 @@ export async function GET(req: Request) {
     const content = {} as Reading['content'];
     for (const topic of READING_TOPICS) content[topic] = toHant(reading.content[topic]);
     const body: Reading = { key, mainStar: reading.mainStar && toHant(reading.mainStar), content };
-    // 数据集是确定性生成的，同一键永远同一内容
+    // 數據集是確定性生成的，同一鍵永遠同一內容
     return NextResponse.json(body, { headers: { 'Cache-Control': 'public, max-age=86400' } });
   } catch (err) {
     if (err instanceof ReadingNotFoundError) {

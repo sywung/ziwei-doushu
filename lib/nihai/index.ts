@@ -1,13 +1,13 @@
 /**
- * 倪海厦 天纪 / 地纪 / 人纪 — 统一导出
+ * 倪海廈 天紀 / 地紀 / 人紀 — 統一導出
  *
- * 倪海厦（1954-2012），美国汉唐中医学院创办人，
- * 当代少见的「命、相、卜、山、医」五术兼备之旷世奇人。
+ * 倪海廈（1954-2012），美國漢唐中醫學院創辦人，
+ * 當代少見的「命、相、卜、山、醫」五術兼備之曠世奇人。
  *
- * 三纪体系：
- *   天纪 —— 上知天文（紫微斗数、易经、堪舆、推命、面相、测字）
- *   地纪 —— 下知地理（国家地理志、风水与国运）
- *   人纪 —— 中知人事（针灸、黄帝内经、神农本草经、伤寒论、金匮要略）
+ * 三紀體系：
+ *   天紀 —— 上知天文（紫微斗數、易經、堪輿、推命、面相、測字）
+ *   地紀 —— 下知地理（國家地理志、風水與國運）
+ *   人紀 —— 中知人事（針灸、黃帝內經、神農本草經、傷寒論、金匱要略）
  */
 
 export * from './types';
@@ -15,7 +15,7 @@ export { TIANJI_MODULES, HEXAGRAMS, FENGSHUI_ENTRIES, TIANJI_EPISODES, TIANJI_QU
 export { RENJI_MODULES, ACU_EXPERIENCES, TRANS_NEEDLING, HANTANG_FORMULAS, CLASSIC_FORMULAS, RENJI_STATS } from './renji';
 export { DIJI_MODULES, DIJI_STATS } from './diji';
 
-/** 倪海厦完整传记 */
+/** 倪海廈完整傳記 */
 export const NI_HAIXIA_BIO = {
   name: '倪海厦',
   nameVariant: '倪海夏',
@@ -37,7 +37,7 @@ export const NI_HAIXIA_BIO = {
     '天纪、人纪教学体系创立者',
     '海外优秀华人奖获得者',
   ],
-  /** 师承关系 */
+  /** 師承關係 */
   teachers: [
     { name: '周左宇', background: '北京四代家传名医，1949年后移居台湾', subject: '针灸', period: '1977-1981' },
     { name: '徐济民', background: '江苏籍上海名医', subject: '针灸', period: '1970s' },
@@ -55,7 +55,7 @@ export const NI_HAIXIA_BIO = {
     '算命就是一个讨论果的哲学',
     '文字只是船，真理才是彼岸',
   ],
-  /** 人生大事记 */
+  /** 人生大事記 */
   timeline: [
     { year: '1954', event: '出生于台北市，祖籍浙江瑞安' },
     { year: '1970s', event: '高中时以《医宗金鉴》治愈二姐月经痛，立志习医' },
@@ -76,7 +76,7 @@ export const NI_HAIXIA_BIO = {
     { year: '2011', event: '成立深圳汉唐经方中医馆' },
     { year: '2012', event: '1月31日因心肺衰竭在台北辞世，享年59岁' },
   ],
-  /** 著作体系 */
+  /** 著作體系 */
   publications: {
     originalBooks8: ['黄帝内经素问', '黄帝内经', '神农本草经', '针灸', '伤寒论', '金匮', '人间道', '天机道·地脉道'],
     totalBooks: '26-44册（含注解版教材、医案全集、穴位精解等）',
@@ -85,7 +85,7 @@ export const NI_HAIXIA_BIO = {
     medicalCases: '医案全集7本',
     totalVideoHours: '200+小时',
   },
-  /** 三纪体系 */
+  /** 三紀體系 */
   sanJi: {
     tianji: {
       name: '天纪',
@@ -121,7 +121,7 @@ export const NI_HAIXIA_BIO = {
       existingContent: '天纪课程中堪舆学部分 + 后人整理遗稿',
     },
   },
-  /** 人格特征 */
+  /** 人格特徵 */
   personality: {
     算命风格: '铁口直断不留余地',
     音乐爱好: '最喜老鹰乐队《加州旅馆》',
@@ -130,7 +130,7 @@ export const NI_HAIXIA_BIO = {
     睡眠: '多年夜间睡眠不足三小时',
     患者评价: '常被美国病患称为"最后的希望（The last hope）"',
   },
-  /** 传人选拔标准 */
+  /** 傳人選拔標準 */
   discipleStandards: [
     '心性好',
     '个性强',
@@ -140,7 +140,7 @@ export const NI_HAIXIA_BIO = {
   ],
 };
 
-/** 三纪导航 */
+/** 三紀導航 */
 export const SANJI_CATEGORIES = [
   { key: 'tianji' as const, name: '天纪', nameEn: 'Tian Ji', icon: '⊙', meaning: '上知天文', color: '#d4a843', href: '/tianji' },
   { key: 'diji' as const, name: '地纪', nameEn: 'Di Ji', icon: '⊞', meaning: '下知地理', color: '#6b8a5e', href: '/diji' },

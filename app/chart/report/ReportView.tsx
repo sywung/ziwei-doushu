@@ -16,20 +16,20 @@ type ReadingState =
 
 type PngState = 'idle' | 'working' | 'failed';
 
-/** 报告页：本命盘 + 13 维解读，供列印成 PDF 或下载命盘 PNG */
+/** 報告頁：本命盤 + 13 維解讀，供列印成 PDF 或下載命盤 PNG */
 export default function ReportView() {
   const params = useSearchParams();
   const key = params.get('key') ?? '';
   const schoolQuery = params.toString();
   const info = parseReadingKey(key);
-  // 流派从网址带过来（命盘页「汇出报告」会附上非默认项）；不合法的值丢掉、走默认
+  // 流派從網址帶過來（命盤頁「匯出報告」會附上非默認項）；不合法的值丟掉、走默認
   const chart = useMemo(
     () => (info ? generateChart(info, { school: sanitizeSchoolConfig(paramsToConfig(params)) }) : null),
     [key, schoolQuery], // eslint-disable-line react-hooks/exhaustive-deps
   );
   const [reading, setReading] = useState<ReadingState>({ status: 'loading' });
   const [png, setPng] = useState<PngState>('idle');
-  // 产生出的命盘图；http 网站下载常被浏览器当成「不安全下载」挡掉，所以同时显示在页面上可右键另存
+  // 產生出的命盤圖；http 網站下載常被瀏覽器當成「不安全下載」擋掉，所以同時顯示在頁面上可右鍵另存
   const [pngUrl, setPngUrl] = useState<string | null>(null);
 
   useEffect(() => () => { if (pngUrl) URL.revokeObjectURL(pngUrl); }, [pngUrl]);
@@ -60,8 +60,8 @@ export default function ReportView() {
     if (!node) return;
     setPng('working');
     try {
-      // html-to-image 经 SVG foreignObject 交给浏览器自己排版再画进 canvas，与页面所见一致。
-      // 原本的 html2canvas 自行重算版面：小徽章与图例文字下移、底角文字被圆角裁掉、color-mix 背景画成实心色块
+      // html-to-image 經 SVG foreignObject 交給瀏覽器自己排版再畫進 canvas，與頁面所見一致。
+      // 原本的 html2canvas 自行重算版面：小徽章與圖例文字下移、底角文字被圓角裁掉、color-mix 背景畫成實心色塊
       const { toBlob } = await import('html-to-image');
       const blob = await toBlob(node, {
         pixelRatio: 2, cacheBust: true,

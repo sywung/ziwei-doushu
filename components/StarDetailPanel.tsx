@@ -9,7 +9,7 @@ interface StarDetailPanelProps {
   onClose: () => void;
 }
 
-// 倪海厦体系各星详细解读（参考顾祥弘《飞星紫微斗数全书》及南北山人《紫微斗数全书》）
+// 倪海廈體系各星詳細解讀（參考顧祥弘《飛星紫微斗數全書》及南北山人《紫微斗數全書》）
 const STAR_DETAIL: Record<string, {
   niHaixia: string;
   classical: string;
@@ -191,7 +191,7 @@ export default function StarDetailPanel({ star, palaceName, onClose }: StarDetai
           transition={{ duration: 0.2 }}
           className="card-glass rounded-xl overflow-hidden"
         >
-          {/* 标题栏 */}
+          {/* 標題欄 */}
           <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid var(--t-border)' }}>
             <div className="flex items-center gap-2">
               <span className="text-xl font-bold" style={{ color: 'var(--t-gold)' }}>{star.name}</span>
@@ -230,7 +230,7 @@ export default function StarDetailPanel({ star, palaceName, onClose }: StarDetai
               </div>
             )}
 
-            {/* 关键词 */}
+            {/* 關鍵詞 */}
             {desc && (
               <div>
                 <div className="text-[10px] tracking-widest mb-1.5" style={{ color: 'var(--t-faint)' }}>星曜特质</div>
@@ -245,7 +245,7 @@ export default function StarDetailPanel({ star, palaceName, onClose }: StarDetai
               </div>
             )}
 
-            {/* 古书原文 */}
+            {/* 古書原文 */}
             {detail && (
               <div className="rounded-xl p-3" style={{ background: 'rgba(212,168,67,0.04)', border: '1px solid rgba(212,168,67,0.12)' }}>
                 <div className="text-[10px] tracking-widest mb-1.5 flex items-center gap-1" style={{ color: 'var(--t-gold)', opacity: 0.7 }}>
@@ -255,7 +255,7 @@ export default function StarDetailPanel({ star, palaceName, onClose }: StarDetai
               </div>
             )}
 
-            {/* 倪海厦解读 */}
+            {/* 倪海廈解讀 */}
             {detail && (
               <>
                 <div>
@@ -297,7 +297,7 @@ export default function StarDetailPanel({ star, palaceName, onClose }: StarDetai
               </>
             )}
 
-            {/* 辅星/煞星说明 */}
+            {/* 輔星/煞星說明 */}
             {!detail && star.type !== 'major' && (
               <div className="text-xs leading-relaxed" style={{ color: 'var(--t-text2)' }}>
                 {star.type === 'lucky' && (

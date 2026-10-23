@@ -1,19 +1,19 @@
-name: 功能建议 / Feature request
-description: 想要的新功能或改进
+name: 功能建議 / Feature request
+description: 想要的新功能或改進
 labels: ["enhancement"]
 body:
   - type: textarea
     id: need
     attributes:
-      label: 想解决什么问题
+      label: 想解決什麼問題
     validations:
       required: true
   - type: textarea
     id: idea
     attributes:
-      label: 你设想的做法
+      label: 你設想的做法
   - type: textarea
     id: source
     attributes:
-      label: 依据（涉及命理口径时请写）
-      description: 出自哪本书、哪一讲，或哪个排盘软件的哪种设置。没有出处的口径改动我们一般不收。
+      label: 依據（涉及命理口徑時請寫）
+      description: 出自哪本書、哪一講，或哪個排盤軟件的哪種設置。沒有出處的口徑改動我們一般不收。

@@ -1,10 +1,10 @@
 /**
- * 为 v4.0 解读数据集建索引
+ * 為 v4.0 解讀數據集建索引
  *
  *   npx tsx scripts/reading/build-index.ts <dataDir> [indexDir]
  *
- * dataDir 放解压后的 year-YYYY.jsonl；indexDir 默认为 <dataDir>/index。
- * 数据档更新后要重跑，否则 store 会因键对不上而拒绝回传。
+ * dataDir 放解壓後的 year-YYYY.jsonl；indexDir 默認為 <dataDir>/index。
+ * 數據檔更新後要重跑，否則 store 會因鍵對不上而拒絕回傳。
  */
 import { mkdir, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';

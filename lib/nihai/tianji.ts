@@ -1,20 +1,20 @@
 /**
- * 天纪 — 倪海厦天文术数体系数据库
+ * 天紀 — 倪海廈天文術數體系數據庫
  *
- * 「上知天文」—— 天之纪，是术数研究的体系化成果。
- * 1994年录制，共24集视频（每集2小时，共48小时）。
- * 讲义分为《天机道》《人间道》《地脉道》《64卦易图》四册。
+ * 「上知天文」—— 天之紀，是術數研究的體系化成果。
+ * 1994年錄製，共24集視頻（每集2小時，共48小時）。
+ * 講義分為《天機道》《人間道》《地脈道》《64卦易圖》四冊。
  *
- * 核心学派：
- *   紫微斗数 → 三合派
- *   风水     → 九星派（杨救贫流派）
- *   易经     → 象数派
- *   推命     → 河洛数理派
+ * 核心學派：
+ *   紫微斗數 → 三合派
+ *   風水     → 九星派（楊救貧流派）
+ *   易經     → 象數派
+ *   推命     → 河洛數理派
  */
 
 import type { NiModule, Hexagram, FengShuiEntry, TianjiEpisode } from './types';
 
-// ─── 天纪模块 ────────────────────────────────────────────
+// ─── 天紀模塊 ────────────────────────────────────────────
 export const TIANJI_MODULES: NiModule[] = [
   {
     id: 'tj-ziwei',
@@ -355,7 +355,7 @@ export const TIANJI_MODULES: NiModule[] = [
   },
 ];
 
-// ─── 易经六十四卦数据库 ──────────────────────────────────
+// ─── 易經六十四卦數據庫 ──────────────────────────────────
 export const HEXAGRAMS: Hexagram[] = [
   { number: 1, name: '乾', composition: '乾为天', upper: '乾', lower: '乾', meaning: '元亨利贞，天行健，君子以自强不息', niInterpretation: '纯阳之卦，刚健中正，至大至刚', divination: '大吉大利，但需注意亢龙有悔' },
   { number: 2, name: '坤', composition: '坤为地', upper: '坤', lower: '坤', meaning: '元亨，利牝马之贞，地势坤，君子以厚德载物', niInterpretation: '纯阴之卦，柔顺承载', divination: '宜顺从，不宜主动' },
@@ -423,7 +423,7 @@ export const HEXAGRAMS: Hexagram[] = [
   { number: 64, name: '未济', composition: '火水未济', upper: '离', lower: '坎', meaning: '亨，小狐汔济，濡其尾', niInterpretation: '尚未完成之卦，事在人为', divination: '事未完成，需继续努力' },
 ];
 
-// ─── 堪舆学条目 ──────────────────────────────────────────
+// ─── 堪輿學條目 ──────────────────────────────────────────
 export const FENGSHUI_ENTRIES: FengShuiEntry[] = [
   {
     id: 'fs-bashayq',
@@ -469,7 +469,7 @@ export const FENGSHUI_ENTRIES: FengShuiEntry[] = [
   },
 ];
 
-// ─── 天纪24集课程结构（每集2小时：前半段命学/后半段易经） ──
+// ─── 天紀24集課程結構（每集2小時：前半段命學/後半段易經） ──
 export const TIANJI_EPISODES: TianjiEpisode[] = [
   { dvd: 1, firstHalf: '天纪开篇·天纪与真理', secondHalf: '易经三义·先后天八卦', highlights: ['如何分辨君子与小人', '天地人三才论', '紫微斗数为何优于子平法', '文字只是船真理才是彼岸'] },
   { dvd: 2, firstHalf: '紫微斗数·十二宫位详解', secondHalf: '八卦地理配置·爻变与时机', highlights: ['命宫为本三方为用', '夫妻宫兼看福德宫', '面相五形论', '名位相等原则', '卜筮有时机不疑何卜'] },
@@ -497,7 +497,7 @@ export const TIANJI_EPISODES: TianjiEpisode[] = [
   { dvd: 24, firstHalf: '天纪总结·核心心法', secondHalf: '传承与期许', highlights: ['天纪精神总结', '命运掌握在自己手上', '文化传承使命', '不希望中华文化失传'] },
 ];
 
-// ─── 倪师天纪核心语录库 ──────────────────────────────────
+// ─── 倪師天紀核心語錄庫 ──────────────────────────────────
 export const TIANJI_QUOTES = [
   { text: '文字只是协助诸位到达真理的彼岸，千万不要三个月以后，怎么还是扛着船在马路上跑', topic: '学习态度' },
   { text: '大道至简——飞星飞来飞去太复杂，不搞这个', topic: '紫微斗数' },
@@ -530,7 +530,7 @@ export const TIANJI_QUOTES = [
   { text: '天纪就是自然法则，是真理', topic: '天纪总论' },
 ];
 
-// ─── 统计 ────────────────────────────────────────────────
+// ─── 統計 ────────────────────────────────────────────────
 export const TIANJI_STATS = {
   totalModules: TIANJI_MODULES.length,
   activeModules: TIANJI_MODULES.filter(m => m.status === 'active').length,

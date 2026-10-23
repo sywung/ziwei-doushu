@@ -1,8 +1,8 @@
 /**
  * POST /api/interpret  { chart: { birthInfo }, messages: [{ role, content }] }
  *
- * AI 问盘：依命盘结构 + v4 断语节录回答，回传 delta SSE（见 lib/ai/sse.ts）。
- * 命盘由服务端按出生资料重排，不信任前端的 chart 物件。模型设定见 lib/ai/llm.ts。
+ * AI 問盤：依命盤結構 + v4 斷語節錄回答，回傳 delta SSE（見 lib/ai/sse.ts）。
+ * 命盤由服務端按出生資料重排，不信任前端的 chart 物件。模型設定見 lib/ai/llm.ts。
  */
 import { NextResponse } from 'next/server';
 import { chartFromUntrusted, currentTarget, describeChart, readingExcerpts } from '@/lib/ai/chart-context';

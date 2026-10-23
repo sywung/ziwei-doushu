@@ -1,8 +1,8 @@
 /**
- * GET /api/sanji?corpus=tianji|renji                     → 书册与章目
- * GET /api/sanji?corpus=…&entries=1&book=&chapter=&q=&ids=&offset=&limit=  → 判语分页
+ * GET /api/sanji?corpus=tianji|renji                     → 書冊與章目
+ * GET /api/sanji?corpus=…&entries=1&book=&chapter=&q=&ids=&offset=&limit=  → 判語分頁
  *
- * 语料目录由环境变量 SANJI_DATA_DIR 指定（其下 tianji/、renji/ 各放 entries.jsonl）。
+ * 語料目錄由環境變量 SANJI_DATA_DIR 指定（其下 tianji/、renji/ 各放 entries.jsonl）。
  */
 import { NextResponse } from 'next/server';
 import { toHans } from '@/lib/i18n/hans';

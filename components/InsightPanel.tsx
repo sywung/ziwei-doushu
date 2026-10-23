@@ -16,7 +16,7 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   hidden?: boolean; // don't show user bubble for auto/topic messages
-  /** reading：来自 v4 解读数据集（非 AI），新增时滚到这则的开头而不是底部；error：失败提示，不送给 AI、不存纪录 */
+  /** reading：來自 v4 解讀數據集（非 AI），新增時滾到這則的開頭而不是底部；error：失敗提示，不送給 AI、不存紀錄 */
   kind?: 'reading' | 'error';
   topic?: ReadingTopic;
 }
@@ -29,7 +29,7 @@ interface SelectedSiHua {
 
 interface InsightPanelProps {
   chart: ZiweiChart;
-  /** AI 对话纪录的键（出生资料＋流派）；不给就不存纪录 */
+  /** AI 對話紀錄的鍵（出生資料＋流派）；不給就不存紀錄 */
   historyKey?: string;
   selectedPalace?: Palace | null;
   selectedSiHua?: SelectedSiHua | null;
@@ -43,7 +43,7 @@ const TOPIC_SHORT_LABEL: Record<ReadingTopic, string> = {
 
 const TOPICS = READING_TOPICS.map(key => ({ key, label: TOPIC_SHORT_LABEL[key] }));
 
-// 宫位 → 解读维度；命宫对应「命格总览」（另有「性格」维度也落在命宫，从按钮进入）
+// 宮位 → 解讀維度；命宮對應「命格總覽」（另有「性格」維度也落在命宮，從按鈕進入）
 const PALACE_TOPIC: Record<string, ReadingTopic> = Object.fromEntries(
   (Object.entries(TOPIC_PALACE_NAME) as [ReadingTopic, string][])
     .filter(([topic]) => topic !== 'personality')
@@ -133,7 +133,7 @@ export default function InsightPanel({ chart, historyKey, selectedPalace, select
   const [loading, setLoading] = useState(false);
   const [activeTopic, setActiveTopic] = useState<ReadingTopic>('overview');
   const [readingState, setReadingState] = useState<ReadingState>({ status: 'loading' });
-  // 资料还没载入时点的维度，载入后补显示
+  // 資料還沒載入時點的維度，載入後補顯示
   const pendingTopic = useRef<ReadingTopic | null>('overview');
   const messagesRef = useRef<Message[]>([]); // always-current copy for closures
   const loadingRef = useRef(false);
@@ -141,7 +141,7 @@ export default function InsightPanel({ chart, historyKey, selectedPalace, select
   const lastPalaceBranch = useRef<number | undefined>(undefined);
   const lastSiHuaKey = useRef<string | undefined>(undefined);
   const scrollRef = useRef<HTMLDivElement>(null);
-  // 先读回浏览器里的旧对话，读完才开始回存（否则首次渲染的空阵列会把旧纪录删掉）
+  // 先讀回瀏覽器裡的舊對話，讀完才開始回存（否則首次渲染的空陣列會把舊紀錄刪掉）
   const [historyReady, setHistoryReady] = useState(false);
   const [restoredCount, setRestoredCount] = useState(0);
 
@@ -149,7 +149,7 @@ export default function InsightPanel({ chart, historyKey, selectedPalace, select
     if (historyKey) {
       const restored = loadChatHistory(browserChatStorage(), historyKey);
       if (restored.length) {
-        // 以读回的纪录取代现有 AI 对话（不是附加）：effect 重跑（StrictMode、historyKey 变动）才不会重复
+        // 以讀回的紀錄取代現有 AI 對話（不是附加）：effect 重跑（StrictMode、historyKey 變動）才不會重複
         setMessages(prev => [...restored, ...prev.filter(m => m.kind === 'reading')]);
         setRestoredCount(restored.length);
       }
@@ -157,7 +157,7 @@ export default function InsightPanel({ chart, historyKey, selectedPalace, select
     setHistoryReady(true);
   }, [historyKey]);
 
-  // 每则 AI 回答串流完才存，不在逐字更新时写入
+  // 每則 AI 回答串流完才存，不在逐字更新時寫入
   useEffect(() => {
     if (!historyKey || !historyReady || loading) return;
     saveChatHistory(browserChatStorage(), historyKey, messages.filter(m => !m.kind));
@@ -173,7 +173,7 @@ export default function InsightPanel({ chart, historyKey, selectedPalace, select
   useEffect(() => { messagesRef.current = messages; }, [messages]);
   useEffect(() => { loadingRef.current = loading; }, [loading]);
 
-  // Auto-scroll：解读一则动辄上万字，新增时对齐到这则开头；AI 流式回答则跟到底部
+  // Auto-scroll：解讀一則動輒上萬字，新增時對齊到這則開頭；AI 流式回答則跟到底部
   useEffect(() => {
     const box = scrollRef.current;
     if (!box) return;
@@ -203,7 +203,7 @@ export default function InsightPanel({ chart, historyKey, selectedPalace, select
     appendReading(topic, readingState);
   };
 
-  // 起盘后载入 v4 解读资料，先显示命格总览
+  // 起盤後載入 v4 解讀資料，先顯示命格總覽
   useEffect(() => {
     if (autoLoaded.current) return;
     autoLoaded.current = true;
@@ -251,14 +251,14 @@ ${selectedPalace.name}在命盘中的意义，以及这种星曜配置的整体�
     sendMessage(prompt, true);
   }, [selectedPalace]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // 注入四化飞化分析
+  // 注入四化飛化分析
   useEffect(() => {
     if (!selectedSiHua) return;
     const key = `${selectedSiHua.starName}-${selectedSiHua.siHua}-${selectedSiHua.view}`;
     if (key === lastSiHuaKey.current) return;
     lastSiHuaKey.current = key;
 
-    // 找出该星所在宫位
+    // 找出該星所在宮位
     const palaceOfStar = chart.palaces.find(p =>
       p.stars.some(s => s.name === selectedSiHua.starName)
     );
@@ -319,8 +319,8 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
 
     const userMsg: Message = { role: 'user', content: text, hidden };
     // Capture current messages synchronously via ref (avoids stale closure)
-    // 资料集解读（每则上万字）不送给 AI：服务端已附上这张盘的断语节录，再送会超过长度上限
-    // 错误提示也不送：那不是 AI 说过的话
+    // 資料集解讀（每則上萬字）不送給 AI：服務端已附上這張盤的斷語節錄，再送會超過長度上限
+    // 錯誤提示也不送：那不是 AI 說過的話
     const apiMessages = [...messagesRef.current.filter(m => !m.kind), userMsg].map(m => ({
       role: m.role,
       content: m.content,

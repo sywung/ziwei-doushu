@@ -8,14 +8,14 @@ export interface ProvinceInfo {
   cities: CityInfo[];
 }
 
-// ★ 2026-10-07 用户反馈「出生地点还不够全」→ 补全全国区县（直辖市以外 2724 个，挂在各地级市下）。
-//   区县不放进本表：本表经 BirthForm → LocationPicker 在 /chart、/heming 首屏静态依赖图上，
-//   区县表与拼音表在 lib/ziwei/counties.generated.ts、lib/i18n/county-pinyin.generated.ts，
-//   打开地点选择框时才动态加载（lib/ziwei/county-data.ts）。区县选中后城市字段存成「地级市·区县」，
-//   见 lib/ziwei/county-label.ts。省直辖县级单位（仙桃、海南各市县、新疆兵团各市）仍是本表的市一级。
+// ★ 2026-10-07 用戶反饋「出生地點還不夠全」→ 補全全國區縣（直轄市以外 2724 個，掛在各地級市下）。
+//   區縣不放進本表：本表經 BirthForm → LocationPicker 在 /chart、/heming 首屏靜態依賴圖上，
+//   區縣表與拼音表在 lib/ziwei/counties.generated.ts、lib/i18n/county-pinyin.generated.ts，
+//   打開地點選擇框時才動態加載（lib/ziwei/county-data.ts）。區縣選中後城市字段存成「地級市·區縣」，
+//   見 lib/ziwei/county-label.ts。省直轄縣級單位（仙桃、海南各市縣、新疆兵團各市）仍是本表的市一級。
 export const PROVINCES: ProvinceInfo[] = [
-  // ─── 台湾（置顶：本站使用者多在台湾）─────────────────────
-  // 22 县市，经度取县市政府所在地（到 0.01°，误差约 2 秒钟）。新竹、嘉义的市与县分开（县治在竹北、太保）
+  // ─── 台灣（置頂：本站使用者多在台灣）─────────────────────
+  // 22 縣市，經度取縣市政府所在地（到 0.01°，誤差約 2 秒鐘）。新竹、嘉義的市與縣分開（縣治在竹北、太保）
   {
     name: '台湾省',
     cities: [
@@ -43,14 +43,14 @@ export const PROVINCES: ProvinceInfo[] = [
       { name: '连江县', longitude: 119.95 },
     ],
   },
-  // ─── 直辖市 ───────────────────────────────────────────
+  // ─── 直轄市 ───────────────────────────────────────────
   {
     name: '北京市',
     cities: [
-      // ★ 2026-08-23 用户反馈「直辖市内部也有分区，希望加上更准一些」→ 补全 16 区。
-      //   保留「北京」市级条目在首位：老用户历史命盘存的是它，删掉会对不上。
-      //   全市经度跨度 115.98–117.12（延庆↔平谷），约 1.14°，真太阳时最大差约 4.6 分钟——
-      //   出生时刻落在时辰交界 ±5 分钟内时，选市中心与选边缘区会得到不同时辰，整盘皆变。
+      // ★ 2026-08-23 用戶反饋「直轄市內部也有分區，希望加上更準一些」→ 補全 16 區。
+      //   保留「北京」市級條目在首位：老用戶歷史命盤存的是它，刪掉會對不上。
+      //   全市經度跨度 115.98–117.12（延慶↔平谷），約 1.14°，真太陽時最大差約 4.6 分鐘——
+      //   出生時刻落在時辰交界 ±5 分鐘內時，選市中心與選邊緣區會得到不同時辰，整盤皆變。
       { name: '北京', longitude: 116.4 },
       { name: '东城', longitude: 116.42 },
       { name: '西城', longitude: 116.37 },
@@ -73,7 +73,7 @@ export const PROVINCES: ProvinceInfo[] = [
   {
     name: '天津市',
     cities: [
-      // 跨度 116.97–117.83（静海↔宁河），约 0.86°，真太阳时最大差约 3.4 分钟
+      // 跨度 116.97–117.83（靜海↔寧河），約 0.86°，真太陽時最大差約 3.4 分鐘
       { name: '天津', longitude: 117.2 },
       { name: '和平', longitude: 117.21 },
       { name: '河东', longitude: 117.24 },
@@ -96,7 +96,7 @@ export const PROVINCES: ProvinceInfo[] = [
   {
     name: '上海市',
     cities: [
-      // 跨度 121.12–121.56（青浦↔浦东新区），约 0.44°，真太阳时最大差约 1.8 分钟
+      // 跨度 121.12–121.56（青浦↔浦東新區），約 0.44°，真太陽時最大差約 1.8 分鐘
       { name: '上海', longitude: 121.5 },
       { name: '黄浦', longitude: 121.49 },
       { name: '徐汇', longitude: 121.44 },
@@ -119,7 +119,7 @@ export const PROVINCES: ProvinceInfo[] = [
   {
     name: '重庆市',
     cities: [
-      // 主城九区
+      // 主城九區
       { name: '渝中', longitude: 106.6 },
       { name: '大渡口', longitude: 106.5 },
       { name: '江北', longitude: 106.6 },
@@ -129,7 +129,7 @@ export const PROVINCES: ProvinceInfo[] = [
       { name: '北碚', longitude: 106.4 },
       { name: '渝北', longitude: 106.6 },
       { name: '巴南', longitude: 106.5 },
-      // 远郊区
+      // 遠郊區
       { name: '万州', longitude: 108.4 },
       { name: '涪陵', longitude: 107.4 },
       { name: '黔江', longitude: 108.8 },
@@ -147,7 +147,7 @@ export const PROVINCES: ProvinceInfo[] = [
       { name: '开州', longitude: 108.4 },
       { name: '梁平', longitude: 107.8 },
       { name: '武隆', longitude: 107.8 },
-      // 县
+      // 縣
       { name: '城口', longitude: 108.7 },
       { name: '丰都', longitude: 107.7 },
       { name: '垫江', longitude: 107.4 },
@@ -156,7 +156,7 @@ export const PROVINCES: ProvinceInfo[] = [
       { name: '奉节', longitude: 109.5 },
       { name: '巫山', longitude: 109.9 },
       { name: '巫溪', longitude: 109.6 },
-      // 自治县
+      // 自治縣
       { name: '石柱', longitude: 108.1 },
       { name: '秀山', longitude: 109.0 },
       { name: '酉阳', longitude: 108.8 },
@@ -164,7 +164,7 @@ export const PROVINCES: ProvinceInfo[] = [
     ],
   },
 
-  // ─── 华北 ─────────────────────────────────────────────
+  // ─── 華北 ─────────────────────────────────────────────
   {
     name: '河北省',
     cities: [
@@ -215,7 +215,7 @@ export const PROVINCES: ProvinceInfo[] = [
     ],
   },
 
-  // ─── 东北 ─────────────────────────────────────────────
+  // ─── 東北 ─────────────────────────────────────────────
   {
     name: '辽宁省',
     cities: [
@@ -269,7 +269,7 @@ export const PROVINCES: ProvinceInfo[] = [
     ],
   },
 
-  // ─── 华东 ─────────────────────────────────────────────
+  // ─── 華東 ─────────────────────────────────────────────
   {
     name: '江苏省',
     cities: [
@@ -377,7 +377,7 @@ export const PROVINCES: ProvinceInfo[] = [
     ],
   },
 
-  // ─── 华中 ─────────────────────────────────────────────
+  // ─── 華中 ─────────────────────────────────────────────
   {
     name: '河南省',
     cities: [
@@ -420,7 +420,7 @@ export const PROVINCES: ProvinceInfo[] = [
       { name: '仙桃', longitude: 113.4 },
       { name: '潜江', longitude: 112.9 },
       { name: '天门', longitude: 113.2 },
-      // ★ 2026-10-07 补省直辖县级单位（经度取 data/geo/cn-counties-2023.json）
+      // ★ 2026-10-07 補省直轄縣級單位（經度取 data/geo/cn-counties-2023.json）
       { name: '神农架', longitude: 110.67 },
     ],
   },
@@ -444,7 +444,7 @@ export const PROVINCES: ProvinceInfo[] = [
     ],
   },
 
-  // ─── 华南 ─────────────────────────────────────────────
+  // ─── 華南 ─────────────────────────────────────────────
   {
     name: '广东省',
     cities: [
@@ -502,7 +502,7 @@ export const PROVINCES: ProvinceInfo[] = [
       { name: '陵水', longitude: 110.0 },
       { name: '乐东', longitude: 109.2 },
       { name: '五指山', longitude: 109.5 },
-      // ★ 2026-10-07 补齐省直辖市县（经度取 data/geo/cn-counties-2023.json）
+      // ★ 2026-10-07 補齊省直轄市縣（經度取 data/geo/cn-counties-2023.json）
       { name: '东方', longitude: 108.65 },
       { name: '定安', longitude: 110.33 },
       { name: '屯昌', longitude: 110.1 },
@@ -669,7 +669,7 @@ export const PROVINCES: ProvinceInfo[] = [
       { name: '塔城', longitude: 83.0 },
       { name: '阿勒泰', longitude: 88.1 },
       { name: '石河子', longitude: 86.1 },
-      // ★ 2026-10-07 补齐自治区直辖县级市（兵团各市，经度取 data/geo/cn-counties-2023.json）
+      // ★ 2026-10-07 補齊自治區直轄縣級市（兵團各市，經度取 data/geo/cn-counties-2023.json）
       { name: '阿拉尔', longitude: 81.27 },
       { name: '图木舒克', longitude: 79.07 },
       { name: '五家渠', longitude: 87.54 },
@@ -685,7 +685,7 @@ export const PROVINCES: ProvinceInfo[] = [
     ],
   },
 
-  // ─── 特别行政区 / 台湾 ──────────────────────────────────
+  // ─── 特別行政區 / 台灣 ──────────────────────────────────
   {
     name: '香港特别行政区',
     cities: [
@@ -703,6 +703,6 @@ export const PROVINCES: ProvinceInfo[] = [
     ],
   },
 
-  // 注：海外出生暂未支持，因 share.ts 真太阳时算法假设输入为北京时间(UTC+8)。
-  // 海外用户请把当地时间换算成北京时间再填写（或填出生时所在的中国时区相对城市）。
+  // 注：海外出生暫未支持，因 share.ts 真太陽時算法假設輸入為北京時間(UTC+8)。
+  // 海外用戶請把當地時間換算成北京時間再填寫（或填出生時所在的中國時區相對城市）。
 ];
