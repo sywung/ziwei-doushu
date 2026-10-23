@@ -3,7 +3,8 @@ import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { chartSignatures } from '../../lib/twins/signature';
-import { createTwinsStore, type TwinsIndex } from '../../lib/twins/store';
+import { createTwinsStore, lunarYearOfKey, type TwinsIndex } from '../../lib/twins/store';
+import { clockWindows, formatClockWindow } from '../../lib/twins/clock-windows';
 import { TWIN_TIERS } from '../../lib/twins/tiers';
 import { generateChart } from '../../lib/ziwei/algorithm';
 import type { ZiweiChart } from '../../lib/ziwei/types';
@@ -138,13 +139,46 @@ async function main() {
       assert.ok(t.samples.every(k => expected.includes(k)), `${t.tier} samples are twins`);
       assert.equal(t.samples.length, Math.min(3, expected.length));
       if (expected.length > 3) assert.equal(t.samples[0], expected[0]); // 等距抽样从头开始
+      // 样本都在 3–8 月，农历年 = 公历年
+      const sameYear = expected.filter(k => k.slice(0, 4) === self.key.slice(0, 4));
+      assert.equal(t.sameYear.total, sameYear.length, `${t.tier} sameYear total`);
+      assert.ok(t.sameYear.samples.every(k => sameYear.includes(k)), `${t.tier} sameYear samples`);
     }
+
+    // 同年以农历年计：春节（1990-01-27）前出生属 1989 年。手造一组跨春节的同配置盘
+    const juneChart = generateChart({ year: 1990, month: 6, day: 1, hour: 3, gender: 'male' });
+    const selfSig = chartSignatures(juneChart).main;
+    const boundaryKeys = ['1989-03-01-0', '1990-01-20-0', '1990-01-27-0', '1990-12-31-0', '1991-02-10-0', '1991-02-20-0'];
+    const boundaryFile = path.join(dir, 'boundary.json');
+    await writeFile(boundaryFile, JSON.stringify({
+      version: 1, yearMin: 1989, yearMax: 1991, keys: boundaryKeys,
+      tiers: { main: { [selfSig]: boundaryKeys.map((_, i) => i) }, sihua: {}, full: {} },
+    }));
+    const boundary = await createTwinsStore(boundaryFile).find(juneChart, 10);
+    const mainTier = boundary.tiers.find(t => t.tier === 'main')!;
+    // 1990 庚午年：1990-01-27 春节起至 1991-02-14 除夕
+    assert.deepEqual(mainTier.sameYear.samples, ['1990-01-27-0', '1990-12-31-0', '1991-02-10-0']);
 
     const female = await store.find(generateChart({ ...self.chart.birthInfo, gender: 'female' }), 3);
     assert.deepEqual(female.tiers, result.tiers);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
+}
+
+// ── 同盘时刻表：北京 1990-01-01 辰时，参考 metisziwei 线上结果「当日 07:18–09:17」──
+assert.equal(lunarYearOfKey('1990-01-26-0'), 1989);
+assert.equal(lunarYearOfKey('1990-01-27-0'), 1990);
+const jan1 = { year: 1990, month: 1, day: 1 };
+assert.deepEqual(clockWindows(jan1, 4, 116.4).map(formatClockWindow), ['当日 07:18–09:17']);
+// 子时（视为次日）：前一日晚子＋当日早子，连成一段
+assert.deepEqual(clockWindows(jan1, 0, 116.4).map(formatClockWindow), ['前一日 23:18–当日 01:17']);
+// 视为当日：本日早子＋本日晚子两段
+assert.deepEqual(clockWindows(jan1, 0, 116.4, 'current-day').map(formatClockWindow), ['当日 00:18–01:17', '当日 23:18–次日 00:17']);
+// 每个时辰的窗口约 120 分钟（视为次日时）；均时差随钟表时间微变，边界可差 1 分钟
+for (let b = 0; b < 12; b++) {
+  const total = clockWindows(jan1, b, 121.5).reduce((n, w) => n + w.endMinute - w.startMinute + 1, 0);
+  assert.ok(Math.abs(total - 120) <= 1, `branch ${b} window length ${total}`);
 }
 
 main().then(

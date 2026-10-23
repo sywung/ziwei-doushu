@@ -915,6 +915,18 @@ export default function HomePage() {
               }}>
               ▶ 三纪字幕导播 →
             </motion.a>
+            <motion.a
+              href="/twins"
+              whileHover={{ scale: 1.02 }}
+              className="text-xs tracking-[0.2em] inline-flex items-center gap-2 px-4 py-2 rounded-full"
+              style={{
+                color: c.goldSolid,
+                border: `1px solid ${c.goldLine}`,
+                background: 'transparent',
+                textDecoration: 'none',
+              }}>
+              ◎ 命理学双子 →
+            </motion.a>
           </div>
         </FadeIn>
       </section>
