@@ -43,7 +43,7 @@
 >
 > 授權同上遊：程式碼 MIT（保留原作者版權聲明），資料依各自授權。
 >
-> **贊助**：覺得有用，歡迎[贊助本 fork 的維護](https://donate.twater.cc/r/ziwei)（綠界金流：信用卡、ATM、超商）。上游作者的原始成果另見 [metisziwei.com](https://metisziwei.com/)。
+> 覺得有用，歡迎[贊助本 fork 的維護](#贊助)。
 
 基於<strong>倪海廈《天紀》</strong>教學體系的紫微斗數排盤系統，包含完整排盤算法、四化系統、格局知識庫、古籍原文數據，以及一套完整開源的紫微斗數解讀數據：**v4.0 解讀數據集——67.5 萬張命盤 × 13 維 = 877 萬段解讀，正文約 204 億字，解壓後 56.6 GB**（2026-10-15 發佈）。
 
@@ -77,7 +77,7 @@
 | 七 | [開源邊界](#七開源邊界什麼不在裡面) | 什麼開源、什麼不開源 |
 | 八 | [維護節奏與貢獻](#八維護節奏與貢獻) | 同步節奏、issue / PR 口徑 |
 | 九 | [協議](#九協議) | 代碼 MIT / 數據 CC BY 4.0 / 古籍公版 / 倪師原話非商用 |
-| 十 | [關於與聯繫](#十關於與聯繫) | 項目理念、技術棧、聯繫方式 |
+| 十 | [關於與贊助](#十關於與贊助) | 項目理念、技術棧、贊助 |
 
 ---
 
@@ -286,7 +286,7 @@ Expand-Archive combined.zip
 - **學術論文**：參考文獻或致謝章節
 - **二次發佈的數據集**：README 或 metadata 文件裡註明上游來源
 
-僅此一條，其餘都自由。完整條款見 [DATASET-LICENSE](./DATASET-LICENSE)。希望這套數據能幫你做出好東西 —— 做出來記得來小紅書 / 抖音 / 閒魚 **@王多魚AI** 打個招呼 👋
+僅此一條，其餘都自由。完整條款見 [DATASET-LICENSE](./DATASET-LICENSE)。希望這套數據能幫你做出好東西。
 
 ---
 
@@ -437,7 +437,7 @@ npm test            # 排盤引擎迴歸（768 盤 × 紫微鐵律、夏令時�
 
 ---
 
-## 十、關於與聯繫
+## 十、關於與贊助
 
 ### 項目理念
 
@@ -455,8 +455,12 @@ npm test            # 排盤引擎迴歸（768 盤 × 紫微鐵律、夏令時�
 - **排盤**：基於 [iztro](https://github.com/SylarLong/iztro) + lunar-javascript
 - **動畫**：Framer Motion
 
-### 聯繫
+### 贊助
 
-- 線上平台：[metisziwei.com](https://metisziwei.com/?from=gh-readme)（已完成 ICP 備案：渝ICP備2026013379號-1）
-- 提問題、提修復：見 [CONTRIBUTING.md](./CONTRIBUTING.md)；使用交流請到 [討論區](https://github.com/Renhuai123/ziwei-doushu/discussions)
-- 💕 發財的小手點一下：小紅書 / 抖音 / 閒魚 / X 關注 **王多魚AI**，第一時間看上線 + 解鎖更多紫微乾貨～
+覺得這個 fork 有用，歡迎贊助維護（綠界金流：信用卡、ATM、超商代碼）。
+
+<a href="https://donate.twater.cc/r/ziwei"><img src="./docs/assets/donate-qr.svg" alt="贊助 QR Code：https://donate.twater.cc/r/ziwei" width="180" height="180"></a>
+
+掃描 QR Code 或前往 **<https://donate.twater.cc/r/ziwei>**。
+
+本 fork 的原始成果來自上游作者，請見 [Renhuai123/ziwei-doushu](https://github.com/Renhuai123/ziwei-doushu)。
